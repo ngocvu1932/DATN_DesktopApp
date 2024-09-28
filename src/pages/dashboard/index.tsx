@@ -5,6 +5,8 @@ import {useTranslation} from 'react-i18next';
 import axios from 'axios';
 import Header from './header';
 import './index.css';
+import {useLocation} from 'react-router-dom';
+import {toast, ToastContainer} from 'react-toastify';
 
 const Dashboard: React.FunctionComponent = () => {
   const {t} = useTranslation();
@@ -12,6 +14,13 @@ const Dashboard: React.FunctionComponent = () => {
   const resizerRef = useRef<HTMLDivElement>(null);
   const maxWidth = 300;
   const minWidth = 200;
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.message) {
+      toast.success(location.state.message, {autoClose: location.state.autoClose});
+    }
+  }, [location.state]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -78,6 +87,7 @@ const Dashboard: React.FunctionComponent = () => {
           {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading...</p>}
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
