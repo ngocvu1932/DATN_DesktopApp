@@ -6,6 +6,8 @@ import {initReactI18next} from 'react-i18next';
 import enLocale from './locales/locale_en.json';
 import viLocale from './locales/locale_vi.json';
 import {StrictMode} from 'react';
+import {Provider} from 'react-redux';
+import store from './redux/store';
 
 i18n
   .use(initReactI18next)
@@ -28,6 +30,8 @@ i18n
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </StrictMode>
 );

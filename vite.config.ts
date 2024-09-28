@@ -5,6 +5,10 @@ import {join} from 'path';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
+import dotenv from 'dotenv';
+
+// Load file .env
+dotenv.config();
 
 const root = join(__dirname);
 const srcRoot = join(__dirname, 'src');
