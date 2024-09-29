@@ -2,8 +2,15 @@ import axios, {AxiosResponse} from 'axios';
 import Cookies from 'js-cookie';
 const API_URL = import.meta.env.VITE_API_URL;
 
+interface IPagination {
+  totalPage: number;
+  limit: number;
+  page: number;
+}
+
 export interface CustomAxiosResponse<T = any> extends AxiosResponse<T> {
   statusCode?: number;
+  pagination?: IPagination;
 }
 
 const axiosInstance = axios.create({
@@ -17,8 +24,12 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = Cookies.get('accessToken');
-    config.headers.Authorization = `Bearer ${accessToken ?? ''}`;
+    // const accessToken = Cookies.get('accessToken');
+    const accessTokenLocalStorage = localStorage.getItem('accessToken');
+
+    console.log('accessTokenLocalStorage: ', accessTokenLocalStorage);
+
+    config.headers.Authorization = `Bearer ${accessTokenLocalStorage ?? ''}`;
     return config;
   },
   (error) => {

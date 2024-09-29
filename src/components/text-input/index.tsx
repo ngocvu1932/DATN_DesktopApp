@@ -38,9 +38,7 @@ const TextInput: React.FC<ITextInputProps> = ({
           suffix ? 'pr-9' : ''
         } w-full h-full px-3 py-2 border rounded-xl hover:border-blue-500 focus:outline-none focus:ring-blue-500`}
       />
-      {suffix && (
-        <span className="absolute right-3 flex items-center h-full text-gray-500 pointer-events-none">{suffix}</span>
-      )}
+      {suffix && <span className="absolute right-3 flex items-center h-full text-gray-500">{suffix}</span>}
     </span>
   );
 };
