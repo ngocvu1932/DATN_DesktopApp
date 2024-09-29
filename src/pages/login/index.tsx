@@ -2,19 +2,28 @@ import React, {useEffect, useState} from 'react';
 import TextInput from '../../components/text-input';
 import BG from '../../assets/images/background.png';
 import Divider from '../../components/divider';
-import {login} from '../../api/auth';
+import {getInfo, login} from '../../api/auth';
 import LoadingSpinner from '../../components/loading-spinner';
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from '../../redux/slices/userInfoSlice';
 import Cookies from 'js-cookie';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faEye, faEyeSlash, faUnlock, faUser} from '@fortawesome/free-solid-svg-icons';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [isFilled, setIsFilled] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isShowPassword, setIsShowPassword] = useState(false);
 
   useEffect(() => {
     if (phone && password) {
@@ -24,16 +33,26 @@ const Login: React.FC = () => {
     }
   }, [phone, password]);
 
+  useEffect(() => {
+    if (location.state?.message) {
+      toast.success(location.state.message, {autoClose: location.state.autoClose});
+    }
+  }, [location.state]);
+
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsLoadingLogin(true);
     const res = await login({username: phone, password: password});
     if (res?.statusCode === 200) {
-      console.log('res', res.data.user);
       dispatch(setUserInfo(res.data.user));
       Cookies.set('accessToken', res.data.accessToken, {expires: 1 / 24, secure: true});
+      localStorage.setItem('accessToken', res.data.accessToken);
       Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
-      setIsLoading(false);
+      setIsLoadingLogin(false);
+      navigate('/dashboard', {state: {message: 'Đăng nhập thành công!', autoClose: 3000}});
+    } else {
+      setIsLoadingLogin(false);
+      toast.error('Đăng nhập thất bại!', {autoClose: 3000});
     }
   };
 
@@ -47,27 +66,55 @@ const Login: React.FC = () => {
       <div className="flex items-center bg-white flex-col px-6 py-8 rounded-xl shadow-xl">
         <p className="text-black font-bold text-2xl">LOGIN</p>
         <Divider size={20} />
-        <TextInput value={phone} className="w-[250px]" changeText={setPhone} placeholder="Tên đăng nhập" type="text" />
+        <TextInput
+          prefix={
+            <>
+              <FontAwesomeIcon icon={faUser} />
+            </>
+          }
+          value={phone}
+          className="w-[250px]"
+          changeText={setPhone}
+          placeholder="Tên đăng nhập"
+          type="text"
+        />
         <Divider size={20} />
         <TextInput
+          prefix={
+            <>
+              <FontAwesomeIcon icon={faUnlock} />
+            </>
+          }
+          suffix={
+            <span onClick={() => setIsShowPassword(!isShowPassword)}>
+              {isShowPassword ? (
+                <FontAwesomeIcon className="cursor-pointer" icon={faEye} />
+              ) : (
+                <FontAwesomeIcon className="cursor-pointer" icon={faEyeSlash} />
+              )}
+            </span>
+          }
           value={password}
           className="w-[250px]"
           changeText={setPassword}
           placeholder="Mật khẩu"
-          type="password"
+          type={isShowPassword ? 'text' : 'password'}
         />
 
         <Divider size={20} />
         <button
-          className={`bg-blue-500 text-white w-[250px] h-[40px] rounded-xl`}
+          className={` ${
+            isFilled ? 'bg-blue-500' : 'bg-blue-200'
+          } text-white w-[250px] cursor-pointer h-[40px] rounded-xl`}
           disabled={!isFilled}
           onClick={(e) => handleLogin(e)}
         >
-          {isLoading ? <LoadingSpinner /> : 'Đăng nhập'}
+          {isLoadingLogin ? <LoadingSpinner /> : 'Đăng nhập'}
         </button>
       </div>
+      <ToastContainer />
 
-      <div className="absolute bottom-2 text-white">Version: 1.0.0 {API_URL ?? ''}</div>
+      <div className="absolute bottom-2 text-white">Version: 1.0.2 {API_URL ?? ''}</div>
     </div>
   );
 };
