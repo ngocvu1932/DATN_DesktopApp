@@ -2,23 +2,29 @@ import React, {useState, useRef, useEffect} from 'react';
 import {faGripLinesVertical} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useTranslation} from 'react-i18next';
-import axios from 'axios';
 import Header from './header';
 import './index.css';
 import {useLocation} from 'react-router-dom';
 import {toast, ToastContainer} from 'react-toastify';
 import Sidebar from './sidebar';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ELayout} from '../../constants/layout';
 import Account from '../account';
 import Appointment from '../appointment';
+import RevenueManagement from '../revenue-management';
+import BranchManagement from '../branch-management';
+import {setWidth} from '../../redux/slices/sideBarWidthSlice';
+import Home from '../home';
+import Bills from '../bills';
+import AllServices from '../all-services';
 
 const Dashboard: React.FunctionComponent = () => {
   const {t} = useTranslation();
-  const [width, setWidth] = useState(240);
+  const width = useSelector((state: any) => state.width.width);
+  const dispatch = useDispatch();
   const resizerRef = useRef<HTMLDivElement>(null);
   const maxWidth = 300;
-  const minWidth = 220;
+  const minWidth = 250;
   const location = useLocation();
   const layout = useSelector((state: any) => state.layout.layout);
 
@@ -38,7 +44,7 @@ const Dashboard: React.FunctionComponent = () => {
       if (newWidth > maxWidth || newWidth < minWidth) {
         return;
       }
-      setWidth(newWidth);
+      dispatch(setWidth(newWidth));
     };
 
     const onMouseUp = () => {
@@ -53,11 +59,19 @@ const Dashboard: React.FunctionComponent = () => {
   const renderContent = () => {
     switch (layout) {
       case ELayout.Home:
-        return <div>Nội dung của Trang Home</div>;
+        return <Home />;
       case ELayout.Account:
         return <Account />;
-      case ELayout.Appointment:
+      case ELayout.ScheduleAppointment:
         return <Appointment />;
+      case ELayout.RevenueManagement:
+        return <RevenueManagement />;
+      case ELayout.BranchManagement:
+        return <BranchManagement />;
+      case ELayout.Bills:
+        return <Bills />;
+      case ELayout.AllServices:
+        return <AllServices />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }
@@ -70,11 +84,15 @@ const Dashboard: React.FunctionComponent = () => {
       <div className="flex w-full h-[90%]">
         <Sidebar width={width} />
 
-        <div className="resizer" ref={resizerRef} onMouseDown={onMouseDown}>
-          <FontAwesomeIcon icon={faGripLinesVertical} size={'sm'} opacity={0.5} />
-        </div>
+        {width != 0 ? (
+          <div className="resizer" ref={resizerRef} onMouseDown={onMouseDown}>
+            <FontAwesomeIcon icon={faGripLinesVertical} size={'sm'} opacity={0.5} />
+          </div>
+        ) : (
+          <></>
+        )}
 
-        <div className="flex-1 bg-gray-100 p-6 m-1 rounded-lg overflow-y-auto">{renderContent()}</div>
+        <div className="flex-1 bg-gray-100 w-full p-6 m-1 rounded-lg overflow-y-auto">{renderContent()}</div>
       </div>
       <ToastContainer />
     </div>

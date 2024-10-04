@@ -64,7 +64,7 @@ const Login: React.FC = () => {
       }}
     >
       <div className="flex items-center bg-white flex-col px-6 py-8 rounded-xl shadow-xl">
-        <p className="text-black font-bold text-2xl">LOGIN</p>
+        <p className="text-black font-bold text-2xl">Đăng nhập</p>
         <Divider size={20} />
         <TextInput
           prefix={
@@ -111,10 +111,12 @@ const Login: React.FC = () => {
         >
           {isLoadingLogin ? <LoadingSpinner /> : 'Đăng nhập'}
         </button>
+
+        <p className="text-right cursor-pointer mt-2">Bạn quên mật khẩu?</p>
       </div>
       <ToastContainer />
 
-      <div className="absolute bottom-2 text-white">Version: 1.0.2 {API_URL ?? ''}</div>
+      <div className="absolute bottom-2 text-white">Version: 1.0.3 {API_URL ?? ''}</div>
     </div>
   );
 };
