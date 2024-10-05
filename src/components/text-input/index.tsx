@@ -5,8 +5,6 @@ interface ITextInputProps {
   suffix?: React.ReactNode;
   placeholder?: string;
   type?: React.HTMLInputTypeAttribute | 'text';
-  width?: string;
-  height?: string;
   className?: React.HTMLAttributes<HTMLInputElement>['className'];
   changeText?: (text: string) => void;
   value?: string;
