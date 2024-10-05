@@ -42,7 +42,6 @@
     "chart.js": "^4.4.4",
     "dotenv": "^16.4.5",
     "electron-is-dev": "^3.0.1",
-    "js-cookie": "^3.0.5",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
@@ -55,7 +54,6 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

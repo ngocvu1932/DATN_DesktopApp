@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import Cookies from 'js-cookie';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {setLayout} from '../../../redux/slices/layoutSlice';
@@ -30,8 +29,8 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   const [openMenu, setOpenMenu] = useState<string | null>(null); // Lưu trữ menu đang mở
 
   const handleLogout = () => {
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
   };
 

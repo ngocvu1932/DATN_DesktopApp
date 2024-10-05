@@ -5,11 +5,10 @@ import {HashRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 import {getInfo} from '../api/auth';
 import {setUserInfo} from '../redux/slices/userInfoSlice';
 import {useDispatch} from 'react-redux';
-import Cookies from 'js-cookie';
 
 const App = () => {
   const dispatch = useDispatch();
-  const accessToken = Cookies.get('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 

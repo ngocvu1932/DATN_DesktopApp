@@ -20,6 +20,7 @@ import TextInput from '../../components/text-input';
 import Drawer from '../../components/drawer';
 import {allServices} from '../../api/services';
 import {IService} from '../../models/service';
+import {ETypeAdd} from '../../components/drawer/enum';
 
 const AllServices: React.FC = () => {
   const [services, setAllservices] = useState<IService[]>([]);
@@ -36,9 +37,9 @@ const AllServices: React.FC = () => {
 
   // console.log('currentPageRes', currentPageRes);
 
-  const toggleDrawer = () => {
-    setIsOpenDrawer(!isOpenDrawer);
-  };
+  useEffect(() => {
+    fetchAllServices();
+  }, [isOpenDrawer]);
 
   useEffect(() => {
     fetchAllServices();
@@ -56,6 +57,10 @@ const AllServices: React.FC = () => {
     } catch (error) {
       console.error('Error fetching appointments:', error);
     }
+  };
+
+  const toggleDrawer = () => {
+    setIsOpenDrawer(!isOpenDrawer);
   };
 
   const handleNextPage = () => {
@@ -123,19 +128,21 @@ const AllServices: React.FC = () => {
         <td className="border border-gray-300 p-1">
           <button
             onClick={() => handleToggleEdit(index)}
-            className={`${editStatuses[index] ? 'bg-blue-200' : 'bg-blue-500'} px-1.5 py-0.5 rounded-lg`}
+            className={`${
+              editStatuses[index] ? 'bg-[#CCCCCC] text-black' : 'bg-[#4D90FE] text-white'
+            } px-1.5 py-0.5  rounded-lg`}
           >
             {editStatuses[index] ? 'Hủy' : 'Sửa'}
           </button>
           {editStatuses[index] && (
             <button
-              className="bg-green-500 px-1.5 py-0.5 rounded-lg"
+              className="bg-[#28A745] px-1.5 py-0.5 rounded-lg text-white"
               onClick={() => handleSave(service.id, statuses.status, index)}
             >
               Lưu
             </button>
           )}
-          <button className="bg-red-500 px-1.5 py-0.5 rounded-lg">Xóa</button>
+          <button className="bg-[#FF4B4B] px-1.5 py-0.5 rounded-lg text-[#FFFFFF]">Xóa</button>
         </td>
       </>
     );
@@ -163,7 +170,7 @@ const AllServices: React.FC = () => {
           <button
             className="border border-white bg-slate-400 px-3.5 py-1 rounded-lg mr-2"
             onClick={toggleDrawer}
-            title="Thêm lịch hẹn"
+            title="Thêm dịch vụ"
           >
             <FontAwesomeIcon icon={faCalendarPlus} />
           </button>
@@ -259,7 +266,7 @@ const AllServices: React.FC = () => {
         </div>
       </div>
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} />
+      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />
 
       <ToastContainer />
     </div>

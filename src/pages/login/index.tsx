@@ -6,13 +6,13 @@ import {getInfo, login} from '../../api/auth';
 import LoadingSpinner from '../../components/loading-spinner';
 import {useDispatch} from 'react-redux';
 import {setUserInfo} from '../../redux/slices/userInfoSlice';
-import Cookies from 'js-cookie';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faEyeSlash, faUnlock, faUser} from '@fortawesome/free-solid-svg-icons';
 const API_URL = import.meta.env.VITE_API_URL;
+const VERSION = import.meta.env.VITE_VERSION;
 
 const Login: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -45,9 +45,9 @@ const Login: React.FC = () => {
     const res = await login({username: phone, password: password});
     if (res?.statusCode === 200) {
       dispatch(setUserInfo(res.data.user));
-      Cookies.set('accessToken', res.data.accessToken, {expires: 1 / 24, secure: true});
+      // Cookies.set('accessToken', res.data.accessToken, {expires: 1 / 24, secure: true});
       localStorage.setItem('accessToken', res.data.accessToken);
-      Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
+      // Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
       setIsLoadingLogin(false);
       navigate('/dashboard', {state: {message: 'Đăng nhập thành công!', autoClose: 3000}});
     } else {
@@ -67,6 +67,7 @@ const Login: React.FC = () => {
         <p className="text-black font-bold text-2xl">Đăng nhập</p>
         <Divider size={20} />
         <TextInput
+          disabled={isLoadingLogin}
           prefix={
             <>
               <FontAwesomeIcon icon={faUser} />
@@ -80,6 +81,7 @@ const Login: React.FC = () => {
         />
         <Divider size={20} />
         <TextInput
+          disabled={isLoadingLogin}
           prefix={
             <>
               <FontAwesomeIcon icon={faUnlock} />
@@ -116,7 +118,7 @@ const Login: React.FC = () => {
       </div>
       <ToastContainer />
 
-      <div className="absolute bottom-2 text-white">Version: 1.0.3 {API_URL ?? ''}</div>
+      <div className="absolute bottom-2 text-white">Version: {VERSION ?? ''}</div>
     </div>
   );
 };

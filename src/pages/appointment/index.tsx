@@ -19,6 +19,7 @@ import SwitchSideBar from '../../components/switch-sidebar';
 import TextInput from '../../components/text-input';
 import Drawer from '../../components/drawer';
 import {getFormattedDate, getFormattedTime} from '../../utils/dateTime';
+import {ETypeAdd} from '../../components/drawer/enum';
 
 const Appointment: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
@@ -121,19 +122,21 @@ const Appointment: React.FC = () => {
         <td className="border border-gray-300 p-1">
           <button
             onClick={() => handleToggleEdit(index)}
-            className={`${editStatuses[index] ? 'bg-blue-200' : 'bg-blue-500'} px-1.5 py-0.5 rounded-lg`}
+            className={`${
+              editStatuses[index] ? 'bg-[#CCCCCC] text-black' : 'bg-[#4D90FE] text-white'
+            } px-1.5 py-0.5  rounded-lg`}
           >
             {editStatuses[index] ? 'Hủy' : 'Sửa'}
           </button>
           {editStatuses[index] && (
             <button
-              className="bg-green-500 px-1.5 py-0.5 rounded-lg"
+              className="bg-[#28A745] px-1.5 py-0.5 rounded-lg text-white"
               onClick={() => handleSave(appointment.id, statuses.status, index)}
             >
               Lưu
             </button>
           )}
-          <button className="bg-red-500 px-1.5 py-0.5 rounded-lg">Xóa</button>
+          <button className="bg-[#FF4B4B] px-1.5 py-0.5 rounded-lg text-[#FFFFFF]">Xóa</button>
         </td>
       </>
     );
@@ -257,7 +260,7 @@ const Appointment: React.FC = () => {
         </div>
       </div>
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} />
+      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.APPOINTMENT} />
 
       <ToastContainer />
     </div>

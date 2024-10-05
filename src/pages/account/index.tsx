@@ -1,6 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useSelector} from 'react-redux';
-import Cookies from 'js-cookie';
 import {useNavigate} from 'react-router-dom';
 import SwitchSideBar from '../../components/switch-sidebar';
 import avata from '../../assets/images/anh-avatar-cute-58.jpg';
@@ -10,15 +9,21 @@ import TextInput from '../../components/text-input';
 const Account: React.FC = () => {
   const userInfo = useSelector((state: any) => state.user.userInfo);
   const navigate = useNavigate();
-  const accessToken = Cookies.get('accessToken');
   const accessTokenLocalStorage = localStorage.getItem('accessToken');
+  const [isEdit, setIsEdit] = useState({isEditUserInfo: false, isEditPassword: false});
 
   const handleLogout = () => {
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
+  };
+
+  const handleClickEdit = (type: string) => {
+    if (type === 'userInfo') {
+      setIsEdit({...isEdit, isEditUserInfo: !isEdit.isEditUserInfo});
+    } else if (type === 'password') {
+      setIsEdit({...isEdit, isEditPassword: !isEdit.isEditPassword});
+    }
   };
 
   console.log('userInfo', userInfo);
@@ -47,34 +52,70 @@ const Account: React.FC = () => {
             <div className="flex flex-1">
               <div className="flex flex-col w-[50%] p-1">
                 <label className="font-semibold pl-1 text-base">Tên đăng nhập</label>
-                <TextInput value={userInfo?.username ?? ''} type="text" placeholder="Tên đăng nhập" className="h-8" />
+                <TextInput
+                  disabled
+                  value={userInfo?.username ?? ''}
+                  type="text"
+                  placeholder="Tên đăng nhập"
+                  className="h-8"
+                />
               </div>
 
               <div className="flex flex-col w-[50%] p-1">
                 <label className="font-semibold text-base pl-1">Họ và tên</label>
-                <TextInput value={userInfo?.name ?? ''} type="text" placeholder="Họ và tên" className="h-8" />
+                <TextInput
+                  disabled={!isEdit.isEditUserInfo}
+                  value={userInfo?.name ?? ''}
+                  type="text"
+                  placeholder="Họ và tên"
+                  className="h-8"
+                />
               </div>
             </div>
 
             <div className="flex  flex-col p-1">
               <label className="font-semibold text-base pl-1">Email</label>
-              <TextInput value={userInfo?.email ?? ''} type="text" placeholder="Email" className="h-8" />
+              <TextInput
+                disabled={!isEdit.isEditUserInfo}
+                value={userInfo?.email ?? ''}
+                type="text"
+                placeholder="Email"
+                className="h-8"
+              />
             </div>
 
             <div className="flex flex-1 ">
               <div className="flex flex-col w-[50%] p-1">
                 <label className="font-semibold pl-1 text-base">Số điện thoại</label>
-                <TextInput value={userInfo?.phone ?? ''} type="text" placeholder="Số điện thoại" className="h-8" />
+                <TextInput
+                  disabled={!isEdit.isEditUserInfo}
+                  value={userInfo?.phone ?? ''}
+                  type="text"
+                  placeholder="Số điện thoại"
+                  className="h-8"
+                />
               </div>
 
               <div className="flex flex-col w-[50%] p-1">
                 <label className="font-semibold text-base pl-1">Chức vụ</label>
-                <TextInput value={userInfo?.role ?? ''} type="text" placeholder="chức vụ" className="h-8" />
+                <TextInput
+                  // disabled={!isEdit.isEditUserInfo}
+                  disabled
+                  value={userInfo?.role ?? ''}
+                  type="text"
+                  placeholder="chức vụ"
+                  className="h-8"
+                />
               </div>
             </div>
 
-            <div className="flex  justify-center">
-              <button className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex">Sửa</button>
+            <div className="flex justify-center">
+              <button
+                className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex mr-4"
+                onClick={() => handleClickEdit('userInfo')}
+              >
+                {isEdit.isEditUserInfo ? 'Hủy' : 'Sửa'}
+              </button>
               <button className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex">Lưu</button>
             </div>
           </div>
@@ -87,21 +128,41 @@ const Account: React.FC = () => {
           <div className="flex flex-1 flex-col mt-2">
             <div className="flex flex-col p-1 w-[50%]">
               <label className="font-semibold text-base pl-1">Mật khẩu hiện tại</label>
-              <TextInput type="text" placeholder="Mật khẩu hiện tại" className="h-8" />
+              <TextInput
+                disabled={!isEdit.isEditPassword}
+                type="text"
+                placeholder="Mật khẩu hiện tại"
+                className="h-8"
+              />
             </div>
             <div className="flex flex-1">
               <div className="flex flex-col w-[50%] p-1">
                 <label className="font-semibold pl-1 text-base">Mật khẩu mới</label>
-                <TextInput type="text" placeholder="Nhập mật khẩu mới" className="h-8" />
+                <TextInput
+                  disabled={!isEdit.isEditPassword}
+                  type="text"
+                  placeholder="Nhập mật khẩu mới"
+                  className="h-8"
+                />
               </div>
 
               <div className="flex flex-col w-[50%] p-1">
                 <label className="font-semibold text-base pl-1">Nhập lại mật khẩu mới</label>
-                <TextInput type="text" placeholder="Nhập lại mật khẩu mới" className="h-8" />
+                <TextInput
+                  disabled={!isEdit.isEditPassword}
+                  type="text"
+                  placeholder="Nhập lại mật khẩu mới"
+                  className="h-8"
+                />
               </div>
             </div>
             <div className="flex justify-center">
-              <button className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex">Sửa</button>
+              <button
+                className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex mr-4"
+                onClick={() => handleClickEdit('password')}
+              >
+                {isEdit.isEditPassword ? 'Hủy' : 'Sửa'}
+              </button>
               <button className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex">Lưu</button>
             </div>
           </div>
