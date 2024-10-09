@@ -31,3 +31,21 @@ export const logout = async (refreshToken: string): Promise<CustomAxiosResponse<
     console.log(error);
   }
 };
+
+export const updateUser = async (id: number, data: any): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.post(`/api/v1/users/${id}`, data);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const changePasswordUser = async (id: number, data: any): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.post(`/api/v1/users/${id}`, data);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};

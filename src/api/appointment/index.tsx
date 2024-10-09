@@ -4,7 +4,7 @@ interface IStatusUpdate {
   status: number;
 }
 
-export const appointment = async (page: number, limit: number): Promise<CustomAxiosResponse<any> | undefined> => {
+export const allAppointment = async (page: number, limit: number): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
     const res = await axios.get(`/api/v1/appointments?page=${page}&limit=${limit}`);
     return res;
@@ -13,12 +13,39 @@ export const appointment = async (page: number, limit: number): Promise<CustomAx
   }
 };
 
+export const createAppointment = async (data: any): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.post(`/api/v1/appointments/`, {data});
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteAppointment = async (id: number): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.delete(`/api/v1/services/${id}`);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const findOneAppointmentById = async (id: number): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.delete(`/api/v1/services/findById/${id}`);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const updateStatusAppointment = async (
-  appointmentId: number,
+  id: number,
   data: IStatusUpdate
 ): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.put(`/api/v1/appointments/update-status/${appointmentId}`, {data});
+    const res = await axios.put(`/api/v1/appointments/update-status/${id}`, data);
     return res;
   } catch (error) {
     console.log(error);

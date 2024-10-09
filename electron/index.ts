@@ -4,7 +4,7 @@ import {fileURLToPath} from 'url'; // Import fileURLToPath từ 'url'
 import {dirname} from 'path'; // Import dirname từ 'path'
 
 // Packages
-import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut} from 'electron';
+import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut, screen} from 'electron';
 import isDev from 'electron-is-dev';
 
 // Tạo biến __filename từ import.meta.url
@@ -14,10 +14,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 function createWindow() {
+  // Lấy kích thước màn hình
+  const {width: screenWidth, height: screenHeight} = screen.getPrimaryDisplay().workAreaSize;
+
+  const windowWidth = Math.round(screenWidth * 0.9); // 90% width
+  const windowHeight = Math.round(screenHeight * 0.92); // 92% height
   // Create the browser window.
   const window = new BrowserWindow({
-    width: 1350,
-    height: 770,
+    width: windowWidth,
+    height: windowHeight,
     resizable: false,
     center: true,
     hasShadow: true,
@@ -39,13 +44,13 @@ function createWindow() {
   window.setMenuBarVisibility(false);
 
   try {
-    globalShortcut.register('Control+M', () => {
+    globalShortcut.register('CommandOrControl+M', () => {
       const isVisible = window.isMenuBarVisible();
       window.setMenuBarVisibility(!isVisible);
     });
 
-    // Đăng ký phím tắt với Control+I để mở Developer Tools
-    globalShortcut.register('Control+I', () => {
+    // Đăng ký phím tắt với Control+I để mở Developer Tools window linux
+    globalShortcut.register('CommandOrControl+I', () => {
       const isVisible = window.webContents.isDevToolsOpened();
       isVisible ? window.webContents.closeDevTools() : window.webContents.openDevTools();
     });

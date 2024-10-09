@@ -17,6 +17,7 @@ import {setWidth} from '../../redux/slices/sideBarWidthSlice';
 import Home from '../home';
 import Bills from '../bills';
 import AllServices from '../all-services';
+import SessionsTracking from '../sessions-tracking';
 
 const Dashboard: React.FunctionComponent = () => {
   const {t} = useTranslation();
@@ -72,6 +73,8 @@ const Dashboard: React.FunctionComponent = () => {
         return <Bills />;
       case ELayout.AllServices:
         return <AllServices />;
+      case ELayout.SessionsTracking:
+        return <SessionsTracking />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }

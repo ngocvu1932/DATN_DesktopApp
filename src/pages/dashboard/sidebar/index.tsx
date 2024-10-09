@@ -69,10 +69,10 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.ScheduleAppointment && openMenu != 'menu2' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.ScheduleAppointment && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
-              toggleMenu('menu2');
+              toggleMenu('menu1');
               dispatch(setLayout(ELayout.ScheduleAppointment));
             }}
           >
@@ -82,12 +82,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <FontAwesomeIcon
               className="ml-2"
-              flip={openMenu === 'menu2' ? 'vertical' : 'horizontal'}
+              flip={openMenu === 'menu1' ? 'vertical' : 'horizontal'}
               icon={faAngleDown}
             />
           </button>
           {/* Mục con cho Quản lý lịch hẹn */}
-          {openMenu === 'menu2' && (
+          {openMenu === 'menu1' && (
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
@@ -110,14 +110,59 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           )}
         </li>
 
+        {/*Quản lý liệu trình */}
+        <li className="mb-2">
+          <button
+            className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${
+              layout == ELayout.SessionsTracking && openMenu != 'menu2' ? 'bg-gray-400 border border-white' : ''
+            }`}
+            onClick={() => {
+              toggleMenu('menu2');
+              dispatch(setLayout(ELayout.SessionsTracking));
+            }}
+          >
+            <div className="flex items-center">
+              <FontAwesomeIcon icon={faCalendarDays} /> &nbsp;&nbsp;
+              <p>Quản lý liệu trình</p>
+            </div>
+            <FontAwesomeIcon
+              className="ml-2"
+              flip={openMenu === 'menu2' ? 'vertical' : 'horizontal'}
+              icon={faAngleDown}
+            />
+          </button>
+          {/* Mục con cho Quản lý liệu trình */}
+          {openMenu === 'menu2' && (
+            <ul className="mt-1 ml-3">
+              <li
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
+                  layout == ELayout.SessionsTracking ? 'bg-gray-400 border border-white' : ''
+                }`}
+                onClick={() => dispatch(setLayout(ELayout.SessionsTracking))}
+              >
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faCalendar} /> &nbsp;&nbsp;
+                  <p>Liệu trình</p>
+                </div>
+              </li>
+              <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
+                Mục con 2.2
+              </li>
+              <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
+                Mục con 2.3
+              </li>
+            </ul>
+          )}
+        </li>
+
         {/* Quản lý khách hàng */}
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AddCustomer && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AddCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
-              toggleMenu('menu1');
+              toggleMenu('menu3');
               dispatch(setLayout(ELayout.AddCustomer));
             }}
           >
@@ -127,12 +172,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <FontAwesomeIcon
               className="ml-2"
-              flip={openMenu === 'menu1' ? 'vertical' : 'horizontal'}
+              flip={openMenu === 'menu3' ? 'vertical' : 'horizontal'}
               icon={faAngleDown}
             />
           </button>
           {/* Mục con cho Quản lý khách hàng */}
-          {openMenu === 'menu1' && (
+          {openMenu === 'menu3' && (
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
@@ -156,10 +201,10 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AllServices && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AllServices && openMenu != 'menu4' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
-              toggleMenu('menu3');
+              toggleMenu('menu4');
               dispatch(setLayout(ELayout.AllServices));
             }}
           >
@@ -169,12 +214,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <FontAwesomeIcon
               className="ml-2"
-              flip={openMenu === 'menu3' ? 'vertical' : 'horizontal'}
+              flip={openMenu === 'menu4' ? 'vertical' : 'horizontal'}
               icon={faAngleDown}
             />
           </button>
           {/* Mục con cho Quản lý dịch vụ */}
-          {openMenu === 'menu3' && (
+          {openMenu === 'menu4' && (
             <ul className="ml-3 mt-1">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${

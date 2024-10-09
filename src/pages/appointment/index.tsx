@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {appointment, updateStatusAppointment} from '../../api/appointment';
+import {allAppointment, updateStatusAppointment} from '../../api/appointment';
 import {IAppointment} from '../../models/appointment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
@@ -46,7 +46,7 @@ const Appointment: React.FC = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await appointment(currentPage, limit);
+      const response = await allAppointment(currentPage, limit);
       if (response?.statusCode === 200) {
         setAppointments(response?.data);
         setTotalPages(response?.pagination?.totalPage ?? 0);

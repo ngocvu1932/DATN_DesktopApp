@@ -47,6 +47,7 @@ const Login: React.FC = () => {
       dispatch(setUserInfo(res.data.user));
       // Cookies.set('accessToken', res.data.accessToken, {expires: 1 / 24, secure: true});
       localStorage.setItem('accessToken', res.data.accessToken);
+      localStorage.setItem('refreshToken', res.data.refreshToken);
       // Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
       setIsLoadingLogin(false);
       navigate('/dashboard', {state: {message: 'Đăng nhập thành công!', autoClose: 3000}});

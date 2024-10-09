@@ -1,4 +1,4 @@
-import ReactDOM, {createRoot} from 'react-dom/client';
+import {createRoot} from 'react-dom/client';
 import './index.css';
 import App from './pages/App';
 import i18n from 'i18next';
@@ -8,6 +8,13 @@ import viLocale from './locales/locale_vi.json';
 import {StrictMode} from 'react';
 import {Provider} from 'react-redux';
 import store from './redux/store';
+import {appConfig} from './appConfig';
+
+if (!localStorage.getItem('appConfig')) {
+  localStorage.setItem('appConfig', JSON.stringify(appConfig));
+}
+
+const lang = JSON.parse(localStorage.getItem('appConfig') ?? '{}').defaultLanguage ?? 'vi';
 
 i18n
   .use(initReactI18next)
@@ -20,7 +27,7 @@ i18n
         translation: viLocale,
       },
     },
-    lng: 'vi', // ngôn ngữ mặc định
+    lng: lang, // ngôn ngữ mặc định
     fallbackLng: 'vi', // không có ngôn ngữ nào thì mặc định là tiếng việt
     interpolation: {
       escapeValue: false,

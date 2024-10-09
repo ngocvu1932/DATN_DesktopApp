@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {appointment, updateStatusAppointment} from '../../api/appointment';
+import {updateStatusAppointment} from '../../api/appointment';
 import {IAppointment} from '../../models/appointment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
