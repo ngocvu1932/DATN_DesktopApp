@@ -9,9 +9,9 @@ export const createBranch = async (body: any): Promise<CustomAxiosResponse<any> 
   }
 };
 
-export const findAllBranch = async (): Promise<CustomAxiosResponse<any> | undefined> => {
+export const getAllBranch = async (page: number, limit: number): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.get('/api/v1/branch/');
+    const res = await axios.get(`/api/v1/branch/?page=${page}&limit=${limit}`);
     return res;
   } catch (error) {
     console.log(error);

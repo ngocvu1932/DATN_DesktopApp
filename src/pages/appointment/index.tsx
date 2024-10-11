@@ -20,14 +20,18 @@ import TextInput from '../../components/text-input';
 import Drawer from '../../components/drawer';
 import {getFormattedDate, getFormattedTime} from '../../utils/dateTime';
 import {ETypeAdd} from '../../components/drawer/enum';
+import {EFilterType} from '../../components/filter/enum';
+import Filter from '../../components/filter';
+import Pagination from '../../components/pagination';
 
 const Appointment: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
+  const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(12);
+  const [limit] = useState(15);
   const [totalPages, setTotalPages] = useState(0);
-  const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({}); // Lưu trạng thái chỉnh sửa cho từng hàng
+  const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const dispatch = useDispatch();
   const width = useSelector((state: any) => state.width.width);
@@ -49,6 +53,7 @@ const Appointment: React.FC = () => {
       const response = await allAppointment(currentPage, limit);
       if (response?.statusCode === 200) {
         setAppointments(response?.data);
+        setAppointmentsTemp(response?.data);
         setTotalPages(response?.pagination?.totalPage ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
@@ -142,7 +147,7 @@ const Appointment: React.FC = () => {
     );
   };
   const handleGoToPage = (pageNumber: number) => {
-    setCurrentPage(pageNumber); // Thay đổi trang hiện tại
+    setCurrentPage(pageNumber);
   };
 
   if (isLoadingPage) {
@@ -151,33 +156,20 @@ const Appointment: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="flex justify-between pb-2">
+      <div className="h-[19%] flex flex-col">
         <SwitchSideBar title="Danh sách lịch hẹn" className="font-bold text-lg" />
 
-        <div className="flex-1 flex items-center justify-end">
-          <TextInput
-            placeholder="Tìm kiếm"
-            className="h-8 mr-2"
-            suffix={<FontAwesomeIcon icon={faMagnifyingGlass} />}
-          />
-
-          <button
-            className="border border-white bg-slate-400 px-3.5 py-1 rounded-md mr-2"
-            onClick={toggleDrawer}
-            title="Thêm lịch hẹn"
-          >
-            <FontAwesomeIcon icon={faCalendarPlus} />
-          </button>
-
-          <button className="border border-white bg-slate-400 px-3.5 py-1 rounded-md" title="Làm mới">
-            <FontAwesomeIcon icon={faRotate} />
-          </button>
-        </div>
+        <Filter
+          setDataFilter={setAppointmentsTemp}
+          dataFilter={appointments}
+          toggleDrawer={toggleDrawer}
+          type={EFilterType.APPOINTMENT}
+        />
       </div>
 
-      <div className="overflow-y-auto h-[80%]">
-        <table className="min-w-full border border-gray-300 ">
-          <thead className="bg-gray-200">
+      <div className="overflow-y-auto h-[75%] border-b border-x border-slate-400">
+        <table className="min-w-full">
+          <thead className="bg-gray-200 sticky top-0 z-10">
             <tr>
               <th className="border border-gray-300 p-1">ID</th>
               <th className="border border-gray-300 p-1">Khách hàng</th>
@@ -192,7 +184,7 @@ const Appointment: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment, index) => (
+            {appointmentsTemp.map((appointment, index) => (
               <tr
                 key={appointment.id}
                 className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b border-gray-300`}
@@ -204,60 +196,14 @@ const Appointment: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <div>
-          Tổng {currentPage} / {totalPages}
-        </div>
-        <div className="flex items-center">
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="h-8 w-8 rounded-full border border-white bg-slate-400 flex items-center justify-center"
-            title="Trang trước"
-          >
-            <FontAwesomeIcon icon={faAngleLeft} />
-          </button>
-
-          <div className="flex space-x-2 px-3">
-            {currentPage > 3 && (
-              <span onClick={() => handleGoToPage(1)} className="cursor-pointer">
-                1
-              </span>
-            )}
-            {currentPage > 3 && <span>...</span>}
-            {currentPage > 2 && (
-              <span onClick={() => handleGoToPage(currentPage - 2)} className="cursor-pointer">
-                {currentPage - 2}
-              </span>
-            )}
-            {currentPage > 1 && (
-              <span onClick={() => handleGoToPage(currentPage - 1)} className="cursor-pointer">
-                {currentPage - 1}
-              </span>
-            )}
-            <span className="font-bold text-blue-600">{currentPage}</span>
-            {currentPage < totalPages && (
-              <span onClick={() => handleGoToPage(currentPage + 1)} className="cursor-pointer">
-                {currentPage + 1}
-              </span>
-            )}
-            {currentPage + 1 < totalPages && (
-              <span onClick={() => handleGoToPage(currentPage + 2)} className="cursor-pointer">
-                {currentPage + 2}
-              </span>
-            )}
-            {currentPage + 2 < totalPages && <span>...</span>}
-          </div>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="h-8 w-8 rounded-full border border-white bg-slate-400 flex items-center justify-center"
-            title="Trang sau"
-          >
-            <FontAwesomeIcon icon={faAngleRight} />
-          </button>
-        </div>
+      <div className="flex justify-between items-center h-[6%]">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          goToPage={(page) => handleGoToPage(page)}
+          nextPage={handleNextPage}
+          previousPage={handlePreviousPage}
+        />
       </div>
 
       <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.APPOINTMENT} />

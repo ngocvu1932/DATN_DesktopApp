@@ -95,7 +95,9 @@ const Dashboard: React.FunctionComponent = () => {
           <></>
         )}
 
-        <div className="flex-1 bg-gray-100 w-full p-6 m-1 rounded-lg overflow-y-auto">{renderContent()}</div>
+        <div className="flex-1 bg-gray-100 w-full border border-slate-400 p-2 m-1 rounded-lg overflow-y-auto">
+          {renderContent()}
+        </div>
       </div>
       <ToastContainer />
     </div>

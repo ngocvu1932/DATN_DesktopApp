@@ -110,6 +110,8 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
                   ? 'Thêm dịch vụ'
                   : type === ETypeAdd.CUSTOMER
                   ? 'Thêm khách hàng'
+                  : type === ETypeAdd.BRANCH
+                  ? 'Thêm chi nhánh'
                   : 'Thêm lịch hẹn'}
               </p>
               <button className="absolute left-0 px-3" onClick={onClose}>
@@ -278,6 +280,48 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
                 )}
 
                 {type === ETypeAdd.APPOINTMENT && (
+                  <>
+                    <div className="flex w-full mt-8">
+                      <div className="w-[50%] ">
+                        <label className="font-semibold ml-1">Tên dịch vụ</label>
+                        <TextInput
+                          disabled={isLoadingAdd}
+                          value={dataServiceAdd.name ?? ''}
+                          changeText={(e) => {
+                            setDataServiceAdd((prevState) => ({
+                              ...prevState,
+                              name: e,
+                            }));
+                          }}
+                          className="w-[90%] h-8"
+                          placeholder="Nhập tên dịch vụ"
+                        />
+                      </div>
+                      <div className="w-[50%] ">
+                        <label className="font-semibold ml-1">Chi nhánh</label>
+                        {/* <TextInput className="w-[90%] h-8" placeholder="Chọn chi nhánh" /> */}
+                        <select
+                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          disabled={isLoadingAdd}
+                          value={dataServiceAdd.branch_id ?? ''}
+                          onChange={(e) => {
+                            setDataServiceAdd((prevState) => ({
+                              ...prevState,
+                              branch_id: Number(e.target.value),
+                            }));
+                          }}
+                        >
+                          <option value="">---Chọn chi nhánh--- </option>
+                          <option value="1">Chi nhánh 1</option>
+                          <option value="2">Chi nhánh 2</option>
+                          <option value="3">Chi nhánh 3</option>
+                        </select>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {type === ETypeAdd.BRANCH && (
                   <>
                     <div className="flex w-full mt-8">
                       <div className="w-[50%] ">

@@ -2,4 +2,5 @@ export enum ETypeAdd {
   CUSTOMER = 'CUSTOMER',
   SERVICE = 'SERVICE',
   APPOINTMENT = 'APPOINTMENT',
+  BRANCH = 'BRANCH',
 }

@@ -1,0 +1,6 @@
+export enum EFilterType {
+  BRANCH = 'BRANCH',
+  SERVICE = 'SERVICE',
+  EMPLOYEE = 'EMPLOYEE',
+  APPOINTMENT = 'APPOINTMENT',
+}
