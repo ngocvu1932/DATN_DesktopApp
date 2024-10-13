@@ -5,11 +5,12 @@ import SwitchSideBar from '../../components/switch-sidebar';
 import avata from '../../assets/images/anh-avatar-cute-58.jpg';
 import Avatar from '../../components/avatar';
 import TextInput from '../../components/text-input';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faArrowRightFromBracket} from '@fortawesome/free-solid-svg-icons';
 
 const Account: React.FC = () => {
   const userInfo = useSelector((state: any) => state.user.userInfo);
   const navigate = useNavigate();
-  const accessTokenLocalStorage = localStorage.getItem('accessToken');
   const [isEdit, setIsEdit] = useState({isEditUserInfo: false, isEditPassword: false});
 
   const handleLogout = () => {
@@ -26,8 +27,6 @@ const Account: React.FC = () => {
     }
   };
 
-  console.log('userInfo', userInfo);
-
   return (
     <div className="flex flex-col ">
       <SwitchSideBar title="Tài khoản" className="font-bold text-lg" />
@@ -42,7 +41,7 @@ const Account: React.FC = () => {
             <div className="flex pl-5 mt-2 items-center">
               <Avatar src={avata} height={100} width={100} />
               <div className="ml-8">
-                <button className="bg-slate-700 px-2 py-1 rounded-md text-white text-base flex">
+                <button className="hover:bg-slate-700 bg-slate-500 px-2 py-1 rounded-md text-white text-base flex">
                   Đổi ảnh đại điện
                 </button>
                 <p className="text-xs mt-1 italic">*JPG, PNG</p>
@@ -111,12 +110,14 @@ const Account: React.FC = () => {
 
             <div className="flex justify-center">
               <button
-                className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex mr-4"
+                className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
                 onClick={() => handleClickEdit('userInfo')}
               >
                 {isEdit.isEditUserInfo ? 'Hủy' : 'Sửa'}
               </button>
-              <button className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex">Lưu</button>
+              <button className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex">
+                Lưu
+              </button>
             </div>
           </div>
         </div>
@@ -158,24 +159,29 @@ const Account: React.FC = () => {
             </div>
             <div className="flex justify-center">
               <button
-                className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex mr-4"
+                className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
                 onClick={() => handleClickEdit('password')}
               >
                 {isEdit.isEditPassword ? 'Hủy' : 'Sửa'}
               </button>
-              <button className="bg-slate-700 px-3 py-1 rounded-md text-white text-base flex">Lưu</button>
+              <button className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex">
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex pb-2 mt-4">
+          <div className="flex justify-center w-full">
+            <div
+              className="flex hover:bg-red-600 bg-red-400 text-white rounded-xl cursor-pointer shadow-xl px-9 py-1.5 items-center"
+              onClick={handleLogout}
+            >
+              <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; Đăng xuất
             </div>
           </div>
         </div>
       </div>
-      {/* <p className="font-bold text-2xl">Tài khoản</p>
-      <div>name: {userInfo?.name}</div>
-      <div>userName: {userInfo?.username}</div>
-      <div>accessToken: {accessToken}</div>
-      <div>accessTokenLocalStorage: {accessTokenLocalStorage}</div>
-      <button className="flex px-3 py-4 bg-red-600" onClick={() => handleLogout()}>
-        Đăng xuất
-      </button> */}
     </div>
   );
 };

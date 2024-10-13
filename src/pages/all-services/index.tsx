@@ -1,17 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {updateStatusAppointment} from '../../api/appointment';
-import {IAppointment} from '../../models/appointment';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {
-  faAngleLeft,
-  faAngleRight,
-  faArrowLeft,
-  faBars,
-  faCalendarPlus,
-  faMagnifyingGlass,
-  faRotate,
-} from '@fortawesome/free-solid-svg-icons';
 import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../../components/loading-spinner';
 import {useDispatch, useSelector} from 'react-redux';
 import {setWidth} from '../../redux/slices/sideBarWidthSlice';

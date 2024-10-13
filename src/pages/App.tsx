@@ -8,11 +8,12 @@ import {useDispatch} from 'react-redux';
 
 const App = () => {
   const dispatch = useDispatch();
-  const accessToken = localStorage.getItem('accessToken');
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
     const getInfoUser = async () => {
       const res = await getInfo();
       if (res?.statusCode === 200) {
@@ -26,12 +27,14 @@ const App = () => {
       }
     };
 
+    console.log('accessToken', accessToken);
+
     if (accessToken) {
       getInfoUser();
     } else {
       setIsAuthenticated(false);
     }
-  }, [accessToken]);
+  }, []);
 
   return (
     <Router>

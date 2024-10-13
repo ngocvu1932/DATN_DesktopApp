@@ -26,7 +26,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   const navigate = useNavigate();
   const layout = useSelector((state: any) => state.layout.layout);
 
-  const [openMenu, setOpenMenu] = useState<string | null>(null); // Lưu trữ menu đang mở
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -45,7 +45,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
   return (
     <div
-      className=" m-1 text-white rounded-lg relative flex flex-col"
+      className=" m-1 text-white rounded-lg relative flex  flex-col"
       style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
     >
       <h2 className="text-2xl mb-4 text-center mt-3">Menu</h2>
@@ -291,14 +291,16 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
       </ul>
 
       {/* Đăng xuất */}
-      <div className="flex absolute bottom-4 justify-center w-full">
-        <div
-          className="flex bg-red-500 text-white rounded-xl cursor-pointer shadow-xl px-10 py-2 items-center"
-          onClick={handleLogout}
-        >
-          <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; Đăng xuất
+      {layout != ELayout.Account && (
+        <div className="flex absolute bottom-4 justify-center w-full">
+          <div
+            className="flex hover:bg-red-600 bg-red-400 text-white rounded-xl cursor-pointer shadow-xl px-9 py-1.5 items-center"
+            onClick={handleLogout}
+          >
+            <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; Đăng xuất
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

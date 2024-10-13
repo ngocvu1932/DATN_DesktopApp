@@ -3,6 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import React, {useEffect, useState} from 'react';
 import Drawer from '../../components/drawer';
 import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {ETypeAdd} from '../../components/drawer/enum';
 import TextInput from '../../components/text-input';
 import SwitchSideBar from '../../components/switch-sidebar';

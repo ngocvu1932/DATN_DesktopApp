@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useRef, useEffect} from 'react';
 import {faGripLinesVertical} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useTranslation} from 'react-i18next';
@@ -6,6 +6,7 @@ import Header from './header';
 import './index.css';
 import {useLocation} from 'react-router-dom';
 import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from './sidebar';
 import {useDispatch, useSelector} from 'react-redux';
 import {ELayout} from '../../constants/layout';
@@ -18,8 +19,10 @@ import Home from '../home';
 import Bills from '../bills';
 import AllServices from '../all-services';
 import SessionsTracking from '../sessions-tracking';
+import LoadingOverlay from '../../components/loading-overlay';
 
 const Dashboard: React.FunctionComponent = () => {
+  const loading = useSelector((state: any) => state.loading.loading);
   const {t} = useTranslation();
   const width = useSelector((state: any) => state.width.width);
   const dispatch = useDispatch();
@@ -30,10 +33,10 @@ const Dashboard: React.FunctionComponent = () => {
   const layout = useSelector((state: any) => state.layout.layout);
 
   useEffect(() => {
-    if (location.state?.message) {
-      toast.success(location.state.message, {autoClose: location.state.autoClose});
+    if (location?.state && location?.state?.message) {
+      toast.success(location.state.message ?? 'test', {autoClose: location.state.autoClose ?? 3000});
     }
-  }, [location.state]);
+  }, [location?.state]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -100,6 +103,7 @@ const Dashboard: React.FunctionComponent = () => {
         </div>
       </div>
       <ToastContainer />
+      <LoadingOverlay isLoading={loading} />
     </div>
   );
 };

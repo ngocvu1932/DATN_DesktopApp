@@ -1,22 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {allAppointment, updateStatusAppointment} from '../../api/appointment';
 import {IAppointment} from '../../models/appointment';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {
-  faAngleLeft,
-  faAngleRight,
-  faArrowLeft,
-  faBars,
-  faCalendarPlus,
-  faMagnifyingGlass,
-  faRotate,
-} from '@fortawesome/free-solid-svg-icons';
 import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../../components/loading-spinner';
-import {useDispatch, useSelector} from 'react-redux';
-import {setWidth} from '../../redux/slices/sideBarWidthSlice';
 import SwitchSideBar from '../../components/switch-sidebar';
-import TextInput from '../../components/text-input';
 import Drawer from '../../components/drawer';
 import {getFormattedDate, getFormattedTime} from '../../utils/dateTime';
 import {ETypeAdd} from '../../components/drawer/enum';
@@ -29,16 +17,11 @@ const Appointment: React.FC = () => {
   const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(15);
+  const [limit] = useState(30);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(true);
-  const dispatch = useDispatch();
-  const width = useSelector((state: any) => state.width.width);
-
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-
-  console.log('appointment', appointments);
 
   const toggleDrawer = () => {
     setIsOpenDrawer(!isOpenDrawer);

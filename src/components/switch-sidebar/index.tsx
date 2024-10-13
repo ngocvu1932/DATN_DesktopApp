@@ -15,7 +15,7 @@ const SwitchSideBar: React.FC<ISwitchSideBarProps> = ({title, className}) => {
 
   return (
     <div
-      className={`${className} flex items-center p-1 cursor-pointer`}
+      className={`${className} flex items-center p-1 cursor-pointer w-fit`}
       onClick={() => {
         width == 0 ? dispatch(setWidth(260)) : dispatch(setWidth(0));
       }}
