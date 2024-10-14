@@ -7,5 +7,24 @@
   "auth_login_success": "Đăng nhập thành công!",
   "auth_login_fail": "Đăng nhập thất bại!",
 
+  "account_title": "Tài khoản",
+  "account_info_title": "Thông tin cá nhân",
+  "account_info_edit": "Chỉnh sửa thông tin cá nhân",
+  "account_info_change_avt": "Đổi ảnh đại diện",
+  "account_info_username": "Tên đăng nhập",
+  "account_info_fullname": "Họ và tên",
+  "account_info_email": "Email",
+  "account_info_phone_number": "Số điện thoại",
+  "account_info_role": "Chức vụ",
+  "account_info_button_edit": "Sửa",
+  "account_info_button_cancel": "Hủy",
+  "account_info_button_save": "Lưu",
+  "account_info_password_title": "Mật khẩu",
+  "account_info_password_edit": "Chỉnh sửa mật khẩu",
+  "account_info_password_current": "Mật khẩu hiện tại",
+  "account_info_password_new": "Mật khẩu mới",
+  "account_info_password_renew": "Nhập lại mật khẩu mới",
+  "account_info_button_logout": "Đăng xuất",
+
   "home_title": "Xin chào"
 }
