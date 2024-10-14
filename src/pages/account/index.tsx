@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import SwitchSideBar from '../../components/switch-sidebar';
 import avata from '../../assets/images/anh-avatar-cute-58.jpg';
@@ -7,15 +7,18 @@ import Avatar from '../../components/avatar';
 import TextInput from '../../components/text-input';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faArrowRightFromBracket} from '@fortawesome/free-solid-svg-icons';
+import {setIsLogin} from '../../redux/slices/authSlice';
 
 const Account: React.FC = () => {
   const userInfo = useSelector((state: any) => state.user.userInfo);
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState({isEditUserInfo: false, isEditPassword: false});
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    dispatch(setIsLogin(false));
     navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
   };
 

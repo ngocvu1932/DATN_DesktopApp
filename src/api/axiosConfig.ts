@@ -52,9 +52,11 @@ axiosInstance.interceptors.response.use(
         const refreshResponse = await axios.post(`${API_URL}/api/v1/auth/refresh-token`, {
           refreshToken: refreshToken,
         });
+
+        // chỗ này phải check lại!!
         const newAccessToken = refreshResponse.data.data.accessToken;
 
-        console.log('newAccessToken: ', newAccessToken);
+        console.log('newAccessToken exp: ', newAccessToken);
 
         localStorage.setItem('accessToken', newAccessToken);
         // Cập nhật header Authorization với accessToken mới

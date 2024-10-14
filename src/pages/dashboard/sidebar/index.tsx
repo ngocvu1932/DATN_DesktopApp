@@ -16,6 +16,7 @@ import {
   faReceipt,
   faUsersGear,
 } from '@fortawesome/free-solid-svg-icons';
+import {setIsLogin} from '../../../redux/slices/authSlice';
 
 interface ISidebarProps {
   width: number;
@@ -31,6 +32,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    dispatch(setIsLogin(false));
     navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
   };
 

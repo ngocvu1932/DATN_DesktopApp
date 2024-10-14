@@ -1,3 +1,11 @@
 {
-  "home_title": "Hello"
+  "auth_login_title": "Login",
+  "auth_login_placeholder_user": "User name",
+  "auth_login_placeholder_password": "Password",
+  "auth_login_forget_password": "Foget password?",
+  "auth_login_version": "Version",
+  "auth_login_success": "Login success!",
+  "auth_login_fail": "Login fail!",
+
+  "home_title": "Hi"
 }

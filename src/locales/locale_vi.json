@@ -1,3 +1,11 @@
 {
+  "auth_login_title": "Đăng nhập",
+  "auth_login_placeholder_user": "Tên đăng nhập",
+  "auth_login_placeholder_password": "Mật khẩu",
+  "auth_login_forget_password": "Quên mật khẩu?",
+  "auth_login_version": "Phiên bản",
+  "auth_login_success": "Đăng nhập thành công!",
+  "auth_login_fail": "Đăng nhập thất bại!",
+
   "home_title": "Xin chào"
 }
