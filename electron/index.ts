@@ -1,23 +1,21 @@
-// Native
 import {join} from 'path';
-import {fileURLToPath} from 'url'; // Import fileURLToPath từ 'url'
-import {dirname} from 'path'; // Import dirname từ 'path'
-
-// Packages
-import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut} from 'electron';
+import {fileURLToPath} from 'url';
+import {dirname} from 'path';
+import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut, screen} from 'electron';
 import isDev from 'electron-is-dev';
 
-// Tạo biến __filename từ import.meta.url
 const __filename = fileURLToPath(import.meta.url);
 
-// Tạo biến __dirname từ __filename
 const __dirname = dirname(__filename);
 
 function createWindow() {
-  // Create the browser window.
+  const {width: screenWidth, height: screenHeight} = screen.getPrimaryDisplay().workAreaSize;
+
+  const windowWidth = Math.round(screenWidth * 0.92); // 92% width
+  const windowHeight = Math.round(screenHeight * 0.94); // 94% height
   const window = new BrowserWindow({
-    width: 1350,
-    height: 770,
+    width: windowWidth,
+    height: windowHeight,
     resizable: false,
     center: true,
     hasShadow: true,
@@ -27,10 +25,9 @@ function createWindow() {
     },
   });
 
-  const port = 3000;
+  const port = 3001;
   const url = isDev ? `http://localhost:${port}` : join(__dirname, '../dist-vite/index.html');
 
-  // and load the index.html of the app.
   if (isDev) {
     window?.loadURL(url);
   } else {
@@ -39,13 +36,12 @@ function createWindow() {
   window.setMenuBarVisibility(false);
 
   try {
-    globalShortcut.register('Control+M', () => {
+    globalShortcut.register('CommandOrControl+M', () => {
       const isVisible = window.isMenuBarVisible();
       window.setMenuBarVisibility(!isVisible);
     });
 
-    // Đăng ký phím tắt với Control+I để mở Developer Tools
-    globalShortcut.register('Control+I', () => {
+    globalShortcut.register('CommandOrControl+I', () => {
       const isVisible = window.webContents.isDevToolsOpened();
       isVisible ? window.webContents.closeDevTools() : window.webContents.openDevTools();
     });
@@ -71,9 +67,6 @@ function createWindow() {
   nativeTheme.themeSource = 'system';
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
 

@@ -16,6 +16,7 @@ import {
   faReceipt,
   faUsersGear,
 } from '@fortawesome/free-solid-svg-icons';
+import {setIsLogin} from '../../../redux/slices/authSlice';
 
 interface ISidebarProps {
   width: number;
@@ -26,11 +27,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   const navigate = useNavigate();
   const layout = useSelector((state: any) => state.layout.layout);
 
-  const [openMenu, setOpenMenu] = useState<string | null>(null); // Lưu trữ menu đang mở
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    dispatch(setIsLogin(false));
     navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
   };
 
@@ -45,7 +47,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
   return (
     <div
-      className=" m-1 text-white rounded-lg relative flex flex-col"
+      className=" m-1 text-white rounded-lg relative flex  flex-col"
       style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
     >
       <h2 className="text-2xl mb-4 text-center mt-3">Menu</h2>
@@ -69,10 +71,10 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.ScheduleAppointment && openMenu != 'menu2' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.ScheduleAppointment && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
-              toggleMenu('menu2');
+              toggleMenu('menu1');
               dispatch(setLayout(ELayout.ScheduleAppointment));
             }}
           >
@@ -82,12 +84,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <FontAwesomeIcon
               className="ml-2"
-              flip={openMenu === 'menu2' ? 'vertical' : 'horizontal'}
+              flip={openMenu === 'menu1' ? 'vertical' : 'horizontal'}
               icon={faAngleDown}
             />
           </button>
           {/* Mục con cho Quản lý lịch hẹn */}
-          {openMenu === 'menu2' && (
+          {openMenu === 'menu1' && (
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
@@ -110,14 +112,59 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           )}
         </li>
 
+        {/*Quản lý liệu trình */}
+        <li className="mb-2">
+          <button
+            className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${
+              layout == ELayout.SessionsTracking && openMenu != 'menu2' ? 'bg-gray-400 border border-white' : ''
+            }`}
+            onClick={() => {
+              toggleMenu('menu2');
+              dispatch(setLayout(ELayout.SessionsTracking));
+            }}
+          >
+            <div className="flex items-center">
+              <FontAwesomeIcon icon={faCalendarDays} /> &nbsp;&nbsp;
+              <p>Quản lý liệu trình</p>
+            </div>
+            <FontAwesomeIcon
+              className="ml-2"
+              flip={openMenu === 'menu2' ? 'vertical' : 'horizontal'}
+              icon={faAngleDown}
+            />
+          </button>
+          {/* Mục con cho Quản lý liệu trình */}
+          {openMenu === 'menu2' && (
+            <ul className="mt-1 ml-3">
+              <li
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
+                  layout == ELayout.SessionsTracking ? 'bg-gray-400 border border-white' : ''
+                }`}
+                onClick={() => dispatch(setLayout(ELayout.SessionsTracking))}
+              >
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faCalendar} /> &nbsp;&nbsp;
+                  <p>Liệu trình</p>
+                </div>
+              </li>
+              <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
+                Mục con 2.2
+              </li>
+              <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
+                Mục con 2.3
+              </li>
+            </ul>
+          )}
+        </li>
+
         {/* Quản lý khách hàng */}
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AddCustomer && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AddCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
-              toggleMenu('menu1');
+              toggleMenu('menu3');
               dispatch(setLayout(ELayout.AddCustomer));
             }}
           >
@@ -127,12 +174,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <FontAwesomeIcon
               className="ml-2"
-              flip={openMenu === 'menu1' ? 'vertical' : 'horizontal'}
+              flip={openMenu === 'menu3' ? 'vertical' : 'horizontal'}
               icon={faAngleDown}
             />
           </button>
           {/* Mục con cho Quản lý khách hàng */}
-          {openMenu === 'menu1' && (
+          {openMenu === 'menu3' && (
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
@@ -156,10 +203,10 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AllServices && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AllServices && openMenu != 'menu4' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
-              toggleMenu('menu3');
+              toggleMenu('menu4');
               dispatch(setLayout(ELayout.AllServices));
             }}
           >
@@ -169,12 +216,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <FontAwesomeIcon
               className="ml-2"
-              flip={openMenu === 'menu3' ? 'vertical' : 'horizontal'}
+              flip={openMenu === 'menu4' ? 'vertical' : 'horizontal'}
               icon={faAngleDown}
             />
           </button>
           {/* Mục con cho Quản lý dịch vụ */}
-          {openMenu === 'menu3' && (
+          {openMenu === 'menu4' && (
             <ul className="ml-3 mt-1">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
@@ -246,14 +293,16 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
       </ul>
 
       {/* Đăng xuất */}
-      <div className="flex absolute bottom-4 justify-center w-full">
-        <div
-          className="flex bg-red-500 text-white rounded-xl cursor-pointer shadow-xl px-10 py-2 items-center"
-          onClick={handleLogout}
-        >
-          <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; Đăng xuất
+      {layout != ELayout.Account && (
+        <div className="flex absolute bottom-4 justify-center w-full">
+          <div
+            className="flex hover:bg-red-600 bg-red-400 text-white rounded-xl cursor-pointer shadow-xl px-9 py-1.5 items-center"
+            onClick={handleLogout}
+          >
+            <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; Đăng xuất
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -1,17 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {appointment, updateStatusAppointment} from '../../api/appointment';
-import {IAppointment} from '../../models/appointment';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {
-  faAngleLeft,
-  faAngleRight,
-  faArrowLeft,
-  faBars,
-  faCalendarPlus,
-  faMagnifyingGlass,
-  faRotate,
-} from '@fortawesome/free-solid-svg-icons';
+import {updateStatusAppointment} from '../../api/appointment';
 import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../../components/loading-spinner';
 import {useDispatch, useSelector} from 'react-redux';
 import {setWidth} from '../../redux/slices/sideBarWidthSlice';
@@ -21,9 +11,13 @@ import Drawer from '../../components/drawer';
 import {allServices} from '../../api/services';
 import {IService} from '../../models/service';
 import {ETypeAdd} from '../../components/drawer/enum';
+import Filter from '../../components/filter';
+import {EFilterType} from '../../components/filter/enum';
+import Pagination from '../../components/pagination';
 
 const AllServices: React.FC = () => {
   const [services, setAllservices] = useState<IService[]>([]);
+  const [servicesTemp, setAllServicesTemp] = useState<IService[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit] = useState(10);
@@ -50,6 +44,7 @@ const AllServices: React.FC = () => {
       const response = await allServices(currentPage, limit);
       if (response?.statusCode === 200) {
         setAllservices(response?.data);
+        setAllServicesTemp(response?.data);
         setTotalPages(response?.pagination?.totalPage ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
@@ -107,24 +102,9 @@ const AllServices: React.FC = () => {
       <>
         <td className="border border-gray-300 p-1">{service.id}</td>
         <td className="border border-gray-300 p-1">{service.name}</td>
-        {/* <td className="border border-gray-300 p-1">{service.updated_at}</td> */}
         <td className="border border-gray-300 p-1">{new Date(service.updated_at).toLocaleDateString()}</td>
-        {/* <td className="border border-gray-300 p-1">{new Date(service.time).toLocaleTimeString()}</td> */}
         <td className="border border-gray-300 p-1">{service.price}</td>
         <td className="border border-gray-300 p-1">{service.description}</td>
-        {/* <td className="flex justify-center">
-          <select
-            className={`${statuses.status === 1 ? 'bg-yellow-200' : 'bg-green-400'} rounded-lg p-1 flex`}
-            defaultValue={statuses.status}
-            onChange={handleChangeStatus}
-            disabled={!editStatuses[index]}
-          >
-            <option value="1">Mới</option>
-            <option value="2">Đã xác nhận</option>
-          </select>
-        </td> */}
-        {/* <td className="border border-gray-300 p-1">{service.reminder_sent}</td>
-        <td className="border border-gray-300 p-1">{service.note}</td> */}
         <td className="border border-gray-300 p-1">
           <button
             onClick={() => handleToggleEdit(index)}
@@ -157,52 +137,32 @@ const AllServices: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="flex justify-between pb-2">
+      <div className="h-[19%] flex flex-col">
         <SwitchSideBar title="Danh sách dịch vụ" className="font-bold text-lg" />
 
-        <div className="flex-1 flex items-center justify-end">
-          <TextInput
-            placeholder="Tìm kiếm"
-            className="h-8 mr-2"
-            suffix={<FontAwesomeIcon icon={faMagnifyingGlass} />}
-          />
-
-          <button
-            className="border border-white bg-slate-400 px-3.5 py-1 rounded-lg mr-2"
-            onClick={toggleDrawer}
-            title="Thêm dịch vụ"
-          >
-            <FontAwesomeIcon icon={faCalendarPlus} />
-          </button>
-
-          <button className="border border-white bg-slate-400 px-3.5 py-1 rounded-lg" title="Làm mới">
-            <FontAwesomeIcon icon={faRotate} />
-          </button>
-        </div>
+        <Filter
+          setDataFilter={setAllServicesTemp}
+          dataFilter={services}
+          toggleDrawer={toggleDrawer}
+          type={EFilterType.SERVICE}
+        />
       </div>
 
-      <div className="overflow-y-auto h-[80%]">
-        <table className="min-w-full border border-gray-300">
-          <thead className="bg-gray-200">
+      <div className="overflow-y-auto h-[75%] border-b border-x border-slate-400">
+        <table className="min-w-full">
+          <thead className="bg-gray-200 sticky top-0 z-10">
             <tr>
               <th className="border border-gray-300 p-1">ID</th>
               <th className="border border-gray-300 p-1">Tên dịch vụ</th>
               <th className="border border-gray-300 p-1">Ngày tạo</th>
               <th className="border border-gray-300 p-1">Giá tiền</th>
               <th className="border border-gray-300 p-1">Mô tả</th>
-              {/* <th className="border border-gray-300 p-1">Nhân viên</th>
-            <th className="border border-gray-300 p-1">Trạng thái</th>
-            <th className="border border-gray-300 p-1">Nhắc hẹn</th>
-            <th className="border border-gray-300 p-1">Ghi chú</th> */}
               <th className="border border-gray-300 p-1">Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {services.map((service, index) => (
-              <tr
-                key={service.id}
-                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b border-gray-300`}
-              >
+            {servicesTemp.map((service, index) => (
+              <tr key={service.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} `}>
                 {renderServices(service, index)}
               </tr>
             ))}
@@ -210,60 +170,14 @@ const AllServices: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4 pb-3">
-        <div>
-          Tổng {currentPage} / {totalPages}
-        </div>
-        <div className="flex">
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className="h-8 w-8 rounded-full border border-white bg-slate-400 flex items-center justify-center"
-            title="Trang trước"
-          >
-            <FontAwesomeIcon icon={faAngleLeft} />
-          </button>
-
-          <div className="flex space-x-2 px-3">
-            {currentPage > 3 && (
-              <span onClick={() => handleGoToPage(1)} className="cursor-pointer">
-                1
-              </span>
-            )}
-            {currentPage > 3 && <span>...</span>}
-            {currentPage > 2 && (
-              <span onClick={() => handleGoToPage(currentPage - 2)} className="cursor-pointer">
-                {currentPage - 2}
-              </span>
-            )}
-            {currentPage > 1 && (
-              <span onClick={() => handleGoToPage(currentPage - 1)} className="cursor-pointer">
-                {currentPage - 1}
-              </span>
-            )}
-            <span className="font-bold text-blue-600">{currentPage}</span>
-            {currentPage < totalPages && (
-              <span onClick={() => handleGoToPage(currentPage + 1)} className="cursor-pointer">
-                {currentPage + 1}
-              </span>
-            )}
-            {currentPage + 1 < totalPages && (
-              <span onClick={() => handleGoToPage(currentPage + 2)} className="cursor-pointer">
-                {currentPage + 2}
-              </span>
-            )}
-            {currentPage + 2 < totalPages && <span>...</span>}
-          </div>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="h-8 w-8 rounded-full border border-white bg-slate-400 flex items-center justify-center"
-            title="Trang sau"
-          >
-            <FontAwesomeIcon icon={faAngleRight} />
-          </button>
-        </div>
+      <div className="flex justify-between items-center h-[6%]">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          goToPage={(page) => handleGoToPage(page)}
+          nextPage={handleNextPage}
+          previousPage={handlePreviousPage}
+        />
       </div>
 
       <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />

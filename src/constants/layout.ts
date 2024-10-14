@@ -15,5 +15,7 @@ export enum ELayout {
 
   BranchManagement = 'BranchManagement',
 
+  SessionsTracking = 'SessionsTracking',
+
   Bills = 'Bills',
 }

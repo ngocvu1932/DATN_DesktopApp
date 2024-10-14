@@ -9,6 +9,7 @@ interface ITextInputProps {
   changeText?: (text: string) => void;
   value?: string;
   disabled?: boolean;
+  title?: string;
 }
 
 const TextInput: React.FC<ITextInputProps> = ({
@@ -20,9 +21,10 @@ const TextInput: React.FC<ITextInputProps> = ({
   changeText,
   value,
   disabled,
+  title,
 }) => {
   return (
-    <span className={`${className} flex items-center rounded-xl m-1 relative`}>
+    <span title={title} className={`${className} flex items-center rounded-xl m-1 relative`}>
       {prefix && (
         <span className="absolute left-3 flex items-center h-full text-gray-500 pointer-events-none">{prefix}</span>
       )}

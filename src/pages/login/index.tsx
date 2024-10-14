@@ -11,10 +11,11 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faEyeSlash, faUnlock, faUser} from '@fortawesome/free-solid-svg-icons';
-const API_URL = import.meta.env.VITE_API_URL;
+import {useTranslation} from 'react-i18next';
 const VERSION = import.meta.env.VITE_VERSION;
 
 const Login: React.FC = () => {
+  const {t} = useTranslation();
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [isFilled, setIsFilled] = useState(false);
@@ -35,9 +36,9 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (location.state?.message) {
-      toast.success(location.state.message, {autoClose: location.state.autoClose});
+      toast.success(location?.state?.message, {autoClose: location?.state?.autoClose});
     }
-  }, [location.state]);
+  }, [location?.state]);
 
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -47,12 +48,13 @@ const Login: React.FC = () => {
       dispatch(setUserInfo(res.data.user));
       // Cookies.set('accessToken', res.data.accessToken, {expires: 1 / 24, secure: true});
       localStorage.setItem('accessToken', res.data.accessToken);
+      localStorage.setItem('refreshToken', res.data.refreshToken);
       // Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
       setIsLoadingLogin(false);
-      navigate('/dashboard', {state: {message: 'Đăng nhập thành công!', autoClose: 3000}});
+      navigate('/dashboard', {state: {message: t('auth_login_success'), autoClose: 3000}});
     } else {
       setIsLoadingLogin(false);
-      toast.error('Đăng nhập thất bại!', {autoClose: 3000});
+      toast.error(t('auth_login_fail'), {autoClose: 3000});
     }
   };
 
@@ -64,7 +66,7 @@ const Login: React.FC = () => {
       }}
     >
       <div className="flex items-center bg-white flex-col px-6 py-8 rounded-xl shadow-xl">
-        <p className="text-black font-bold text-2xl">Đăng nhập</p>
+        <p className="text-black font-bold text-2xl">{t('auth_login_title')}</p>
         <Divider size={20} />
         <TextInput
           disabled={isLoadingLogin}
@@ -76,7 +78,7 @@ const Login: React.FC = () => {
           value={phone}
           className="w-[250px]"
           changeText={setPhone}
-          placeholder="Tên đăng nhập"
+          placeholder={t('auth_login_placeholder_user')}
           type="text"
         />
         <Divider size={20} />
@@ -99,7 +101,7 @@ const Login: React.FC = () => {
           value={password}
           className="w-[250px]"
           changeText={setPassword}
-          placeholder="Mật khẩu"
+          placeholder={t('auth_login_placeholder_password')}
           type={isShowPassword ? 'text' : 'password'}
         />
 
@@ -111,14 +113,16 @@ const Login: React.FC = () => {
           disabled={!isFilled}
           onClick={(e) => handleLogin(e)}
         >
-          {isLoadingLogin ? <LoadingSpinner /> : 'Đăng nhập'}
+          {isLoadingLogin ? <LoadingSpinner /> : t('auth_login_title')}
         </button>
 
-        <p className="text-right cursor-pointer mt-2">Bạn quên mật khẩu?</p>
+        <p className="text-right cursor-pointer mt-2">{t('auth_login_forget_password')}</p>
       </div>
       <ToastContainer />
 
-      <div className="absolute bottom-2 text-white">Version: {VERSION ?? ''}</div>
+      <div className="absolute bottom-2 text-white">
+        {t('auth_login_version')}: {VERSION ?? ''}
+      </div>
     </div>
   );
 };

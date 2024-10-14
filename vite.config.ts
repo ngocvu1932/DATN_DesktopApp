@@ -72,7 +72,7 @@ export default ({command}: ConfigEnv): UserConfig => {
         rollupOptions: {},
       },
       server: {
-        port: process.env.PORT === undefined ? 3000 : +process.env.PORT,
+        port: process.env.PORT === undefined ? 3001 : +process.env.PORT,
       },
       optimizeDeps: {
         exclude: ['path'],
@@ -92,6 +92,7 @@ export default ({command}: ConfigEnv): UserConfig => {
     build: {
       outDir: join(root, '/dist-vite'),
       emptyOutDir: true,
+      chunkSizeWarningLimit: 1000, // Điều chỉnh giới hạn chunk size ở đây (tính bằng KB)
       rollupOptions: {},
     },
     server: {

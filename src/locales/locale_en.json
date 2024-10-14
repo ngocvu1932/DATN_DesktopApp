@@ -1,3 +1,30 @@
 {
-  "title": "Hello"
+  "auth_login_title": "Log in",
+  "auth_login_placeholder_user": "User name",
+  "auth_login_placeholder_password": "Password",
+  "auth_login_forget_password": "Foget password?",
+  "auth_login_version": "Version",
+  "auth_login_success": "Login success!",
+  "auth_login_fail": "Login fail!",
+
+  "account_title": "Account",
+  "account_info_title": "Personal information",
+  "account_info_edit": "Edit personal information",
+  "account_info_change_avt": "Change profile picture",
+  "account_info_username": "User name",
+  "account_info_fullname": "Full name",
+  "account_info_email": "Email",
+  "account_info_phone_number": "Phone number",
+  "account_info_role": "Role",
+  "account_info_button_edit": "Edit",
+  "account_info_button_cancel": "Cancel",
+  "account_info_button_save": "Save",
+  "account_info_password_title": "Password",
+  "account_info_password_edit": "Edit password",
+  "account_info_password_current": "Current password",
+  "account_info_password_new": "New password",
+  "account_info_password_renew": "Re-enter new password",
+  "account_info_button_logout": "Log out",
+
+  "home_title": "Hi"
 }
