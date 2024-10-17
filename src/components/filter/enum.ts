@@ -3,4 +3,5 @@ export enum EFilterType {
   SERVICE = 'SERVICE',
   EMPLOYEE = 'EMPLOYEE',
   APPOINTMENT = 'APPOINTMENT',
+  CUSTOMER = 'CUSTOMER',
 }

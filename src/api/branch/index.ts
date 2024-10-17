@@ -20,7 +20,7 @@ export const getAllBranch = async (page: number, limit: number): Promise<CustomA
 
 export const updateStatusBranch = async (id: number, body: any): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.put(`/api/v1/branch/update-status/3/${id}`, body);
+    const res = await axios.put(`/api/v1/branch/update-status/${id}`, body);
     return res;
   } catch (error) {
     console.log(error);

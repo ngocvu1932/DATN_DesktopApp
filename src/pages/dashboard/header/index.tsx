@@ -54,8 +54,8 @@ const Header: React.FC = () => {
             )}
           </div>
           {isShowChooseLanguage && (
-            <div onClick={() => {}} className="absolute flex top-full min-w-[150px] mt-2 right-0">
-              <div className="rounded-lg bg-white w-full shadow-lg p-2 relative flex items-center">
+            <div onClick={() => {}} className="absolute flex top-full min-w-[150px] mt-2 right-0 z-20">
+              <div className="rounded-lg bg-white w-full p-2 relative flex items-center shadow-2xl ring-1 ring-black ring-opacity-5">
                 <div className="absolute top-[-10px] right-3">
                   <FontAwesomeIcon icon={faSortUp} color="white" size="lg" />
                 </div>

@@ -108,9 +108,9 @@ const Login: React.FC = () => {
         <Divider size={20} />
         <button
           className={` ${
-            isFilled ? 'bg-blue-500' : 'bg-blue-200'
+            isFilled ? (!isLoadingLogin ? 'bg-blue-500' : 'bg-blue-200') : 'bg-blue-200'
           } text-white w-[250px] cursor-pointer h-[40px] rounded-xl`}
-          disabled={!isFilled}
+          disabled={!isFilled || isLoadingLogin}
           onClick={(e) => handleLogin(e)}
         >
           {isLoadingLogin ? <LoadingSpinner /> : t('auth_login_title')}
