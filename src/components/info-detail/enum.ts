@@ -1,0 +1,6 @@
+export enum ETypeInfoDetail {
+  CUSTOMER = 'CUSTOMER',
+  SERVICE = 'SERVICE',
+  APPOINTMENT = 'APPOINTMENT',
+  BRANCH = 'BRANCH',
+}

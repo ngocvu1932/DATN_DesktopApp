@@ -31,12 +31,33 @@ const Dashboard: React.FunctionComponent = () => {
   const minWidth = 250;
   const location = useLocation();
   const layout = useSelector((state: any) => state.layout.layout);
+  // const location = useLocation();
+  const {message, type} = location.state || {};
 
   useEffect(() => {
-    if (location?.state && location?.state?.message) {
-      toast.success(location.state.message ?? 'test', {autoClose: location.state.autoClose ?? 3000});
+    if (message && type) {
+      // Gọi showToast dựa vào message và type từ state
+      switch (type) {
+        case 'error':
+          toast.error(message, {autoClose: 2000});
+          break;
+        case 'success':
+          toast.success(message, {autoClose: 2000});
+          break;
+        case 'warning':
+          toast.warning(message, {autoClose: 2000});
+          break;
+        default:
+          break;
+      }
     }
-  }, [location?.state]);
+  }, [message, type]);
+
+  // useEffect(() => {
+  //   if (location?.state && location?.state?.message) {
+  //     toast.success(location.state.message ?? 'test', {autoClose: location.state.autoClose ?? 3000});
+  //   }
+  // }, [location?.state]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,6 +106,7 @@ const Dashboard: React.FunctionComponent = () => {
 
   return (
     <div className="flex h-screen w-screen flex-col">
+      <ToastContainer />
       <Header />
 
       <div className="flex w-full h-[90%]">
@@ -102,7 +124,6 @@ const Dashboard: React.FunctionComponent = () => {
           {renderContent()}
         </div>
       </div>
-      <ToastContainer />
       <LoadingOverlay isLoading={loading} />
     </div>
   );

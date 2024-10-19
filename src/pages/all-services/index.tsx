@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {updateStatusAppointment} from '../../api/appointment';
-import {toast, ToastContainer} from 'react-toastify';
+import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../../components/loading-spinner';
 import {useDispatch, useSelector} from 'react-redux';
@@ -14,6 +14,11 @@ import {ETypeAdd} from '../../components/drawer/enum';
 import Filter from '../../components/filter';
 import {EFilterType} from '../../components/filter/enum';
 import Pagination from '../../components/pagination';
+import Breadcrumb from '../../components/breadcrumb';
+import {ELayoutInfo} from '../../constants/layout';
+import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
+import InfoDetail from '../../components/info-detail';
+import {ETypeInfoDetail} from '../../components/info-detail/enum';
 
 const AllServices: React.FC = () => {
   const [services, setAllservices] = useState<IService[]>([]);
@@ -22,22 +27,17 @@ const AllServices: React.FC = () => {
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
-  const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({}); // Lưu trạng thái chỉnh sửa cho từng hàng
+  const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const dispatch = useDispatch();
-  const width = useSelector((state: any) => state.width.width);
+  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutService);
+  const [selectedServices, setSelectedServices] = useState<IService[]>([]);
 
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
 
-  // console.log('currentPageRes', currentPageRes);
-
   useEffect(() => {
     fetchAllServices();
-  }, [isOpenDrawer]);
-
-  useEffect(() => {
-    fetchAllServices();
-  }, [currentPage]);
+  }, [currentPage, isOpenDrawer, layoutInfo]);
 
   const fetchAllServices = async () => {
     try {
@@ -70,6 +70,22 @@ const AllServices: React.FC = () => {
     }
   };
 
+  const showToast = (message: string, type: string) => {
+    switch (type) {
+      case 'error':
+        toast.error(message, {autoClose: 2000});
+        break;
+      case 'success':
+        toast.success(message, {autoClose: 2000});
+        break;
+      case 'warning':
+        toast.warning(message, {autoClose: 2000});
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleToggleEdit = (index: number) => {
     setEditStatuses((prev) => ({
       ...prev,
@@ -77,112 +93,142 @@ const AllServices: React.FC = () => {
     }));
   };
 
-  const handleSave = async (appointmentId: number, status: number, index: number) => {
-    const res = await updateStatusAppointment(appointmentId, {status});
-    if (res?.statusCode === 200) {
-      fetchAllServices();
-      toast.success('Cập nhật thành công!', {autoClose: 1000});
-      handleToggleEdit(index);
-    } else {
-      toast.error('Cập nhật thất bại!', {autoClose: 1000});
+  const handleViewDetail = (service: any) => {
+    dispatch(
+      setInfoLayout({
+        layoutBranch: {layout: ELayoutInfo.Home, data: null},
+        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
+        layoutService: {layout: ELayoutInfo.Details, data: service},
+      })
+    );
+  };
+
+  const renderContent = () => {
+    switch (layoutInfo?.layout) {
+      case ELayoutInfo.Home:
+        return (
+          <>
+            <div className="h-[13%] flex w-full">
+              <Filter
+                showToast={showToast}
+                setDataFilter={setAllServicesTemp}
+                dataFilter={services}
+                toggleDrawer={toggleDrawer}
+                type={EFilterType.SERVICE}
+                dataAction={selectedServices}
+                setDataAction={setSelectedServices}
+                reloadData={() => fetchAllServices()}
+              />
+            </div>
+            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400">
+              {isLoadingPage ? (
+                <div className="flex w-full h-full justify-center items-center">
+                  <LoadingSpinner size={60} />
+                </div>
+              ) : (
+                <table className="min-w-full">
+                  <thead className="bg-gray-200 sticky top-[-1px] z-10">
+                    <tr>
+                      <th></th>
+                      <th className="border border-gray-300 p-1">ID</th>
+                      <th className="border border-gray-300 p-1">Tên dịch vụ</th>
+                      <th className="border border-gray-300 p-1">Ngày tạo</th>
+                      <th className="border border-gray-300 p-1">Giá tiền</th>
+                      <th className="border border-gray-300 p-1">Trạng thái</th>
+                      <th className="border border-gray-300 p-1">Mô tả</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {servicesTemp.map((service, index) => (
+                      <tr
+                        onClick={() => {
+                          handleViewDetail(service);
+                          setSelectedServices([]);
+                        }}
+                        key={service.id}
+                        className={`${
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+                        } border-b cursor-pointer border-gray-300 hover:bg-slate-200`}
+                      >
+                        {renderServices(service, index)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            <div className="flex justify-between items-center h-[6%]">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                goToPage={(page) => handleGoToPage(page)}
+                nextPage={handleNextPage}
+                previousPage={handlePreviousPage}
+              />
+            </div>
+          </>
+        );
+      case ELayoutInfo.Details:
+        return <InfoDetail type={ETypeInfoDetail.SERVICE} />;
     }
   };
 
+  const handleCheckboxChange = (service: IService) => {
+    setSelectedServices((prevSelected) => {
+      if (prevSelected.find((a) => a.id === service.id)) {
+        return prevSelected.filter((a) => a.id !== service.id);
+      } else {
+        return [...prevSelected, service];
+      }
+    });
+  };
+
   const renderServices = (service: IService, index: number) => {
-    const statuses = {
-      appointmentId: service.id,
-      status: service.status === 1 ? 1 : 2,
-    };
-
-    const handleChangeStatus = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      statuses.status = Number(event.target.value);
-    };
-
     return (
       <>
+        <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
+          <div className="p-2">
+            <input
+              type="checkbox"
+              className="h-5 w-5"
+              checked={selectedServices.some((s) => s.id === service.id)}
+              onChange={() => handleCheckboxChange(service)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </td>
         <td className="border border-gray-300 p-1">{service.id}</td>
-        <td className="border border-gray-300 p-1">{service.name}</td>
+        <td className="border border-gray-300 p-1 max-w-[130px]">{service.name}</td>
         <td className="border border-gray-300 p-1">{new Date(service.updated_at).toLocaleDateString()}</td>
         <td className="border border-gray-300 p-1">{service.price}</td>
-        <td className="border border-gray-300 p-1">{service.description}</td>
-        <td className="border border-gray-300 p-1">
-          <button
-            onClick={() => handleToggleEdit(index)}
-            className={`${
-              editStatuses[index] ? 'bg-[#CCCCCC] text-black' : 'bg-[#4D90FE] text-white'
-            } px-1.5 py-0.5  rounded-lg`}
-          >
-            {editStatuses[index] ? 'Hủy' : 'Sửa'}
-          </button>
-          {editStatuses[index] && (
-            <button
-              className="bg-[#28A745] px-1.5 py-0.5 rounded-lg text-white"
-              onClick={() => handleSave(service.id, statuses.status, index)}
-            >
-              Lưu
-            </button>
+        <td className="h-full justify-center items-center p-0 max-w-[100px]">
+          {service.status !== 1 ? (
+            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
+          ) : (
+            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center justify-center ">
+              Đang hoạt động
+            </span>
           )}
-          <button className="bg-[#FF4B4B] px-1.5 py-0.5 rounded-lg text-[#FFFFFF]">Xóa</button>
         </td>
+        <td className="border border-gray-300 py-1 px-2 max-w-[350px]">{service.description}</td>
       </>
     );
   };
   const handleGoToPage = (pageNumber: number) => {
-    setCurrentPage(pageNumber); // Thay đổi trang hiện tại
+    setCurrentPage(pageNumber);
   };
-
-  if (isLoadingPage) {
-    return <LoadingSpinner size={60} />;
-  }
 
   return (
     <div className="w-full h-full">
-      <div className="h-[19%] flex flex-col">
+      <div className="h-[6%] flex border-b border-slate-400">
         <SwitchSideBar title="Danh sách dịch vụ" className="font-bold text-lg" />
-
-        <Filter
-          setDataFilter={setAllServicesTemp}
-          dataFilter={services}
-          toggleDrawer={toggleDrawer}
-          type={EFilterType.SERVICE}
-        />
+        <Breadcrumb />
       </div>
 
-      <div className="overflow-y-auto h-[75%] border-b border-x border-slate-400">
-        <table className="min-w-full">
-          <thead className="bg-gray-200 sticky top-0 z-10">
-            <tr>
-              <th className="border border-gray-300 p-1">ID</th>
-              <th className="border border-gray-300 p-1">Tên dịch vụ</th>
-              <th className="border border-gray-300 p-1">Ngày tạo</th>
-              <th className="border border-gray-300 p-1">Giá tiền</th>
-              <th className="border border-gray-300 p-1">Mô tả</th>
-              <th className="border border-gray-300 p-1">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {servicesTemp.map((service, index) => (
-              <tr key={service.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} `}>
-                {renderServices(service, index)}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex justify-between items-center h-[6%]">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          goToPage={(page) => handleGoToPage(page)}
-          nextPage={handleNextPage}
-          previousPage={handlePreviousPage}
-        />
-      </div>
+      {renderContent()}
 
       <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />
-
-      <ToastContainer />
     </div>
   );
 };

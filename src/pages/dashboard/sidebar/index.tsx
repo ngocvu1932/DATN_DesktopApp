@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {setLayout} from '../../../redux/slices/layoutSlice';
-import {ELayout} from '../../../constants/layout';
+import {ELayout, ELayoutInfo} from '../../../constants/layout';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
   faAddressBook,
@@ -17,6 +17,7 @@ import {
   faUsersGear,
 } from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../../redux/slices/authSlice';
+import {setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
 
 interface ISidebarProps {
   width: number;
@@ -62,7 +63,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           }}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faHouse} /> &nbsp;&nbsp;
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faHouse} />
+            </div>
             <p>Trang chủ</p>
           </div>
         </button>
@@ -79,7 +82,10 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             }}
           >
             <div className="flex items-center">
-              <FontAwesomeIcon icon={faCalendarDays} /> &nbsp;&nbsp;
+              <div className="flex w-[30px]">
+                <FontAwesomeIcon icon={faCalendarDays} />
+              </div>
+
               <p>Quản lý lịch hẹn</p>
             </div>
             <FontAwesomeIcon
@@ -98,7 +104,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 onClick={() => dispatch(setLayout(ELayout.ScheduleAppointment))}
               >
                 <div className="flex items-center">
-                  <FontAwesomeIcon icon={faCalendar} /> &nbsp;&nbsp;
+                  <div className="flex w-[30px]">
+                    <FontAwesomeIcon icon={faCalendar} />
+                  </div>
                   <p>Lịch hẹn</p>
                 </div>
               </li>
@@ -124,7 +132,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             }}
           >
             <div className="flex items-center">
-              <FontAwesomeIcon icon={faCalendarDays} /> &nbsp;&nbsp;
+              <div className="flex w-[30px]">
+                <FontAwesomeIcon icon={faCalendarDays} />
+              </div>
               <p>Quản lý liệu trình</p>
             </div>
             <FontAwesomeIcon
@@ -143,7 +153,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 onClick={() => dispatch(setLayout(ELayout.SessionsTracking))}
               >
                 <div className="flex items-center">
-                  <FontAwesomeIcon icon={faCalendar} /> &nbsp;&nbsp;
+                  <div className="flex w-[30px]">
+                    <FontAwesomeIcon icon={faCalendar} />
+                  </div>
                   <p>Liệu trình</p>
                 </div>
               </li>
@@ -169,7 +181,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             }}
           >
             <div className="flex items-center">
-              <FontAwesomeIcon icon={faUsersGear} /> &nbsp;&nbsp;
+              <div className="flex w-[30px]">
+                <FontAwesomeIcon icon={faUsersGear} />
+              </div>
               <p>Quản lý khách hàng</p>
             </div>
             <FontAwesomeIcon
@@ -211,7 +225,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             }}
           >
             <div className="flex items-center">
-              <FontAwesomeIcon icon={faAddressBook} /> &nbsp;&nbsp;
+              <div className="flex w-[30px]">
+                <FontAwesomeIcon icon={faAddressBook} />
+              </div>
               <p>Quản lý dịch vụ</p>
             </div>
             <FontAwesomeIcon
@@ -254,7 +270,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           }}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faReceipt} /> &nbsp;&nbsp;
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faReceipt} />
+            </div>
             <p>Hóa đơn</p>
           </div>
         </button>
@@ -270,7 +288,9 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           }}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faChartSimple} /> &nbsp;&nbsp;
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faChartSimple} />
+            </div>
             <p>Báo cáo doanh thu</p>
           </div>
         </button>
@@ -283,10 +303,19 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.BranchManagement));
+            dispatch(
+              setInfoLayout({
+                layoutBranch: {layout: ELayoutInfo.Home, data: null},
+                layoutAppointment: {layout: ELayoutInfo.Home, data: null},
+                layoutService: {layout: ELayoutInfo.Home, data: null},
+              })
+            );
           }}
         >
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faLocationDot} /> &nbsp; &nbsp;
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faLocationDot} />
+            </div>
             <p>Chi nhánh</p>
           </div>
         </button>

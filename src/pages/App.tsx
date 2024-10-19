@@ -41,11 +41,20 @@ const App = () => {
             auth ? (
               <Navigate to="/dashboard" state={{message: 'Chào mừng quay trở lại!', autoClose: 3000}} />
             ) : (
-              <Login />
+              <>
+                <Login />
+              </>
             )
           }
         />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <>
+              <Dashboard />
+            </>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Drawer from '../../components/drawer';
-import {toast, ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {toast} from 'react-toastify';
 import {ETypeAdd} from '../../components/drawer/enum';
 import SwitchSideBar from '../../components/switch-sidebar';
 import LoadingSpinner from '../../components/loading-spinner';
@@ -17,6 +16,7 @@ import {ELayout, ELayoutInfo} from '../../constants/layout';
 import InfoDetail from '../../components/info-detail';
 import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import Breadcrumb from '../../components/breadcrumb';
+import {ETypeInfoDetail} from '../../components/info-detail/enum';
 
 const BranchManagement: React.FC = () => {
   const [branchs, setBranchs] = useState<IBranch[]>([]);
@@ -26,11 +26,27 @@ const BranchManagement: React.FC = () => {
   const [limit] = useState(12);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
-  const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
   const dispatch = useDispatch();
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutBranch);
   const [selectedBranches, setSelectedBranches] = useState<IBranch[]>([]);
+
+  const showToast = (message: string, type: string) => {
+    switch (type) {
+      case 'error':
+        toast.error(message, {autoClose: 2000});
+        break;
+      case 'success':
+        toast.success(message, {autoClose: 2000});
+        break;
+      case 'warning':
+        toast.warning(message, {autoClose: 2000});
+        break;
+      default:
+        break;
+    }
+  };
 
   const toggleDrawer = () => {
     setIsOpenDrawer(!isOpenDrawer);
@@ -42,6 +58,7 @@ const BranchManagement: React.FC = () => {
 
   const fetchBranchs = async () => {
     try {
+      setIsLoadingPage(true);
       const response = await getAllBranch(currentPage, limit);
       if (response?.statusCode === 200) {
         setBranchs(response?.data);
@@ -95,36 +112,48 @@ const BranchManagement: React.FC = () => {
                 toggleDrawer={toggleDrawer}
                 type={EFilterType.BRANCH}
                 dataAction={selectedBranches}
+                showToast={showToast}
+                reloadData={() => fetchBranchs()}
+                setDataAction={setSelectedBranches}
               />
             </div>
 
             <div className="overflow-y-auto h-[75%] border border-slate-400">
-              <table className="min-w-full">
-                <thead className="bg-gray-200 sticky top-0 z-10">
-                  <tr>
-                    <th></th>
-                    <th className="border border-gray-300 p-1">ID</th>
-                    <th className="border border-gray-300 p-1">Tên chi nhánh</th>
-                    <th className="border border-gray-300 p-1">Địa chỉ</th>
-                    <th className="border border-gray-300 p-1">Số điện thoại</th>
-                    <th className="border border-gray-300 p-1">Email</th>
-                    <th className="border border-gray-300 p-1">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {branchsTemp.map((branch, index) => (
-                    <tr
-                      onClick={() => handleViewDetail(branch)}
-                      key={branch.id}
-                      className={`${
-                        index % 2 === 0 ? 'bg-white' : 'bg-white'
-                      } border-b cursor-pointer hover:bg-gray-100 border-gray-300`}
-                    >
-                      {renderBranch(branch, index)}
+              {isLoadingPage ? (
+                <div className="flex w-full h-full justify-center items-center">
+                  <LoadingSpinner size={60} />
+                </div>
+              ) : (
+                <table className="min-w-full">
+                  <thead className="bg-gray-200 sticky top-0 z-10">
+                    <tr>
+                      <th></th>
+                      <th className="border border-gray-300 p-1">ID</th>
+                      <th className="border border-gray-300 p-1">Tên chi nhánh</th>
+                      <th className="border border-gray-300 p-1">Địa chỉ</th>
+                      <th className="border border-gray-300 p-1">Số điện thoại</th>
+                      <th className="border border-gray-300 p-1">Email</th>
+                      <th className="border border-gray-300 p-1">Trạng thái</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {branchsTemp.map((branch, index) => (
+                      <tr
+                        onClick={() => {
+                          handleViewDetail(branch);
+                          setSelectedBranches([]);
+                        }}
+                        key={branch.id}
+                        className={`${
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+                        } border-b cursor-pointer hover:bg-slate-200 border-gray-300`}
+                      >
+                        {renderBranch(branch, index)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             <div className="flex justify-between items-center h-[6%]">
@@ -139,7 +168,7 @@ const BranchManagement: React.FC = () => {
           </>
         );
       case ELayoutInfo.Details:
-        return <InfoDetail />;
+        return <InfoDetail type={ETypeInfoDetail.BRANCH} />;
     }
   };
 
@@ -155,18 +184,18 @@ const BranchManagement: React.FC = () => {
 
     return (
       <>
-        <td>
+        <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
           <div className="p-3">
             <input
               type="checkbox"
-              className=""
+              className="h-5 w-5"
               checked={selectedBranches.some((b) => b.id === branch.id)}
               onChange={() => handleCheckboxChange(branch)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1">{branch.id}</td>
+        <td className="border border-gray-300 p-1 font-semibold">{branch.id}</td>
         <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${branch.name}`}>
           {branch.name}
         </td>
@@ -176,24 +205,25 @@ const BranchManagement: React.FC = () => {
         <td className="border border-gray-300 p-1">{branch.phone}</td>
         <td className="border border-gray-300 p-1">{branch.email}</td>
         <td className="h-full justify-center items-center p-0">
-          <div className="flex justify-center">
-            <select
-              className={`${statuses.status !== 1 ? 'bg-yellow-200' : 'bg-green-400'} rounded-lg p-1`}
-              defaultValue={statuses.status}
-              onChange={handleChangeStatus}
-              disabled={!editStatuses[index]}
-            >
-              <option value="1">Đang hoạt động</option>
-              <option value="2">OFF</option>
-            </select>
-          </div>
+          {/* 1 là mới , 0 là đang hoạt động */}
+          {branch.status == 1 ? (
+            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
+          ) : (
+            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
+          )}
         </td>
       </>
     );
   };
 
   const handleViewDetail = (branch: any) => {
-    dispatch(setInfoLayout({layoutBranch: {layout: ELayoutInfo.Details, data: branch}}));
+    dispatch(
+      setInfoLayout({
+        layoutBranch: {layout: ELayoutInfo.Details, data: branch},
+        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
+        layoutService: {layout: ELayoutInfo.Home, data: null},
+      })
+    );
   };
 
   const handleGoToPage = (pageNumber: number) => {
@@ -212,10 +242,6 @@ const BranchManagement: React.FC = () => {
     }
   };
 
-  if (isLoadingPage) {
-    return <LoadingSpinner size={60} />;
-  }
-
   return (
     <div className="w-full h-full">
       <div className="h-[6%] flex border-b border-slate-400">
@@ -226,8 +252,6 @@ const BranchManagement: React.FC = () => {
       {renderContent()}
 
       <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.BRANCH} />
-
-      <ToastContainer />
     </div>
   );
 };
