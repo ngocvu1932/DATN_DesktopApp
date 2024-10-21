@@ -24,6 +24,28 @@ const Login: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const location = useLocation();
+
+  const {message, type} = location.state || {};
+
+  useEffect(() => {
+    if (message && type) {
+      // Gọi showToast dựa vào message và type từ state
+      switch (type) {
+        case 'error':
+          toast.error(message, {autoClose: 2000});
+          break;
+        case 'success':
+          toast.success(message, {autoClose: 2000});
+          break;
+        case 'warning':
+          toast.warning(message, {autoClose: 2000});
+          break;
+        default:
+          break;
+      }
+    }
+  }, [message, type]);
 
   useEffect(() => {
     if (phone && password) {

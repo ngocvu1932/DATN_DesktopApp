@@ -202,7 +202,7 @@ const AllServices: React.FC = () => {
         <td className="border border-gray-300 p-1 max-w-[130px]">{service.name}</td>
         <td className="border border-gray-300 p-1">{new Date(service.updated_at).toLocaleDateString()}</td>
         <td className="border border-gray-300 p-1">{service.price}</td>
-        <td className="h-full justify-center items-center p-0 max-w-[100px]">
+        <td className="h-full justify-center items-center p-0 max-w-[110px]">
           {service.status !== 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
           ) : (

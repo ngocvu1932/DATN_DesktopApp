@@ -204,7 +204,13 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   {/* <TextInput disabled={isEdit} type="text" title="Trạng thái" placeholder={'Trạng thái'} className="h-8" /> */}
                   <select
                     title="Trạng thái"
-                    className={`${dataBranch?.status == 1 ? 'bg-yellow-200' : 'bg-green-400'} rounded-lg p-1 mx-1 mt-1`}
+                    className={`${
+                      dataBranch?.status == 1
+                        ? 'bg-yellow-200'
+                        : dataBranch?.status == 0
+                        ? 'bg-green-400'
+                        : 'bg-red-400'
+                    } rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataBranch?.status ?? 0}
                     onChange={(event) => setDataBranch({...dataBranch, status: Number(event.target.value)})}
                     disabled={!isEdit}

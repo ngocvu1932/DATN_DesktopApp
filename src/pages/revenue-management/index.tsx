@@ -3,6 +3,7 @@ import BarChart from '../../components/chart';
 import SwitchSideBar from '../../components/switch-sidebar';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faRotate} from '@fortawesome/free-solid-svg-icons';
+import {ETypeChart} from '../../components/chart/enum';
 
 const RevenueManagement: React.FC = () => {
   return (
@@ -16,7 +17,7 @@ const RevenueManagement: React.FC = () => {
           </button>
         </div>
       </div>
-      <BarChart />
+      <BarChart type={ETypeChart.BAR} />
     </div>
   );
 };

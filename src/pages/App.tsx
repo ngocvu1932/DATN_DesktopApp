@@ -6,11 +6,13 @@ import {getInfo} from '../api/auth';
 import {setUserInfo} from '../redux/slices/userInfoSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import {setIsLogin} from '../redux/slices/authSlice';
+import {useTranslation} from 'react-i18next';
 
 const App = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state: any) => state.auth.isLogin);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {t} = useTranslation();
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -39,22 +41,19 @@ const App = () => {
           path="/"
           element={
             auth ? (
-              <Navigate to="/dashboard" state={{message: 'Chào mừng quay trở lại!', autoClose: 3000}} />
+              <Navigate
+                to="/dashboard"
+                state={{
+                  message: t('auth_login_successx'),
+                  type: 'success',
+                }}
+              />
             ) : (
-              <>
-                <Login />
-              </>
+              <Login />
             )
           }
         />
-        <Route
-          path="/dashboard"
-          element={
-            <>
-              <Dashboard />
-            </>
-          }
-        />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );

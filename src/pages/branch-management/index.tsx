@@ -17,6 +17,7 @@ import InfoDetail from '../../components/info-detail';
 import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import Breadcrumb from '../../components/breadcrumb';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
+import '../../global.css';
 
 const BranchManagement: React.FC = () => {
   const [branchs, setBranchs] = useState<IBranch[]>([]);
@@ -118,7 +119,7 @@ const BranchManagement: React.FC = () => {
               />
             </div>
 
-            <div className="overflow-y-auto h-[75%] border border-slate-400">
+            <div className="overflow-y-auto h-[75%] scrollbar-thin border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -208,8 +209,10 @@ const BranchManagement: React.FC = () => {
           {/* 1 là mới , 0 là đang hoạt động */}
           {branch.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : (
+          ) : branch.status == 0 ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
+          ) : (
+            <>Error</>
           )}
         </td>
       </>
