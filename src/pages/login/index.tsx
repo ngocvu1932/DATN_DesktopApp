@@ -23,8 +23,29 @@ const Login: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const location = useLocation();
+
+  const {message, type} = location.state || {};
+
+  useEffect(() => {
+    if (message && type) {
+      // Gọi showToast dựa vào message và type từ state
+      switch (type) {
+        case 'error':
+          toast.error(message, {autoClose: 2000});
+          break;
+        case 'success':
+          toast.success(message, {autoClose: 2000});
+          break;
+        case 'warning':
+          toast.warning(message, {autoClose: 2000});
+          break;
+        default:
+          break;
+      }
+    }
+  }, [message, type]);
 
   useEffect(() => {
     if (phone && password) {
@@ -33,12 +54,6 @@ const Login: React.FC = () => {
       setIsFilled(false);
     }
   }, [phone, password]);
-
-  useEffect(() => {
-    if (location.state?.message) {
-      toast.success(location?.state?.message, {autoClose: location?.state?.autoClose});
-    }
-  }, [location?.state]);
 
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -51,7 +66,12 @@ const Login: React.FC = () => {
       localStorage.setItem('refreshToken', res.data.refreshToken);
       // Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
       setIsLoadingLogin(false);
-      navigate('/dashboard', {state: {message: t('auth_login_success'), autoClose: 3000}});
+      navigate('/dashboard', {
+        state: {
+          message: t('auth_login_success'),
+          type: 'success',
+        },
+      });
     } else {
       setIsLoadingLogin(false);
       toast.error(t('auth_login_fail'), {autoClose: 3000});
@@ -65,6 +85,7 @@ const Login: React.FC = () => {
         backgroundImage: `url(${BG})`,
       }}
     >
+      <ToastContainer />
       <div className="flex items-center bg-white flex-col px-6 py-8 rounded-xl shadow-xl">
         <p className="text-black font-bold text-2xl">{t('auth_login_title')}</p>
         <Divider size={20} />
@@ -108,9 +129,9 @@ const Login: React.FC = () => {
         <Divider size={20} />
         <button
           className={` ${
-            isFilled ? 'bg-blue-500' : 'bg-blue-200'
+            isFilled ? (!isLoadingLogin ? 'bg-blue-500' : 'bg-blue-200') : 'bg-blue-200'
           } text-white w-[250px] cursor-pointer h-[40px] rounded-xl`}
-          disabled={!isFilled}
+          disabled={!isFilled || isLoadingLogin}
           onClick={(e) => handleLogin(e)}
         >
           {isLoadingLogin ? <LoadingSpinner /> : t('auth_login_title')}
@@ -118,7 +139,6 @@ const Login: React.FC = () => {
 
         <p className="text-right cursor-pointer mt-2">{t('auth_login_forget_password')}</p>
       </div>
-      <ToastContainer />
 
       <div className="absolute bottom-2 text-white">
         {t('auth_login_version')}: {VERSION ?? ''}

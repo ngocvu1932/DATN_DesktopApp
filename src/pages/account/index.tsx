@@ -21,7 +21,12 @@ const Account: React.FC = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     dispatch(setIsLogin(false));
-    navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
+    navigate('/', {
+      state: {
+        message: t('auth_login_successxxxxx'),
+        type: 'success',
+      },
+    });
   };
 
   const handleClickEdit = (type: string) => {

@@ -20,7 +20,7 @@ const Pagination: React.FC<IPaginationProps> = ({currentPage, totalPages, previo
         <button
           onClick={previousPage}
           disabled={currentPage === 1}
-          className={`h-8 w-8 rounded-full border border-white bg-slate-300 hover:bg-slate-400 flex items-center justify-center`}
+          className={`h-8 w-8 rounded-full border border-white text-white bg-slate-500 hover:bg-slate-800 flex items-center justify-center`}
           title="Trang trước"
         >
           <FontAwesomeIcon icon={faAngleLeft} />
@@ -61,7 +61,7 @@ const Pagination: React.FC<IPaginationProps> = ({currentPage, totalPages, previo
         <button
           onClick={nextPage}
           disabled={currentPage === totalPages}
-          className="h-8 w-8 rounded-full border border-white bg-slate-300 hover:bg-slate-400 flex items-center justify-center"
+          className="h-8 w-8 rounded-full border border-white text-white bg-slate-500 hover:bg-slate-800 flex items-center justify-center"
           title="Trang sau"
         >
           {/* Tiếp &nbsp; */}

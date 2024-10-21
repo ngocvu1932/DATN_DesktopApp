@@ -54,3 +54,12 @@ export const findOneServiceById = async (id: number): Promise<CustomAxiosRespons
     console.log(error);
   }
 };
+
+export const updateService = async (id: number, data: any): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.put(`/api/v1/services/${id}`, data);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};

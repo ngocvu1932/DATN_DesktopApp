@@ -19,3 +19,8 @@ export enum ELayout {
 
   Bills = 'Bills',
 }
+
+export enum ELayoutInfo {
+  Home = 'Home',
+  Details = 'Details',
+}

@@ -101,9 +101,9 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 overflow-hidden">
+        <div className="fixed inset-0 overflow-hidden z-20">
           <div className="fixed inset-0" onClick={onClose}></div>
-          <div className={`drawer ${isOpen ? 'open' : ''} z-30`}>
+          <div className={`drawer ${isOpen ? 'open' : ''} z-20 shadow-2xl`}>
             <div className="flex relative justify-center py-2 items-center">
               <p className="font-bold text-xl">
                 {type === ETypeAdd.SERVICE

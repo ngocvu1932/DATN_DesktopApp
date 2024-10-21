@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
     // xử lý response trước khi trả về
     // console.log('response', response);
 
-    if (response.status === 200) {
+    if (response?.status === 200) {
       return response.data;
     }
     return response;
@@ -49,6 +49,8 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem('refreshToken');
+        console.log('refreshToken test:', refreshToken);
+
         const refreshResponse = await axios.post(`${API_URL}/api/v1/auth/refresh-token`, {
           refreshToken: refreshToken,
         });
