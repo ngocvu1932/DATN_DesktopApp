@@ -109,7 +109,7 @@ const Dashboard: React.FunctionComponent = () => {
       <ToastContainer />
       <Header />
 
-      <div className="flex w-full h-[90%]">
+      <div className="flex w-full h-[90vh]">
         <Sidebar width={width} />
 
         {width != 0 ? (
@@ -120,7 +120,7 @@ const Dashboard: React.FunctionComponent = () => {
           <></>
         )}
 
-        <div className="flex-1 bg-gray-100 w-full border border-slate-400 p-2 m-1 rounded-lg overflow-y-auto">
+        <div className="flex-1 bg-gray-100 w-full h-[89vh] border border-slate-400 p-2 m-1 rounded-lg overflow-hidden box-border">
           {renderContent()}
         </div>
       </div>

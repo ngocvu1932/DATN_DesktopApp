@@ -4,14 +4,15 @@ import BG from '../../assets/images/background.png';
 import Divider from '../../components/divider';
 import {getInfo, login} from '../../api/auth';
 import LoadingSpinner from '../../components/loading-spinner';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {setUserInfo} from '../../redux/slices/userInfoSlice';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEye, faEyeSlash, faUnlock, faUser} from '@fortawesome/free-solid-svg-icons';
+import {faEye, faEyeSlash, faUnlock, faUser, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {useTranslation} from 'react-i18next';
+import {setIsReLogin} from '../../redux/slices/reLoginSlice';
 const VERSION = import.meta.env.VITE_VERSION;
 
 const Login: React.FC = () => {
@@ -20,6 +21,10 @@ const Login: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [isFilled, setIsFilled] = useState(false);
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+
+  const reLogin = useSelector((state: any) => state.reLogin.reLogin);
+
+  console.log('reLogin:', reLogin);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -86,6 +91,36 @@ const Login: React.FC = () => {
       }}
     >
       <ToastContainer />
+
+      {reLogin?.isReLogin && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 z-30">
+          {/* Nội dung overlay */}
+          <div className="flex justify-center items-center h-full">
+            <div className=" flex bg-white px-3 py-1.5 rounded-md flex-col">
+              <div className="relative flex">
+                <p className="text-black text-base whitespace-nowrap">Đang lấy thông tin tài khoản...</p>
+              </div>
+
+              <div className="flex py-4">
+                {reLogin?.isSuscess ? <LoadingSpinner /> : 'Hết phiên đăng nhập, vui lòng đăng nhập lại!'}
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  className="py-0.5 px-2 rounded-md border border-slate-400"
+                  onClick={() => {
+                    dispatch(setIsReLogin({isReLogin: false, isSuscess: true, isCancel: true}));
+                  }}
+                >
+                  Hủy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center bg-white flex-col px-6 py-8 rounded-xl shadow-xl">
         <p className="text-black font-bold text-2xl">{t('auth_login_title')}</p>
         <Divider size={20} />

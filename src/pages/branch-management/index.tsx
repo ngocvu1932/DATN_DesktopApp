@@ -29,9 +29,26 @@ const BranchManagement: React.FC = () => {
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const dispatch = useDispatch();
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutBranch);
   const [selectedBranches, setSelectedBranches] = useState<IBranch[]>([]);
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoadingPage(isLoading);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    fetchBranchs();
+  }, [currentPage, layoutInfo]);
+
+  useEffect(() => {
+    if (isOpenDrawer == false) {
+      fetchBranchs();
+    }
+  }, [isOpenDrawer]);
 
   const showToast = (message: string, type: string) => {
     switch (type) {
@@ -52,10 +69,6 @@ const BranchManagement: React.FC = () => {
   const toggleDrawer = () => {
     setIsOpenDrawer(!isOpenDrawer);
   };
-
-  useEffect(() => {
-    fetchBranchs();
-  }, [currentPage, layoutInfo]);
 
   const fetchBranchs = async () => {
     try {
@@ -90,23 +103,12 @@ const BranchManagement: React.FC = () => {
     }));
   };
 
-  const handleSave = async (appointmentId: number, status: number, index: number) => {
-    const res = await updateStatusAppointment(appointmentId, {status});
-    if (res?.statusCode === 200) {
-      fetchBranchs();
-      toast.success('Cập nhật thành công!', {autoClose: 1000});
-      handleToggleEdit(index);
-    } else {
-      toast.error('Cập nhật thất bại!', {autoClose: 1000});
-    }
-  };
-
   const renderContent = () => {
     switch (layoutInfo?.layout) {
       case ELayoutInfo.Home:
         return (
           <>
-            <div className="h-[13%] flex w-full">
+            <div className="h-[11%] flex w-full">
               <Filter
                 setDataFilter={setBranchsTemp}
                 dataFilter={branchs}
@@ -116,16 +118,17 @@ const BranchManagement: React.FC = () => {
                 showToast={showToast}
                 reloadData={() => fetchBranchs()}
                 setDataAction={setSelectedBranches}
+                setLoader={setIsLoading}
               />
             </div>
 
-            <div className="overflow-y-auto h-[75%] scrollbar-thin border border-slate-400">
+            <div className="h-[78%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
                 </div>
               ) : (
-                <table className="min-w-full">
+                <table className="min-w-full table-fixed">
                   <thead className="bg-gray-200 sticky top-0 z-10">
                     <tr>
                       <th></th>
@@ -137,7 +140,7 @@ const BranchManagement: React.FC = () => {
                       <th className="border border-gray-300 p-1">Trạng thái</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="overflow-y-auto">
                     {branchsTemp.map((branch, index) => (
                       <tr
                         onClick={() => {
@@ -157,7 +160,7 @@ const BranchManagement: React.FC = () => {
               )}
             </div>
 
-            <div className="flex justify-between items-center h-[6%]">
+            <div className="flex justify-between items-center h-[5%]">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -206,7 +209,7 @@ const BranchManagement: React.FC = () => {
         <td className="border border-gray-300 p-1">{branch.phone}</td>
         <td className="border border-gray-300 p-1">{branch.email}</td>
         <td className="h-full justify-center items-center p-0">
-          {/* 1 là mới , 0 là đang hoạt động */}
+          {/*     // 1 là OFF, 0 là đang hoạt động*/}
           {branch.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
           ) : branch.status == 0 ? (
@@ -246,8 +249,8 @@ const BranchManagement: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="h-[6%] flex border-b border-slate-400">
+    <div className="w-full h-full overflow-hidden">
+      <div className="h-[6%] flex border-b border-slate-400 overflow-hidden">
         <SwitchSideBar title="Danh sách chi nhánh" className="font-bold text-lg" />
         <Breadcrumb />
       </div>

@@ -48,7 +48,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
   return (
     <div
-      className=" m-1 text-white rounded-lg relative flex  flex-col"
+      className="text-white m-1 rounded-lg relative h-[89vh] flex flex-col box-border"
       style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
     >
       <h2 className="text-2xl mb-4 text-center mt-3">Menu</h2>

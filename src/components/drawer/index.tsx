@@ -9,22 +9,27 @@ import {IServiceRequest} from '../../api/services/enum';
 import {createService} from '../../api/services';
 import LoadingSpinner from '../loading-spinner';
 import {toast} from 'react-toastify';
+import {IBrancheRequest} from '../../api/branch/interface';
+import {createBranch} from '../../api/branch';
+import {EFilterType} from '../filter/enum';
+import {IBranchChoose} from '../../pages/all-services';
 
 interface IDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   type: ETypeAdd;
+  dataChoose?: IBranchChoose[];
 }
 
-const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
+const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataChoose}) => {
   const [isLoadingAdd, setIsLoadingAdd] = useState(false);
   const [isFillAdd, setIsFillAdd] = useState({
     service: false,
-    customer: false,
+    branch: false,
   });
   const [isFillReset, setIsFillReset] = useState({
     service: false,
-    customer: false,
+    branch: false,
   });
 
   const [dataServiceAdd, setDataServiceAdd] = useState<IServiceRequest>({
@@ -37,6 +42,15 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
     service_package_id: 0,
   });
 
+  const [dataBranchAdd, setDataBranchAdd] = useState<IBrancheRequest>({
+    name: '',
+    status: -1,
+    address: '',
+    phone: '',
+    email: '',
+  });
+
+  // dịch vụ
   useEffect(() => {
     if (
       dataServiceAdd.name != '' &&
@@ -69,13 +83,42 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
     }
   }, [dataServiceAdd]);
 
+  //chi nhánh
+  useEffect(() => {
+    if (
+      dataBranchAdd.name != '' &&
+      dataBranchAdd.status != -1 &&
+      dataBranchAdd.address != '' &&
+      dataBranchAdd.phone != '' &&
+      dataBranchAdd.email != ''
+    ) {
+      setIsFillAdd((prevState) => ({...prevState, branch: true}));
+    } else {
+      setIsFillAdd((prevState) => ({...prevState, branch: false}));
+    }
+  }, [dataBranchAdd]);
+
+  useEffect(() => {
+    if (
+      dataBranchAdd.name != '' ||
+      dataBranchAdd.status != -1 ||
+      dataBranchAdd.address != '' ||
+      dataBranchAdd.phone != '' ||
+      dataBranchAdd.email != ''
+    ) {
+      setIsFillReset((prevState) => ({...prevState, branch: true}));
+    } else {
+      setIsFillReset((prevState) => ({...prevState, branch: false}));
+    }
+  }, [dataBranchAdd]);
+
   const handleAddService = async () => {
     setIsLoadingAdd(true);
     const res = await createService(dataServiceAdd);
     if (res?.statusCode === 200) {
       console.log('res', res.data);
       toast.success('Thêm dịch vụ thành công!', {autoClose: 1000});
-      handleResetService();
+      handleReset(ETypeAdd.SERVICE);
       setIsLoadingAdd(false);
       onClose();
     } else {
@@ -86,16 +129,39 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
     }
   };
 
-  const handleResetService = () => {
-    setDataServiceAdd({
-      name: '',
-      description: '',
-      price: 0,
-      status: 0,
-      branch_id: 0,
-      total_sessions: 0,
-      service_package_id: 0,
-    });
+  const handleAddBranch = async () => {
+    console.log('dataBranchAdd', dataBranchAdd);
+
+    setIsLoadingAdd(true);
+    const res = await createBranch(dataBranchAdd);
+    if (res?.statusCode === 200) {
+      console.log('res', res.data);
+      toast.success('Thêm nrahc thành công!', {autoClose: 1000});
+      handleReset(ETypeAdd.BRANCH);
+      setIsLoadingAdd(false);
+      onClose();
+    } else {
+      toast.success('Thêm dịch vụ lỗi!', {autoClose: 1000});
+
+      setIsLoadingAdd(false);
+      console.log('res', res);
+    }
+  };
+
+  const handleReset = (type: ETypeAdd) => {
+    type === ETypeAdd.SERVICE
+      ? setDataServiceAdd({
+          name: '',
+          description: '',
+          price: 0,
+          status: 0,
+          branch_id: 0,
+          total_sessions: 0,
+          service_package_id: 0,
+        })
+      : type === ETypeAdd.BRANCH
+      ? setDataBranchAdd({name: '', status: -1, address: '', phone: '', email: ''})
+      : '';
   };
 
   return (
@@ -119,7 +185,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
               </button>
             </div>
             <div className="drawer-content">
-              <div className="bg-slate-200 flex w-full h-full flex-col rounded-md border border-black px-3">
+              <div className="bg-slate-100 flex w-full h-full flex-col rounded-md border border-black px-3">
                 {type === ETypeAdd.SERVICE && (
                   <>
                     <div className="flex w-full mt-8">
@@ -153,9 +219,13 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
                           }}
                         >
                           <option value="">---Chọn chi nhánh--- </option>
-                          <option value="1">Chi nhánh 1</option>
-                          <option value="2">Chi nhánh 2</option>
-                          <option value="3">Chi nhánh 3</option>
+                          {dataChoose?.map((item, index) => {
+                            return (
+                              <option key={index} value={item.id}>
+                                {item.value}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                     </div>
@@ -240,10 +310,10 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
                           value={dataServiceAdd.description ?? ''}
                           className="flex w-[90%] h-28 resize-none focus:outline-none rounded-xl p-2 m-1"
                           placeholder="Nhập mô tả chi tiết dịch vụ..."
-                          onChange={(e) => {
+                          changeText={(text) => {
                             setDataServiceAdd((prevState) => ({
                               ...prevState,
-                              description: e.target.value,
+                              description: text,
                             }));
                           }}
                         />
@@ -254,27 +324,6 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
                         <button className="bg-slate-500 text-white px-3 py-1 mt-1 rounded-md">Thêm ảnh</button>
                         <p className="text-sm italic">*JPG, PNG</p>
                       </div>
-                    </div>
-
-                    <div className="flex w-full mt-14 mb-8 justify-center">
-                      <button
-                        disabled={!isFillReset.service || isLoadingAdd}
-                        className={`px-3 py-1 ${
-                          !isFillReset.service || isLoadingAdd ? 'bg-slate-400' : 'bg-red-500 '
-                        } text-white shadow-2xl rounded-md mr-3`}
-                        onClick={() => handleResetService()}
-                      >
-                        Reset
-                      </button>
-                      <button
-                        disabled={!isFillAdd.service || isLoadingAdd}
-                        className={`px-3 py-1 ${
-                          !isFillAdd.service || isLoadingAdd ? 'bg-slate-400' : 'bg-blue-500 '
-                        } text-white shadow-2xl rounded-md`}
-                        onClick={() => handleAddService()}
-                      >
-                        {isLoadingAdd ? <LoadingSpinner size={25} /> : 'Thêm'}
-                      </button>
                     </div>
                   </>
                 )}
@@ -325,43 +374,177 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type}) => {
                   <>
                     <div className="flex w-full mt-8">
                       <div className="w-[50%] ">
-                        <label className="font-semibold ml-1">Tên dịch vụ</label>
+                        <label className="font-semibold ml-1">Tên chi nhánh</label>
                         <TextInput
+                          title="Tên chi nhánh"
                           disabled={isLoadingAdd}
-                          value={dataServiceAdd.name ?? ''}
-                          changeText={(e) => {
-                            setDataServiceAdd((prevState) => ({
+                          value={dataBranchAdd.name ?? ''}
+                          changeText={(text) => {
+                            setDataBranchAdd((prevState) => ({
                               ...prevState,
-                              name: e,
+                              name: text,
                             }));
                           }}
                           className="w-[90%] h-8"
-                          placeholder="Nhập tên dịch vụ"
+                          placeholder="Nhập tên chi nhánh"
                         />
                       </div>
+
                       <div className="w-[50%] ">
-                        <label className="font-semibold ml-1">Chi nhánh</label>
-                        {/* <TextInput className="w-[90%] h-8" placeholder="Chọn chi nhánh" /> */}
+                        <label className="font-semibold ml-1">Trạng thái</label>
                         <select
                           className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
                           disabled={isLoadingAdd}
-                          value={dataServiceAdd.branch_id ?? ''}
+                          value={dataBranchAdd.status ?? ''}
                           onChange={(e) => {
-                            setDataServiceAdd((prevState) => ({
+                            setDataBranchAdd((prevState) => ({
                               ...prevState,
-                              branch_id: Number(e.target.value),
+                              status: Number(e.target.value),
                             }));
                           }}
                         >
-                          <option value="">---Chọn chi nhánh--- </option>
-                          <option value="1">Chi nhánh 1</option>
-                          <option value="2">Chi nhánh 2</option>
-                          <option value="3">Chi nhánh 3</option>
+                          <option value="">---Chọn trạng thái--- </option>
+                          <option value="0">Đang hoạt động</option>
+                          <option value="1">OFF</option>
                         </select>
                       </div>
                     </div>
+
+                    {/* dòng 2 */}
+                    <div className="flex w-full mt-8">
+                      <div className="w-[50%] ">
+                        <label className="font-semibold ml-1">Số điện thoại</label>
+                        <TextInput
+                          title="Nhập số điện thoại"
+                          disabled={isLoadingAdd}
+                          value={dataBranchAdd.phone ?? ''}
+                          changeText={(text) => {
+                            setDataBranchAdd((prevState) => ({
+                              ...prevState,
+                              phone: text,
+                            }));
+                          }}
+                          className="w-[90%] h-8"
+                          placeholder="Nhập số điện thoại"
+                        />
+                      </div>
+
+                      <div className="w-[50%] ">
+                        <label className="font-semibold ml-1">Email</label>
+                        <TextInput
+                          title="Nhập email"
+                          disabled={isLoadingAdd}
+                          value={dataBranchAdd.email ?? ''}
+                          changeText={(text) => {
+                            setDataBranchAdd((prevState) => ({
+                              ...prevState,
+                              email: text,
+                            }));
+                          }}
+                          className="w-[90%] h-8"
+                          placeholder="Nhập email"
+                        />
+                      </div>
+                    </div>
+
+                    {/* dòng 3 */}
+                    <div className="flex w-full mt-8">
+                      <div className="w-[100%]">
+                        <label className="font-semibold ml-1">Địa chỉ</label>
+                        <TextArea
+                          title="Nhập địa chỉ"
+                          disabled={isLoadingAdd}
+                          value={dataBranchAdd.address ?? ''}
+                          changeText={(text) => {
+                            setDataBranchAdd((prevState) => ({
+                              ...prevState,
+                              address: text,
+                            }));
+                          }}
+                          className="w-[95%] h-20 resize-none"
+                          placeholder="Nhập địa chỉ"
+                        />
+                      </div>
+                      {/* 
+                      <div className="w-[50%] ">
+                        <label className="font-semibold ml-1">Email</label>
+                        <TextInput
+                          title="Nhập email"
+                          disabled={isLoadingAdd}
+                          value={dataBranchAdd.email ?? ''}
+                          changeText={(text) => {
+                            setDataBranchAdd((prevState) => ({
+                              ...prevState,
+                              email: text,
+                            }));
+                          }}
+                          className="w-[90%] h-8"
+                          placeholder="Nhập email"
+                        />
+                      </div> */}
+                    </div>
                   </>
                 )}
+
+                <div className="flex w-full mt-14 mb-8 justify-center">
+                  <button
+                    disabled={
+                      type == ETypeAdd.BRANCH
+                        ? !isFillReset.branch || isLoadingAdd
+                        : type == ETypeAdd.SERVICE
+                        ? !isFillReset.service || isLoadingAdd
+                        : false
+                    }
+                    className={`px-3 py-1 ${
+                      (
+                        type == ETypeAdd.BRANCH
+                          ? !isFillReset.branch || isLoadingAdd
+                          : type == ETypeAdd.SERVICE
+                          ? !isFillReset.service || isLoadingAdd
+                          : false
+                      )
+                        ? 'bg-slate-400'
+                        : 'bg-red-500 '
+                    } text-white shadow-2xl rounded-md mr-3`}
+                    onClick={() =>
+                      handleReset(
+                        type == ETypeAdd.BRANCH
+                          ? ETypeAdd.BRANCH
+                          : type == ETypeAdd.SERVICE
+                          ? ETypeAdd.SERVICE
+                          : ETypeAdd.APPOINTMENT
+                      )
+                    }
+                  >
+                    Reset
+                  </button>
+
+                  <button
+                    disabled={
+                      type == ETypeAdd.BRANCH
+                        ? !isFillAdd.branch || isLoadingAdd
+                        : type == ETypeAdd.SERVICE
+                        ? !isFillAdd.service || isLoadingAdd
+                        : false
+                    }
+                    className={`px-3 py-1 ${
+                      (
+                        type == ETypeAdd.BRANCH
+                          ? !isFillAdd.branch || isLoadingAdd
+                          : type == ETypeAdd.SERVICE
+                          ? !isFillAdd.service || isLoadingAdd
+                          : false
+                      )
+                        ? 'bg-slate-400'
+                        : 'bg-blue-500 '
+                    } text-white shadow-2xl rounded-md`}
+                    onClick={() => {
+                      type == ETypeAdd.BRANCH ? handleAddBranch() : type == ETypeAdd.SERVICE ? handleAddService() : '';
+                    }}
+                  >
+                    {isLoadingAdd ? <LoadingSpinner size={25} /> : 'Thêm'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -200,8 +200,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
-                  {/* // 1 là off, 0 là  đang hoạt động */}
-                  {/* <TextInput disabled={isEdit} type="text" title="Trạng thái" placeholder={'Trạng thái'} className="h-8" /> */}
+                  {/*     // 1 là OFF, 0 là đang hoạt động*/}
                   <select
                     title="Trạng thái"
                     className={`${
@@ -319,17 +318,22 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
+                  {/* // 1 là mới, 0 là đã xác nhận */}
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataAppointment?.status == 1 ? 'bg-yellow-200' : 'bg-green-400'
+                      dataAppointment?.status == 1
+                        ? 'bg-yellow-200'
+                        : dataAppointment?.status == 0
+                        ? 'bg-green-400'
+                        : 'bg-red-400'
                     } rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataAppointment?.status}
                     onChange={(event) => setDataAppointment({...dataAppointment, status: Number(event.target.value)})}
                     disabled={!isEdit}
                   >
                     <option value="1">Mới</option>
-                    <option value="2">Đã xác nhận</option>
+                    <option value="0">Đã xác nhận</option>
                   </select>
                 </div>
               </div>
@@ -486,18 +490,18 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
-                  {/* // 1 là đang hoạt động, 0 là tạm dừng*/}
+                  {/*     // 1 Tạm dừng, 0 là Đang hoạt động*/}
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataService?.status == 1 ? 'bg-green-400' : 'bg-yellow-200'
+                      dataService?.status == 0 ? 'bg-green-400' : dataService?.status == 1 ? 'bg-yellow-200' : ''
                     } rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataService?.status ?? 0}
                     onChange={(event) => setDataService({...dataService, status: Number(event.target.value)})}
                     disabled={!isEdit}
                   >
-                    <option value="0">Tạm dừng</option>
-                    <option value="1">Đang hoạt động</option>
+                    <option value="1">Tạm dừng</option>
+                    <option value="0">Đang hoạt động</option>
                   </select>
                 </div>
               </div>

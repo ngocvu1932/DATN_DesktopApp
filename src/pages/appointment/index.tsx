@@ -31,26 +31,13 @@ const Appointment: React.FC = () => {
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
   const [selectedAppointments, setSelectedAppointments] = useState<IAppointment[]>([]);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const showToast = (message: string, type: string) => {
-    switch (type) {
-      case 'error':
-        toast.error(message, {autoClose: 2000});
-        break;
-      case 'success':
-        toast.success(message, {autoClose: 2000});
-        break;
-      case 'warning':
-        toast.warning(message, {autoClose: 2000});
-        break;
-      default:
-        break;
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoadingPage(isLoading);
     }
-  };
-
-  const toggleDrawer = () => {
-    setIsOpenDrawer(!isOpenDrawer);
-  };
+  }, [isLoading]);
 
   useEffect(() => {
     fetchAppointments();
@@ -72,6 +59,26 @@ const Appointment: React.FC = () => {
     }
   };
 
+  const showToast = (message: string, type: string) => {
+    switch (type) {
+      case 'error':
+        toast.error(message, {autoClose: 2000});
+        break;
+      case 'success':
+        toast.success(message, {autoClose: 2000});
+        break;
+      case 'warning':
+        toast.warning(message, {autoClose: 2000});
+        break;
+      default:
+        break;
+    }
+  };
+
+  const toggleDrawer = () => {
+    setIsOpenDrawer(!isOpenDrawer);
+  };
+
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -91,17 +98,6 @@ const Appointment: React.FC = () => {
     }));
   };
 
-  const handleSave = async (appointmentId: number, status: number, index: number) => {
-    const res = await updateStatusAppointment(appointmentId, {status});
-    if (res?.statusCode === 200) {
-      fetchAppointments();
-      toast.success('Cập nhật thành công!', {autoClose: 1000});
-      handleToggleEdit(index);
-    } else {
-      toast.error('Cập nhật thất bại!', {autoClose: 1000});
-    }
-  };
-
   const handleViewDetail = (appointment: any) => {
     dispatch(
       setInfoLayout({
@@ -116,7 +112,7 @@ const Appointment: React.FC = () => {
     switch (layoutInfo?.layout) {
       case ELayoutInfo.Home:
         return (
-          <>
+          <div className="h-full w-full relative">
             <div className="h-[13%] flex w-full">
               <Filter
                 showToast={showToast}
@@ -127,10 +123,17 @@ const Appointment: React.FC = () => {
                 dataAction={selectedAppointments}
                 setDataAction={setSelectedAppointments}
                 reloadData={() => fetchAppointments()}
+                setLoader={setIsLoading}
               />
             </div>
 
-            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400">
+            {isLoadingPage && (
+              <div className="absolute inset-0 bg-gray-100 top-[13%] h-[75%] z-20 border border-slate-400">
+                <LoadingSpinner size={60} />
+              </div>
+            )}
+
+            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400 box-border">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -180,7 +183,7 @@ const Appointment: React.FC = () => {
                 previousPage={handlePreviousPage}
               />
             </div>
-          </>
+          </div>
         );
       case ELayoutInfo.Details:
         return <InfoDetail type={ETypeInfoDetail.APPOINTMENT} />;
@@ -242,7 +245,7 @@ const Appointment: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="h-[6%] flex border-b border-slate-400">
+      <div className="h-[6%] flex border-b border-slate-400 box-border">
         <SwitchSideBar title="Danh sách lịch hẹn" className="font-bold text-lg" />
         <Breadcrumb />
       </div>

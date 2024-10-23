@@ -19,6 +19,13 @@ import {ELayoutInfo} from '../../constants/layout';
 import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import InfoDetail from '../../components/info-detail';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
+import {getAllBranch, getAllBranchNoLimit} from '../../api/branch';
+import {IBranch} from '../../models/branch';
+
+export interface IBranchChoose {
+  id: number;
+  value: string;
+}
 
 const AllServices: React.FC = () => {
   const [services, setAllservices] = useState<IService[]>([]);
@@ -32,15 +39,49 @@ const AllServices: React.FC = () => {
   const dispatch = useDispatch();
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutService);
   const [selectedServices, setSelectedServices] = useState<IService[]>([]);
-
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const [branchs, setBranchs] = useState<IBranchChoose[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchAllServices();
-  }, [currentPage, isOpenDrawer, layoutInfo]);
+  }, [currentPage, layoutInfo]);
+
+  useEffect(() => {
+    if (isOpenDrawer == false) {
+      fetchAllServices();
+    }
+  }, [isOpenDrawer]);
+
+  useEffect(() => {
+    fetchBranchs();
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoadingPage(isLoading);
+    }
+  }, [isLoading]);
+
+  const fetchBranchs = async () => {
+    try {
+      const response = await getAllBranchNoLimit();
+      if (response?.statusCode === 200) {
+        const filteredData = response?.data.map((branch: IBranch) => {
+          return {id: branch.id, value: branch.name};
+        });
+        console.log('branchs:', filteredData);
+
+        setBranchs(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
 
   const fetchAllServices = async () => {
     try {
+      setIsLoadingPage(true);
       const response = await allServices(currentPage, limit);
       if (response?.statusCode === 200) {
         setAllservices(response?.data);
@@ -118,6 +159,7 @@ const AllServices: React.FC = () => {
                 dataAction={selectedServices}
                 setDataAction={setSelectedServices}
                 reloadData={() => fetchAllServices()}
+                setLoader={setIsLoading}
               />
             </div>
             <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400">
@@ -203,12 +245,15 @@ const AllServices: React.FC = () => {
         <td className="border border-gray-300 p-1">{new Date(service.updated_at).toLocaleDateString()}</td>
         <td className="border border-gray-300 p-1">{service.price}</td>
         <td className="h-full justify-center items-center p-0 max-w-[110px]">
-          {service.status !== 1 ? (
+          {/* // 1 Tạm dừng, 0 là Đang hoạt động */}
+          {service.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
-          ) : (
+          ) : service.status == 0 ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center justify-center ">
               Đang hoạt động
             </span>
+          ) : (
+            'error'
           )}
         </td>
         <td className="border border-gray-300 py-1 px-2 max-w-[350px]">{service.description}</td>
@@ -228,7 +273,7 @@ const AllServices: React.FC = () => {
 
       {renderContent()}
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />
+      <Drawer dataChoose={branchs} isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import widthSlice from './slices/sideBarWidthSlice';
 import loadingSlice from './slices/loadingSlice';
 import authSlice from './slices/authSlice';
 import layoutInfoSlice from './slices/layoutInfoSlice';
+import reLoginSlice from './slices/reLoginSlice';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     width: widthSlice.reducer,
     auth: authSlice.reducer,
     layoutInfo: layoutInfoSlice.reducer,
+    reLogin: reLoginSlice.reducer,
   },
 });
 
