@@ -58,6 +58,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
           layoutBranch: {layout: ELayoutInfo.Details, data: res?.data},
           layoutAppointment: {layout: ELayoutInfo.Home, data: null},
           layoutService: {layout: ELayoutInfo.Home, data: null},
+          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
         })
       );
       toast.success('Cập nhật thành công!', {autoClose: 2000});
@@ -84,6 +85,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
           layoutBranch: {layout: ELayoutInfo.Home, data: null},
           layoutAppointment: {layout: ELayoutInfo.Details, data: res?.data},
           layoutService: {layout: ELayoutInfo.Home, data: null},
+          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
         })
       );
       toast.success('Cập nhật thành công!', {autoClose: 2000});
@@ -113,6 +115,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
           layoutBranch: {layout: ELayoutInfo.Home, data: null},
           layoutAppointment: {layout: ELayoutInfo.Home, data: null},
           layoutService: {layout: ELayoutInfo.Details, data: res?.data},
+          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
         })
       );
       toast.success('Cập nhật thành công!', {autoClose: 2000});
@@ -132,6 +135,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 layoutBranch: {layout: ELayoutInfo.Home, data: null},
                 layoutAppointment: {layout: ELayoutInfo.Home, data: null},
                 layoutService: {layout: ELayoutInfo.Home, data: null},
+                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
               })
             ),
               setIsEdit(false);

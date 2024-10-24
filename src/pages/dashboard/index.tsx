@@ -20,6 +20,7 @@ import Bills from '../bills';
 import AllServices from '../all-services';
 import SessionsTracking from '../sessions-tracking';
 import LoadingOverlay from '../../components/loading-overlay';
+import Customer from '../customer';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -99,6 +100,8 @@ const Dashboard: React.FunctionComponent = () => {
         return <AllServices />;
       case ELayout.SessionsTracking:
         return <SessionsTracking />;
+      case ELayout.AllCustomer:
+        return <Customer />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }

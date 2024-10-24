@@ -98,7 +98,7 @@ const Login: React.FC = () => {
           <div className="flex justify-center items-center h-full">
             <div className=" flex bg-white px-3 py-1.5 rounded-md flex-col">
               <div className="relative flex">
-                <p className="text-black text-base whitespace-nowrap">Đang lấy thông tin tài khoản...</p>
+                <p className="text-black text-base whitespace-nowrap">Lấy thông tin tài khoản</p>
               </div>
 
               <div className="flex py-4">

@@ -17,6 +17,11 @@ import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import InfoDetail from '../../components/info-detail';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import '../../global.css';
+import {IBranch} from '../../models/branch';
+import {getAllBranchNoLimit} from '../../api/branch';
+import {allServicesNoLimit} from '../../api/services';
+import {IService} from '../../models/service';
+import {IDataChoose} from '../all-services';
 
 const Appointment: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
@@ -32,6 +37,8 @@ const Appointment: React.FC = () => {
   const [selectedAppointments, setSelectedAppointments] = useState<IAppointment[]>([]);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [branchs, setBranchs] = useState<IDataChoose[]>([]);
+  const [services, setServices] = useState<IDataChoose[]>([]);
 
   useEffect(() => {
     if (isLoading) {
@@ -42,6 +49,45 @@ const Appointment: React.FC = () => {
   useEffect(() => {
     fetchAppointments();
   }, [currentPage, layoutInfo]);
+
+  useEffect(() => {
+    if (isOpenDrawer == false) {
+      fetchAppointments();
+    }
+  }, [isOpenDrawer]);
+
+  useEffect(() => {
+    fetchBranchs();
+    fetchServices();
+  }, []);
+
+  const fetchBranchs = async () => {
+    try {
+      const response = await getAllBranchNoLimit();
+      if (response?.statusCode === 200) {
+        const filteredData = response?.data.map((branch: IBranch) => {
+          return {id: branch.id, value: branch.name};
+        });
+        setBranchs(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching branchs:', error);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const response = await allServicesNoLimit();
+      if (response?.statusCode === 200) {
+        const filteredData = response?.data.map((service: IService) => {
+          return {id: service.id, value: service.name};
+        });
+        setServices(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -104,6 +150,7 @@ const Appointment: React.FC = () => {
         layoutBranch: {layout: ELayoutInfo.Home, data: null},
         layoutAppointment: {layout: ELayoutInfo.Details, data: appointment},
         layoutService: {layout: ELayoutInfo.Home, data: null},
+        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
@@ -126,12 +173,6 @@ const Appointment: React.FC = () => {
                 setLoader={setIsLoading}
               />
             </div>
-
-            {isLoadingPage && (
-              <div className="absolute inset-0 bg-gray-100 top-[13%] h-[75%] z-20 border border-slate-400">
-                <LoadingSpinner size={60} />
-              </div>
-            )}
 
             <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400 box-border">
               {isLoadingPage ? (
@@ -228,6 +269,8 @@ const Appointment: React.FC = () => {
         <td className="border border-gray-300 p-1">{getFormattedTime(appointment.time)}</td>
         <td className="border border-gray-300 p-1">{appointment.employee_id ? appointment.employee_id : ''}</td>
         <td className="h-full justify-center items-center p-0">
+          {/* // 1 là mới, 0 là đã xác nhận */}
+
           {appointment.status === 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Mới</span>
           ) : (
@@ -252,7 +295,13 @@ const Appointment: React.FC = () => {
 
       {renderContent()}
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.APPOINTMENT} />
+      <Drawer
+        dataBranchsChoose={branchs}
+        dataServicesChoose={services}
+        isOpen={isOpenDrawer}
+        onClose={toggleDrawer}
+        type={ETypeAdd.APPOINTMENT}
+      />
     </div>
   );
 };

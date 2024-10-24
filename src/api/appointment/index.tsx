@@ -22,7 +22,7 @@ export const allAppointment = async (page: number, limit: number): Promise<Custo
 
 export const createAppointment = async (data: any): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.post(`/api/v1/appointments/`, {data});
+    const res = await axios.post(`/api/v1/appointments/`, data);
     return res;
   } catch (error) {
     console.log(error);

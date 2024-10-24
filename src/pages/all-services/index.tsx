@@ -22,7 +22,7 @@ import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import {getAllBranch, getAllBranchNoLimit} from '../../api/branch';
 import {IBranch} from '../../models/branch';
 
-export interface IBranchChoose {
+export interface IDataChoose {
   id: number;
   value: string;
 }
@@ -40,7 +40,7 @@ const AllServices: React.FC = () => {
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutService);
   const [selectedServices, setSelectedServices] = useState<IService[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const [branchs, setBranchs] = useState<IBranchChoose[]>([]);
+  const [branchs, setBranchs] = useState<IDataChoose[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -140,6 +140,7 @@ const AllServices: React.FC = () => {
         layoutBranch: {layout: ELayoutInfo.Home, data: null},
         layoutAppointment: {layout: ELayoutInfo.Home, data: null},
         layoutService: {layout: ELayoutInfo.Details, data: service},
+        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
@@ -273,7 +274,7 @@ const AllServices: React.FC = () => {
 
       {renderContent()}
 
-      <Drawer dataChoose={branchs} isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />
+      <Drawer dataBranchsChoose={branchs} isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.SERVICE} />
     </div>
   );
 };

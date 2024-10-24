@@ -173,11 +173,11 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AddCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AllCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
               toggleMenu('menu3');
-              dispatch(setLayout(ELayout.AddCustomer));
+              dispatch(setLayout(ELayout.AllCustomer));
             }}
           >
             <div className="flex items-center">
@@ -197,11 +197,11 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.AddCustomer ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.AllCustomer ? 'bg-gray-400 border border-white' : ''
                 }`}
-                onClick={() => dispatch(setLayout(ELayout.AddCustomer))}
+                onClick={() => dispatch(setLayout(ELayout.AllCustomer))}
               >
-                Thêm khách hàng
+                Tất cả khách hàng
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 1.2
@@ -308,6 +308,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 layoutBranch: {layout: ELayoutInfo.Home, data: null},
                 layoutAppointment: {layout: ELayoutInfo.Home, data: null},
                 layoutService: {layout: ELayoutInfo.Home, data: null},
+                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
               })
             );
           }}

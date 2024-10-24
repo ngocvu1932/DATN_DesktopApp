@@ -18,7 +18,7 @@ const Home: React.FC = () => {
         <Breadcrumb />
       </div>
 
-      {/* <div className="flex flex-grow h-[94%] scrollbar-thin flex-col overflow-y-auto">
+      <div className="flex flex-grow h-[94%] scrollbar-thin flex-col overflow-y-auto">
         <div className="flex w-full min-h-[300px] mt-5">
           <div className="flex w-1/2 p-2">
             <div className="flex w-full justify-center h-full bg-white p-3 rounded-xl shadow-md">
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

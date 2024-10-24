@@ -18,10 +18,12 @@ import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import Breadcrumb from '../../components/breadcrumb';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import '../../global.css';
+import {ICustomer} from '../../models/customer';
+import {allCustomer} from '../../api/customer';
 
-const BranchManagement: React.FC = () => {
-  const [branchs, setBranchs] = useState<IBranch[]>([]);
-  const [branchsTemp, setBranchsTemp] = useState<IBranch[]>([]);
+const Customer: React.FC = () => {
+  const [customers, setCustomers] = useState<ICustomer[]>([]);
+  const [customersTemp, setCustomersTemp] = useState<ICustomer[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit] = useState(12);
@@ -29,8 +31,8 @@ const BranchManagement: React.FC = () => {
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const dispatch = useDispatch();
-  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutBranch);
-  const [selectedBranches, setSelectedBranches] = useState<IBranch[]>([]);
+  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutCustomer);
+  const [selectedCustomers, setSelectedCustomers] = useState<ICustomer[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,12 +43,12 @@ const BranchManagement: React.FC = () => {
   }, [isLoading]);
 
   useEffect(() => {
-    fetchBranchs();
+    fetchCustomers();
   }, [currentPage, layoutInfo]);
 
   useEffect(() => {
     if (isOpenDrawer == false) {
-      fetchBranchs();
+      fetchCustomers();
     }
   }, [isOpenDrawer]);
 
@@ -70,13 +72,13 @@ const BranchManagement: React.FC = () => {
     setIsOpenDrawer(!isOpenDrawer);
   };
 
-  const fetchBranchs = async () => {
+  const fetchCustomers = async () => {
     try {
       setIsLoadingPage(true);
-      const response = await getAllBranch(currentPage, limit);
+      const response = await allCustomer(currentPage, limit);
       if (response?.statusCode === 200) {
-        setBranchs(response?.data);
-        setBranchsTemp(response?.data);
+        setCustomers(response?.data);
+        setCustomersTemp(response?.data);
         setTotalPages(response?.pagination?.totalPage ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
@@ -86,12 +88,12 @@ const BranchManagement: React.FC = () => {
     }
   };
 
-  const handleCheckboxChange = (branch: IBranch) => {
-    setSelectedBranches((prevSelected) => {
-      if (prevSelected.find((b) => b.id === branch.id)) {
-        return prevSelected.filter((b) => b.id !== branch.id);
+  const handleCheckboxChange = (customer: ICustomer) => {
+    setSelectedCustomers((prevSelected) => {
+      if (prevSelected.find((b) => b.id === customer.id)) {
+        return prevSelected.filter((b) => b.id !== customer.id);
       } else {
-        return [...prevSelected, branch];
+        return [...prevSelected, customer];
       }
     });
   };
@@ -110,14 +112,14 @@ const BranchManagement: React.FC = () => {
           <>
             <div className="h-[13%] flex w-full">
               <Filter
-                setDataFilter={setBranchsTemp}
-                dataFilter={branchs}
+                setDataFilter={setCustomersTemp}
+                dataFilter={customers}
                 toggleDrawer={toggleDrawer}
-                type={EFilterType.BRANCH}
-                dataAction={selectedBranches}
+                type={EFilterType.CUSTOMER}
+                dataAction={selectedCustomers}
                 showToast={showToast}
-                reloadData={() => fetchBranchs()}
-                setDataAction={setSelectedBranches}
+                reloadData={() => fetchCustomers()}
+                setDataAction={setSelectedCustomers}
                 setLoader={setIsLoading}
               />
             </div>
@@ -133,26 +135,27 @@ const BranchManagement: React.FC = () => {
                     <tr>
                       <th></th>
                       <th className="border border-gray-300 p-1">ID</th>
-                      <th className="border border-gray-300 p-1">Tên chi nhánh</th>
-                      <th className="border border-gray-300 p-1">Địa chỉ</th>
+                      <th className="border border-gray-300 p-1">Tên khách hàng</th>
                       <th className="border border-gray-300 p-1">Số điện thoại</th>
                       <th className="border border-gray-300 p-1">Email</th>
+                      <th className="border border-gray-300 p-1">Giới tính</th>
+                      <th className="border border-gray-300 p-1">Điểm</th>
                       <th className="border border-gray-300 p-1">Trạng thái</th>
                     </tr>
                   </thead>
                   <tbody className="overflow-y-auto">
-                    {branchsTemp.map((branch, index) => (
+                    {customersTemp.map((customer, index) => (
                       <tr
                         onClick={() => {
-                          handleViewDetail(branch);
-                          setSelectedBranches([]);
+                          handleViewDetail(customer);
+                          setSelectedCustomers([]);
                         }}
-                        key={branch.id}
+                        key={customer.id}
                         className={`${
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
                         } border-b cursor-pointer hover:bg-slate-200 border-gray-300`}
                       >
-                        {renderBranch(branch, index)}
+                        {renderCustomer(customer, index)}
                       </tr>
                     ))}
                   </tbody>
@@ -172,20 +175,11 @@ const BranchManagement: React.FC = () => {
           </>
         );
       case ELayoutInfo.Details:
-        return <InfoDetail type={ETypeInfoDetail.BRANCH} />;
+        return <InfoDetail type={ETypeInfoDetail.CUSTOMER} />;
     }
   };
 
-  const renderBranch = (branch: IBranch, index: number) => {
-    const statuses = {
-      appointmentId: branch.id,
-      status: branch.status === 1 ? 1 : 2,
-    };
-
-    const handleChangeStatus = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      statuses.status = Number(event.target.value);
-    };
-
+  const renderCustomer = (customer: ICustomer, index: number) => {
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -193,26 +187,35 @@ const BranchManagement: React.FC = () => {
             <input
               type="checkbox"
               className="h-5 w-5"
-              checked={selectedBranches.some((b) => b.id === branch.id)}
-              onChange={() => handleCheckboxChange(branch)}
+              checked={selectedCustomers.some((b) => b.id === customer.id)}
+              onChange={() => handleCheckboxChange(customer)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold">{branch.id}</td>
-        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${branch.name}`}>
-          {branch.name}
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.id}`}>
+          {customer.id}
         </td>
-        <td className="border border-gray-300 p-1" title={`Address: ${branch.address}`}>
-          {branch.address}
+        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${customer.name}`}>
+          {customer.name}
         </td>
-        <td className="border border-gray-300 p-1">{branch.phone}</td>
-        <td className="border border-gray-300 p-1">{branch.email}</td>
+        <td className="border border-gray-300 p-1" title={`Số điện thoại: ${customer.phone}`}>
+          {customer.phone}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Email: ${customer.email}`}>
+          {customer.email}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Giới tính: ${customer.gender}`}>
+          {customer.gender}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyalty_points}`}>
+          {customer.loyalty_points}
+        </td>
         <td className="h-full justify-center items-center p-0">
           {/*     // 1 là OFF, 0 là đang hoạt động*/}
-          {branch.status == 1 ? (
+          {customer.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : branch.status == 0 ? (
+          ) : customer.status == 0 ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
           ) : (
             <>Error</>
@@ -222,13 +225,13 @@ const BranchManagement: React.FC = () => {
     );
   };
 
-  const handleViewDetail = (branch: any) => {
+  const handleViewDetail = (customer: any) => {
     dispatch(
       setInfoLayout({
-        layoutBranch: {layout: ELayoutInfo.Details, data: branch},
+        layoutBranch: {layout: ELayoutInfo.Home, data: null},
         layoutAppointment: {layout: ELayoutInfo.Home, data: null},
         layoutService: {layout: ELayoutInfo.Home, data: null},
-        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
+        layoutCustomer: {layout: ELayoutInfo.Details, data: customer},
       })
     );
   };
@@ -252,15 +255,15 @@ const BranchManagement: React.FC = () => {
   return (
     <div className="w-full h-full overflow-hidden">
       <div className="h-[6%] flex border-b border-slate-400 overflow-hidden">
-        <SwitchSideBar title="Danh sách chi nhánh" className="font-bold text-lg" />
+        <SwitchSideBar title="Danh sách khách hàng" className="font-bold text-lg" />
         <Breadcrumb />
       </div>
 
       {renderContent()}
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.BRANCH} />
+      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.CUSTOMER} />
     </div>
   );
 };
 
-export default BranchManagement;
+export default Customer;

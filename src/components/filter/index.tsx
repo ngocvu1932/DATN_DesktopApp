@@ -57,6 +57,9 @@ const Filter: React.FC<IFilterProps> = ({
 
     price: '',
     description: '',
+
+    gender: '',
+    loyalty_points: '',
   });
 
   const [tempFilter, setTempFilter] = useState(filter);
@@ -110,6 +113,19 @@ const Filter: React.FC<IFilterProps> = ({
           (filter.price ? item.price.toLowerCase().includes(filter.price.toLowerCase()) : true) &&
           (filter.description
             ? item.description.toString().toLowerCase().includes(filter.description.toLowerCase())
+            : true)
+        );
+      });
+    } else if (type == EFilterType.CUSTOMER) {
+      filteredData = dataFilter.filter((item: any) => {
+        return (
+          (filter.id ? item.id === Number(filter.id) : true) &&
+          (filter.name ? item.name.toString().toLowerCase().includes(filter.name.toLowerCase()) : true) &&
+          (filter.phone ? item.phone.toLowerCase().includes(filter.phone.toLowerCase()) : true) &&
+          (filter.email ? item.email.toLowerCase().includes(filter.email.toLowerCase()) : true) &&
+          (filter.gender ? item.gender.toLowerCase().includes(filter.gender.toLowerCase()) : true) &&
+          (filter.loyalty_points
+            ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase())
             : true)
         );
       });
@@ -273,9 +289,6 @@ const Filter: React.FC<IFilterProps> = ({
 
   const handleDelete = async (type: EFilterType) => {
     const selectedData = dataAction.map((item: any) => ({id: item.id}));
-    console.log('selectedData', selectedData);
-    console.log('type', type);
-
     setLoader && setLoader(false);
     const promises = selectedData.map((element: IUpdateAppointmentStatus) => {
       if (type === EFilterType.SERVICE) {
@@ -292,8 +305,6 @@ const Filter: React.FC<IFilterProps> = ({
     try {
       const results = await Promise.all(promises);
       const allSuccess = results.every((res) => res?.statusCode === 200);
-
-      console.log('results', results);
 
       if (allSuccess) {
         setDataAction && setDataAction([]);
@@ -390,6 +401,29 @@ const Filter: React.FC<IFilterProps> = ({
               />
             </>
           )}
+
+          {type == EFilterType.CUSTOMER && (
+            <>
+              <TextInput
+                changeText={(text) => handleChange('name', text)}
+                className="h-8 w-44"
+                placeholder="Tên khách hàng"
+                title="Tên khách hàng"
+              />
+              <TextInput
+                changeText={(text) => handleChange('email', text)}
+                className="h-8 w-44"
+                placeholder="Email"
+                title="Email"
+              />
+              <TextInput
+                changeText={(text) => handleChange('phone', text)}
+                className="h-8 w-44"
+                placeholder="Số điện thoại"
+                title="Số điện thoại"
+              />
+            </>
+          )}
         </div>
         <div className="flex">
           {type == EFilterType.BRANCH && (
@@ -444,6 +478,29 @@ const Filter: React.FC<IFilterProps> = ({
                 className="h-8"
                 placeholder="Mô tả"
                 title="Mô tả"
+              />
+            </>
+          )}
+
+          {type == EFilterType.CUSTOMER && (
+            <>
+              <TextInput
+                changeText={(text) => handleChange('gender', text)}
+                className="h-8 w-44"
+                placeholder="Giới tính"
+                title="Giới tính"
+              />
+              <TextInput
+                changeText={(text) => handleChange('loyalty_points', text)}
+                className="h-8 w-44"
+                placeholder="Điểm"
+                title="Điểm"
+              />
+              <TextInput
+                changeText={(text) => handleChange('status', text)}
+                className="h-8 w-44"
+                placeholder="Trạng thái"
+                title="Trạng thái"
               />
             </>
           )}

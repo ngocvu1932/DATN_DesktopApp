@@ -1,4 +1,4 @@
-export interface IBrancheRequest {
+export interface IBranchRequest {
   name: string;
   status: number;
   address: string;
