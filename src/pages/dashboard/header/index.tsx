@@ -33,7 +33,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[10%] bg-slate-500 justify-between items-center rounded-lg mt-1 mx-1 px-4">
+    <div className="overflow-hidden flex h-[10vh] bg-slate-500 justify-between items-center rounded-lg mt-1 mx-1 px-4">
       <div className="font-bold text-2xl">LOGO</div>
       <div className="flex items-center">
         <div className="px-3" onClick={() => alert('ATin nhắnT')}>

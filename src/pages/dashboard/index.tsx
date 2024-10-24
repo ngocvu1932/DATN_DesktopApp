@@ -20,6 +20,7 @@ import Bills from '../bills';
 import AllServices from '../all-services';
 import SessionsTracking from '../sessions-tracking';
 import LoadingOverlay from '../../components/loading-overlay';
+import Customer from '../customer';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -99,6 +100,8 @@ const Dashboard: React.FunctionComponent = () => {
         return <AllServices />;
       case ELayout.SessionsTracking:
         return <SessionsTracking />;
+      case ELayout.AllCustomer:
+        return <Customer />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }
@@ -109,7 +112,7 @@ const Dashboard: React.FunctionComponent = () => {
       <ToastContainer />
       <Header />
 
-      <div className="flex w-full h-[90%]">
+      <div className="flex w-full h-[90vh]">
         <Sidebar width={width} />
 
         {width != 0 ? (
@@ -120,7 +123,7 @@ const Dashboard: React.FunctionComponent = () => {
           <></>
         )}
 
-        <div className="flex-1 bg-gray-100 w-full border border-slate-400 p-2 m-1 rounded-lg overflow-y-auto">
+        <div className="flex-1 bg-gray-100 w-full h-[89vh] border border-slate-400 p-2 m-1 rounded-lg overflow-hidden box-border">
           {renderContent()}
         </div>
       </div>

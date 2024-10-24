@@ -48,7 +48,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
   return (
     <div
-      className=" m-1 text-white rounded-lg relative flex  flex-col"
+      className="text-white m-1 rounded-lg relative h-[89vh] flex flex-col box-border"
       style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
     >
       <h2 className="text-2xl mb-4 text-center mt-3">Menu</h2>
@@ -173,11 +173,11 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AddCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AllCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
             }`}
             onClick={() => {
               toggleMenu('menu3');
-              dispatch(setLayout(ELayout.AddCustomer));
+              dispatch(setLayout(ELayout.AllCustomer));
             }}
           >
             <div className="flex items-center">
@@ -197,11 +197,11 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.AddCustomer ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.AllCustomer ? 'bg-gray-400 border border-white' : ''
                 }`}
-                onClick={() => dispatch(setLayout(ELayout.AddCustomer))}
+                onClick={() => dispatch(setLayout(ELayout.AllCustomer))}
               >
-                Thêm khách hàng
+                Tất cả khách hàng
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 1.2
@@ -308,6 +308,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 layoutBranch: {layout: ELayoutInfo.Home, data: null},
                 layoutAppointment: {layout: ELayoutInfo.Home, data: null},
                 layoutService: {layout: ELayoutInfo.Home, data: null},
+                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
               })
             );
           }}

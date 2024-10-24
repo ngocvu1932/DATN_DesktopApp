@@ -14,6 +14,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from 'chart.js';
 import {Chart, Bar, Line, Pie, Doughnut, Radar} from 'react-chartjs-2';
 
@@ -32,6 +33,8 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+ChartJS.register(Filler); // Đăng ký plugin Filler
 
 interface BarChartProps {
   type: ETypeChart;

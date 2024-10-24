@@ -14,6 +14,10 @@ interface ILayoutState {
     layout: ELayoutInfo;
     data?: any;
   };
+  layoutCustomer: {
+    layout: ELayoutInfo;
+    data?: any;
+  };
 }
 
 const initialState: ILayoutState = {
@@ -26,6 +30,10 @@ const initialState: ILayoutState = {
     data: null,
   },
   layoutService: {
+    layout: ELayoutInfo.Home,
+    data: null,
+  },
+  layoutCustomer: {
     layout: ELayoutInfo.Home,
     data: null,
   },
@@ -47,6 +55,10 @@ const layoutInfoSlice = createSlice({
       // cập nhật cho appointment
       state.layoutService.layout = action.payload.layoutService.layout;
       state.layoutService.data = action.payload.layoutService.data;
+
+      // cập nhật cho customer
+      state.layoutCustomer.layout = action.payload.layoutCustomer.layout;
+      state.layoutCustomer.data = action.payload.layoutCustomer.data;
     },
   },
 });

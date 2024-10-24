@@ -17,6 +17,11 @@ import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import InfoDetail from '../../components/info-detail';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import '../../global.css';
+import {IBranch} from '../../models/branch';
+import {getAllBranchNoLimit} from '../../api/branch';
+import {allServicesNoLimit} from '../../api/services';
+import {IService} from '../../models/service';
+import {IDataChoose} from '../all-services';
 
 const Appointment: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
@@ -31,6 +36,74 @@ const Appointment: React.FC = () => {
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
   const [selectedAppointments, setSelectedAppointments] = useState<IAppointment[]>([]);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  const [branchs, setBranchs] = useState<IDataChoose[]>([]);
+  const [services, setServices] = useState<IDataChoose[]>([]);
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoadingPage(isLoading);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [currentPage, layoutInfo]);
+
+  useEffect(() => {
+    if (isOpenDrawer == false) {
+      fetchAppointments();
+    }
+  }, [isOpenDrawer]);
+
+  useEffect(() => {
+    fetchBranchs();
+    fetchServices();
+  }, []);
+
+  const fetchBranchs = async () => {
+    try {
+      const response = await getAllBranchNoLimit();
+      if (response?.statusCode === 200) {
+        const filteredData = response?.data.map((branch: IBranch) => {
+          return {id: branch.id, value: branch.name};
+        });
+        setBranchs(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching branchs:', error);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const response = await allServicesNoLimit();
+      if (response?.statusCode === 200) {
+        const filteredData = response?.data.map((service: IService) => {
+          return {id: service.id, value: service.name};
+        });
+        setServices(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    try {
+      setIsLoadingPage(true);
+      const response = await allAppointment(currentPage, limit);
+      if (response?.statusCode === 200) {
+        setAppointments(response?.data);
+        setAppointmentsTemp(response?.data);
+        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setCurrentPageRes(response?.pagination?.page ?? 0);
+        setIsLoadingPage(false);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
 
   const showToast = (message: string, type: string) => {
     switch (type) {
@@ -52,26 +125,6 @@ const Appointment: React.FC = () => {
     setIsOpenDrawer(!isOpenDrawer);
   };
 
-  useEffect(() => {
-    fetchAppointments();
-  }, [currentPage, layoutInfo]);
-
-  const fetchAppointments = async () => {
-    try {
-      setIsLoadingPage(true);
-      const response = await allAppointment(currentPage, limit);
-      if (response?.statusCode === 200) {
-        setAppointments(response?.data);
-        setAppointmentsTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
-        setCurrentPageRes(response?.pagination?.page ?? 0);
-        setIsLoadingPage(false);
-      }
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    }
-  };
-
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -91,23 +144,13 @@ const Appointment: React.FC = () => {
     }));
   };
 
-  const handleSave = async (appointmentId: number, status: number, index: number) => {
-    const res = await updateStatusAppointment(appointmentId, {status});
-    if (res?.statusCode === 200) {
-      fetchAppointments();
-      toast.success('Cập nhật thành công!', {autoClose: 1000});
-      handleToggleEdit(index);
-    } else {
-      toast.error('Cập nhật thất bại!', {autoClose: 1000});
-    }
-  };
-
   const handleViewDetail = (appointment: any) => {
     dispatch(
       setInfoLayout({
         layoutBranch: {layout: ELayoutInfo.Home, data: null},
         layoutAppointment: {layout: ELayoutInfo.Details, data: appointment},
         layoutService: {layout: ELayoutInfo.Home, data: null},
+        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
@@ -116,7 +159,7 @@ const Appointment: React.FC = () => {
     switch (layoutInfo?.layout) {
       case ELayoutInfo.Home:
         return (
-          <>
+          <div className="h-full w-full relative">
             <div className="h-[13%] flex w-full">
               <Filter
                 showToast={showToast}
@@ -127,10 +170,11 @@ const Appointment: React.FC = () => {
                 dataAction={selectedAppointments}
                 setDataAction={setSelectedAppointments}
                 reloadData={() => fetchAppointments()}
+                setLoader={setIsLoading}
               />
             </div>
 
-            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400">
+            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400 box-border">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -180,7 +224,7 @@ const Appointment: React.FC = () => {
                 previousPage={handlePreviousPage}
               />
             </div>
-          </>
+          </div>
         );
       case ELayoutInfo.Details:
         return <InfoDetail type={ETypeInfoDetail.APPOINTMENT} />;
@@ -225,6 +269,8 @@ const Appointment: React.FC = () => {
         <td className="border border-gray-300 p-1">{getFormattedTime(appointment.time)}</td>
         <td className="border border-gray-300 p-1">{appointment.employee_id ? appointment.employee_id : ''}</td>
         <td className="h-full justify-center items-center p-0">
+          {/* // 1 là mới, 0 là đã xác nhận */}
+
           {appointment.status === 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Mới</span>
           ) : (
@@ -242,14 +288,20 @@ const Appointment: React.FC = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="h-[6%] flex border-b border-slate-400">
+      <div className="h-[6%] flex border-b border-slate-400 box-border">
         <SwitchSideBar title="Danh sách lịch hẹn" className="font-bold text-lg" />
         <Breadcrumb />
       </div>
 
       {renderContent()}
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.APPOINTMENT} />
+      <Drawer
+        dataBranchsChoose={branchs}
+        dataServicesChoose={services}
+        isOpen={isOpenDrawer}
+        onClose={toggleDrawer}
+        type={ETypeAdd.APPOINTMENT}
+      />
     </div>
   );
 };

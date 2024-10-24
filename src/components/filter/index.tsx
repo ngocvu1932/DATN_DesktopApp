@@ -5,8 +5,9 @@ import TextInput from '../text-input';
 import {EFilterType} from './enum';
 import useDebounce from '../../utils/useDebounce';
 import {ETypeAdd} from '../drawer/enum';
-import {updateStatusAppointment} from '../../api/appointment';
-import {updateStatusBranch} from '../../api/branch';
+import {deleteAppointment, updateStatusAppointment} from '../../api/appointment';
+import {deleteBranch, updateStatusBranch} from '../../api/branch';
+import {deleteService, updateStatusService} from '../../api/services';
 
 interface IFilterProps {
   clearFilter?: () => void;
@@ -18,6 +19,7 @@ interface IFilterProps {
   setDataAction?: (dataAction: any) => void;
   reloadData?: () => void;
   showToast?: (message: string, type: string) => void;
+  setLoader?: (isLoading: boolean) => void;
 }
 
 interface IUpdateAppointmentStatus {
@@ -35,6 +37,7 @@ const Filter: React.FC<IFilterProps> = ({
   setDataAction,
   reloadData,
   showToast,
+  setLoader,
 }) => {
   const [isShowActions, setIsShowActions] = useState(false);
   const [filter, setFilter] = useState({
@@ -54,6 +57,9 @@ const Filter: React.FC<IFilterProps> = ({
 
     price: '',
     description: '',
+
+    gender: '',
+    loyalty_points: '',
   });
 
   const [tempFilter, setTempFilter] = useState(filter);
@@ -110,6 +116,19 @@ const Filter: React.FC<IFilterProps> = ({
             : true)
         );
       });
+    } else if (type == EFilterType.CUSTOMER) {
+      filteredData = dataFilter.filter((item: any) => {
+        return (
+          (filter.id ? item.id === Number(filter.id) : true) &&
+          (filter.name ? item.name.toString().toLowerCase().includes(filter.name.toLowerCase()) : true) &&
+          (filter.phone ? item.phone.toLowerCase().includes(filter.phone.toLowerCase()) : true) &&
+          (filter.email ? item.email.toLowerCase().includes(filter.email.toLowerCase()) : true) &&
+          (filter.gender ? item.gender.toLowerCase().includes(filter.gender.toLowerCase()) : true) &&
+          (filter.loyalty_points
+            ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase())
+            : true)
+        );
+      });
     }
 
     if (setDataFilter) {
@@ -125,74 +144,139 @@ const Filter: React.FC<IFilterProps> = ({
 
   const handleChangeAppointments = async (type: string) => {
     // 1 là mới, 0 là đã xác nhận
+    setLoader && setLoader(true);
+
+    const newStatus = type === 'Submit' ? 0 : 1;
+    const currentStatus = type === 'Submit' ? 1 : 0;
+
     const selectedAppointments = dataAction
-      .filter((item: any) => item.status == Number(`${type === 'Submit' ? 1 : 0}`))
+      .filter((item: any) => item.status === currentStatus)
       .map((item: any) => ({id: item.id, status: item.status}));
 
     if (selectedAppointments.length <= 0) {
-      type === 'Submit'
-        ? showToast && showToast('Lịch hẹn chọn đang trong trạng thái xác nhận!', 'warning')
-        : showToast && showToast('Lịch hẹn chọn đang trong trạng thái hủy!', 'warning');
-    } else {
-      let flag = true;
+      showToast &&
+        showToast(
+          type === 'Submit'
+            ? 'Lịch hẹn chọn đang trong trạng thái xác nhận!'
+            : 'Lịch hẹn chọn đang trong trạng thái hủy!',
+          'warning'
+        );
+      setLoader && setLoader(false);
+      return;
+    }
+
+    try {
       const promises = selectedAppointments.map((element: IUpdateAppointmentStatus) =>
-        updateStatusAppointment(element.id, {status: Number(`${type === 'Submit' ? 0 : 1}`)})
+        updateStatusAppointment(element.id, {status: newStatus})
       );
 
       const results = await Promise.all(promises);
       const allSuccess = results.every((res) => res?.statusCode === 200);
 
-      if (!allSuccess) {
-        flag = false;
-      }
-
-      if (flag) {
+      if (allSuccess) {
         setDataAction && setDataAction([]);
         reloadData && reloadData();
-        type === 'Submit'
-          ? showToast && showToast('Xác nhận thành công!', 'success')
-          : showToast && showToast('Hủy thành công!', 'success');
+        showToast && showToast(type === 'Submit' ? 'Xác nhận thành công!' : 'Hủy thành công!', 'success');
       } else {
         showToast && showToast('Có lỗi xảy ra!', 'error');
       }
+    } catch (error) {
+      showToast && showToast('Có lỗi xảy ra trong quá trình xử lý!', 'error');
+      console.error(error);
+    } finally {
+      setLoader && setLoader(false);
     }
   };
 
   const handleChangeBranch = async (type: string) => {
-    // 1 là off, 0 là  đang hoạt động
-    const selectedBranchs = dataAction
-      .filter((item: any) => item.status == Number(`${type === 'Submit' ? 1 : 0}`))
+    // 1 là OFF, 0 là đang hoạt động
+    setLoader && setLoader(true);
+
+    const newStatus = type === 'Submit' ? 0 : 1;
+    const currentStatus = type === 'Submit' ? 1 : 0;
+
+    const selectedBranches = dataAction
+      .filter((item: any) => item.status === currentStatus)
       .map((item: any) => ({id: item.id, status: item.status}));
 
-    console.log('selectedBranchs', selectedBranchs);
+    if (selectedBranches.length <= 0) {
+      showToast &&
+        showToast(
+          type === 'Submit'
+            ? 'Chi nhánh chọn đang trong trạng thái xác nhận!'
+            : 'Chi nhánh chọn đang trong trạng thái hủy!',
+          'warning'
+        );
+      setLoader && setLoader(false);
+      return;
+    }
 
-    if (selectedBranchs.length <= 0) {
-      type === 'Submit'
-        ? showToast && showToast('Chi nhánh chọn đang trong trạng thái xác nhận!', 'warning')
-        : showToast && showToast('Chi nhánh chọn đang trong trạng thái hủy!', 'warning');
-    } else {
-      let flag = true;
-      const promises = selectedBranchs.map((element: IUpdateAppointmentStatus) =>
-        updateStatusBranch(element.id, {status: Number(`${type === 'Submit' ? 0 : 1}`)})
+    try {
+      const promises = selectedBranches.map((element: IUpdateAppointmentStatus) =>
+        updateStatusBranch(element.id, {status: newStatus})
       );
 
       const results = await Promise.all(promises);
       const allSuccess = results.every((res) => res?.statusCode === 200);
-      // const allSuccess = results.every((res) => console.log('res', res));
 
-      if (!allSuccess) {
-        flag = false;
-      }
-
-      if (flag) {
+      if (allSuccess) {
         setDataAction && setDataAction([]);
         reloadData && reloadData();
-        type === 'Submit'
-          ? showToast && showToast('Xác nhận thành công!', 'success')
-          : showToast && showToast('Hủy thành công!', 'success');
+        showToast && showToast(type === 'Submit' ? 'Xác nhận thành công!' : 'Hủy thành công!', 'success');
       } else {
         showToast && showToast('Có lỗi xảy ra!', 'error');
       }
+    } catch (error) {
+      showToast && showToast('Có lỗi xảy ra trong quá trình xử lý!', 'error');
+      console.error(error);
+    } finally {
+      setLoader && setLoader(false);
+    }
+  };
+
+  const handleChangeService = async (type: string) => {
+    // 1 Tạm dừng, 0 là Đang hoạt động
+    setLoader && setLoader(true);
+
+    const newStatus = type === 'Submit' ? 0 : 1;
+    const currentStatus = type === 'Submit' ? 1 : 0;
+
+    const selectedServices = dataAction
+      .filter((item: any) => item.status === currentStatus)
+      .map((item: any) => ({id: item.id, status: item.status}));
+
+    if (selectedServices.length <= 0) {
+      showToast &&
+        showToast(
+          type === 'Submit'
+            ? 'Dịch vụ chọn đang trong trạng thái hoạt động!'
+            : 'Dịch vụ chọn đang trong trạng thái tạm dừng!',
+          'warning'
+        );
+      setLoader && setLoader(false);
+      return;
+    }
+
+    try {
+      const promises = selectedServices.map((element: IUpdateAppointmentStatus) =>
+        updateStatusService(element.id, {status: newStatus})
+      );
+
+      const results = await Promise.all(promises);
+      const allSuccess = results.every((res) => res?.statusCode === 200);
+
+      if (allSuccess) {
+        setDataAction && setDataAction([]);
+        reloadData && reloadData();
+        showToast && showToast(type === 'Submit' ? 'Xác nhận thành công!' : 'Hủy thành công!', 'success');
+      } else {
+        showToast && showToast('Có lỗi xảy ra!', 'error');
+      }
+    } catch (error) {
+      showToast && showToast('Có lỗi xảy ra trong quá trình xử lý!', 'error');
+      console.error(error);
+    } finally {
+      setLoader && setLoader(false);
     }
   };
 
@@ -201,6 +285,41 @@ const Filter: React.FC<IFilterProps> = ({
       ...prevFilter,
       [field]: value,
     }));
+  };
+
+  const handleDelete = async (type: EFilterType) => {
+    const selectedData = dataAction.map((item: any) => ({id: item.id}));
+    setLoader && setLoader(false);
+    const promises = selectedData.map((element: IUpdateAppointmentStatus) => {
+      if (type === EFilterType.SERVICE) {
+        return deleteService(element.id);
+      } else if (type === EFilterType.APPOINTMENT) {
+        return deleteAppointment(element.id);
+      } else if (type === EFilterType.BRANCH) {
+        return deleteBranch(element.id);
+      } else {
+        return Promise.reject(new Error('Invalid filter type'));
+      }
+    });
+
+    try {
+      const results = await Promise.all(promises);
+      const allSuccess = results.every((res) => res?.statusCode === 200);
+
+      if (allSuccess) {
+        setDataAction && setDataAction([]);
+        reloadData && reloadData();
+
+        showToast && showToast('Xóa thành công!', 'success');
+      } else {
+        showToast && showToast('Có lỗi xảy ra!', 'error');
+        setDataAction && setDataAction([]);
+      }
+    } catch (error) {
+      console.error('Error deleting:', error);
+      showToast && showToast('Có lỗi xảy ra!', 'error');
+      setDataAction && setDataAction([]);
+    }
   };
 
   return (
@@ -282,6 +401,29 @@ const Filter: React.FC<IFilterProps> = ({
               />
             </>
           )}
+
+          {type == EFilterType.CUSTOMER && (
+            <>
+              <TextInput
+                changeText={(text) => handleChange('name', text)}
+                className="h-8 w-44"
+                placeholder="Tên khách hàng"
+                title="Tên khách hàng"
+              />
+              <TextInput
+                changeText={(text) => handleChange('email', text)}
+                className="h-8 w-44"
+                placeholder="Email"
+                title="Email"
+              />
+              <TextInput
+                changeText={(text) => handleChange('phone', text)}
+                className="h-8 w-44"
+                placeholder="Số điện thoại"
+                title="Số điện thoại"
+              />
+            </>
+          )}
         </div>
         <div className="flex">
           {type == EFilterType.BRANCH && (
@@ -339,6 +481,29 @@ const Filter: React.FC<IFilterProps> = ({
               />
             </>
           )}
+
+          {type == EFilterType.CUSTOMER && (
+            <>
+              <TextInput
+                changeText={(text) => handleChange('gender', text)}
+                className="h-8 w-44"
+                placeholder="Giới tính"
+                title="Giới tính"
+              />
+              <TextInput
+                changeText={(text) => handleChange('loyalty_points', text)}
+                className="h-8 w-44"
+                placeholder="Điểm"
+                title="Điểm"
+              />
+              <TextInput
+                changeText={(text) => handleChange('status', text)}
+                className="h-8 w-44"
+                placeholder="Trạng thái"
+                title="Trạng thái"
+              />
+            </>
+          )}
         </div>
       </div>
 
@@ -364,6 +529,7 @@ const Filter: React.FC<IFilterProps> = ({
         <button
           className="border border-white  text-white bg-slate-500 hover:bg-slate-800 px-3.5 py-1 mr-2 rounded-md"
           title="Làm mới"
+          onClick={() => reloadData && reloadData()}
         >
           <FontAwesomeIcon icon={faRotate} />
         </button>
@@ -376,7 +542,7 @@ const Filter: React.FC<IFilterProps> = ({
               onClick={() => setIsShowActions(!isShowActions)}
               className={`${
                 isShowActions ? 'bg-slate-800' : 'bg-slate-500'
-              } inline-flex justify-center items-center w-full text-white rounded-md border border-white shadow-sm px-3.5 py-1  hover:bg-slate-800   focus:outline-none`}
+              } inline-flex justify-center items-center w-full text-white rounded-md border border-white shadow-sm px-3.5 py-1 hover:bg-slate-800 focus:outline-none`}
             >
               Hành động &nbsp; <FontAwesomeIcon icon={faArrowsUpDown} />
             </button>
@@ -430,7 +596,39 @@ const Filter: React.FC<IFilterProps> = ({
                       </div>
                     </>
                   )}
-                  <div className="block px-4 mx-1 rounded-md  py-2 text-base cursor-pointer text-gray-700 hover:bg-gray-200 hover:text-red-500">
+
+                  {type == EFilterType.SERVICE && (
+                    <>
+                      <div
+                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
+                        onClick={() => {
+                          handleChangeService('Submit');
+                        }}
+                      >
+                        Xác nhận dịch vụ
+                      </div>
+
+                      <div
+                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                        onClick={() => {
+                          handleChangeService('Cancel');
+                        }}
+                      >
+                        Tạm dừng dịch vụ
+                      </div>
+                    </>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      type == EFilterType.SERVICE
+                        ? handleDelete(EFilterType.SERVICE)
+                        : type == EFilterType.APPOINTMENT
+                        ? handleDelete(EFilterType.APPOINTMENT)
+                        : handleDelete(EFilterType.BRANCH);
+                    }}
+                    className="block px-4 mx-1 rounded-md  py-2 text-base cursor-pointer text-gray-700 hover:bg-gray-200 hover:text-red-500"
+                  >
                     Xóa
                   </div>
                 </div>
