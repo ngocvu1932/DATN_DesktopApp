@@ -21,10 +21,7 @@ const Login: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [isFilled, setIsFilled] = useState(false);
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
-
   const reLogin = useSelector((state: any) => state.reLogin.reLogin);
-
-  console.log('reLogin:', reLogin);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

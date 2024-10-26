@@ -98,13 +98,6 @@ const Customer: React.FC = () => {
     });
   };
 
-  const handleToggleEdit = (index: number) => {
-    setEditStatuses((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
   const renderContent = () => {
     switch (layoutInfo?.layout) {
       case ELayoutInfo.Home:
@@ -211,7 +204,10 @@ const Customer: React.FC = () => {
         <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyalty_points}`}>
           {customer.loyalty_points}
         </td>
-        <td className="h-full justify-center items-center p-0">
+        <td
+          className="h-full justify-center items-center p-0"
+          title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
+        >
           {/*     // 1 là OFF, 0 là đang hoạt động*/}
           {customer.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>

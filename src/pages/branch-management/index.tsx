@@ -203,12 +203,19 @@ const BranchManagement: React.FC = () => {
         <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${branch.name}`}>
           {branch.name}
         </td>
-        <td className="border border-gray-300 p-1" title={`Address: ${branch.address}`}>
+        <td className="border border-gray-300 p-1" title={`Địa chỉ: ${branch.address}`}>
           {branch.address}
         </td>
-        <td className="border border-gray-300 p-1">{branch.phone}</td>
-        <td className="border border-gray-300 p-1">{branch.email}</td>
-        <td className="h-full justify-center items-center p-0">
+        <td className="border border-gray-300 p-1" title={`Số điện thoại: ${branch.phone}`}>
+          {branch.phone}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Email: ${branch.email}`}>
+          {branch.email}
+        </td>
+        <td
+          className="h-full justify-center items-center p-0"
+          title={`Trạng thái: ${branch.status == 1 ? 'OFF' : 'Đang hoạt động'}`}
+        >
           {/*     // 1 là OFF, 0 là đang hoạt động*/}
           {branch.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>

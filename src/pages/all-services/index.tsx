@@ -21,6 +21,7 @@ import InfoDetail from '../../components/info-detail';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import {getAllBranch, getAllBranchNoLimit} from '../../api/branch';
 import {IBranch} from '../../models/branch';
+import {formatPrice} from '../../utils/formatPrice';
 
 export interface IDataChoose {
   id: number;
@@ -127,13 +128,6 @@ const AllServices: React.FC = () => {
     }
   };
 
-  const handleToggleEdit = (index: number) => {
-    setEditStatuses((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
   const handleViewDetail = (service: any) => {
     dispatch(
       setInfoLayout({
@@ -228,6 +222,8 @@ const AllServices: React.FC = () => {
   };
 
   const renderServices = (service: IService, index: number) => {
+    // console.log('price: ', formatPrice(10000000));
+
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -241,11 +237,25 @@ const AllServices: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1">{service.id}</td>
-        <td className="border border-gray-300 p-1 max-w-[130px]">{service.name}</td>
-        <td className="border border-gray-300 p-1">{new Date(service.updated_at).toLocaleDateString()}</td>
-        <td className="border border-gray-300 p-1">{service.price}</td>
-        <td className="h-full justify-center items-center p-0 max-w-[110px]">
+        <td className="border border-gray-300 p-1" title={`ID: ${service.id}`}>
+          {service.id}
+        </td>
+        <td className="border border-gray-300 p-1 max-w-[130px]" title={`Tên dịch vụ: ${service.name}`}>
+          {service.name}
+        </td>
+        <td
+          className="border border-gray-300 p-1"
+          title={`Ngày tạo: ${new Date(service.updated_at).toLocaleDateString()}`}
+        >
+          {new Date(service.updated_at).toLocaleDateString()}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price)}`}>
+          {formatPrice(service.price)}
+        </td>
+        <td
+          className="h-full justify-center items-center p-0 max-w-[110px]"
+          title={`Trạng thái: ${service.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
+        >
           {/* // 1 Tạm dừng, 0 là Đang hoạt động */}
           {service.status == 1 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
@@ -257,7 +267,9 @@ const AllServices: React.FC = () => {
             'error'
           )}
         </td>
-        <td className="border border-gray-300 py-1 px-2 max-w-[350px]">{service.description}</td>
+        <td className="border border-gray-300 py-1 px-2 max-w-[350px]" title="Description">
+          {service.description}
+        </td>
       </>
     );
   };

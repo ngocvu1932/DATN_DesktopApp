@@ -262,13 +262,28 @@ const Appointment: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold">{appointment.id}</td>
-        <td className="border border-gray-300 p-1">{appointment.customer_id}</td>
-        <td className="border border-gray-300 p-1">{appointment.service_id}</td>
-        <td className="border border-gray-300 p-1">{getFormattedDate(appointment.time)}</td>
-        <td className="border border-gray-300 p-1">{getFormattedTime(appointment.time)}</td>
-        <td className="border border-gray-300 p-1">{appointment.employee_id ? appointment.employee_id : ''}</td>
-        <td className="h-full justify-center items-center p-0">
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${appointment.id}`}>
+          {appointment.id}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Tên khách hàng: ${appointment.id}`}>
+          {appointment.customer_id}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Tên dịch vụ: ${appointment.id}`}>
+          {appointment.service_id}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Ngày: ${getFormattedDate(appointment.time)}`}>
+          {getFormattedDate(appointment.time)}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Giờ: ${getFormattedTime(appointment.time)}`}>
+          {getFormattedTime(appointment.time)}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Tên nhân viên: ${appointment.id}`}>
+          {appointment.employee_id ? appointment.employee_id : ''}
+        </td>
+        <td
+          className="h-full justify-center items-center p-0"
+          title={`Trạng thái: ${appointment.status == 1 ? 'Mới' : 'Đã xác nhận'}`}
+        >
           {/* // 1 là mới, 0 là đã xác nhận */}
 
           {appointment.status === 1 ? (

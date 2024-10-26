@@ -5,7 +5,9 @@
   "auth_login_forget_password": "Quên mật khẩu?",
   "auth_login_version": "Phiên bản",
   "auth_login_success": "Đăng nhập thành công!",
+  "auth_logout_success": "Đăng xuất thành công!",
   "auth_login_fail": "Đăng nhập thất bại!",
+  "auth_logout_fail": "Đăng xuất thất bại!",
 
   "account_title": "Tài khoản",
   "account_info_title": "Thông tin cá nhân",
@@ -25,6 +27,20 @@
   "account_info_password_new": "Mật khẩu mới",
   "account_info_password_renew": "Nhập lại mật khẩu mới",
   "account_info_button_logout": "Đăng xuất",
+
+  "sidebar_title": "Chức năng",
+  "sidebar_home": "Trang chủ",
+  "sidebar_appointment_management": "Quản lý lịch hẹn",
+  "sidebar_appointment": "Lịch hẹn",
+  "sidebar_treatment_management": "Quản lý liệu trình",
+  "sidebar_customer_management": "Quản lý khách hàng",
+  "sidebar_customer_management_all": "Tất cả khách hàng",
+  "sidebar_service_management": "Quản lý dịch vụ",
+  "sidebar_service_management_all": "Tất cả dịch vụ",
+  "sidebar_bills": "Hóa đơn",
+  "sidebar_revenue_report": "Báo cáo doanh thu",
+  "sidebar_branchs": "Các chi nhánh",
+  "sidebar_logout": "Đăng xuất",
 
   "home_title": "Xin chào"
 }

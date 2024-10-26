@@ -33,7 +33,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="overflow-hidden flex h-[10vh] bg-slate-500 justify-between items-center rounded-lg mt-1 mx-1 px-4">
+    <div className="flex h-[10vh] bg-slate-500 justify-between items-center rounded-lg mt-1 mx-1 px-4">
       <div className="font-bold text-2xl">LOGO</div>
       <div className="flex items-center">
         <div className="px-3" onClick={() => alert('ATin nhắnT')}>
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
             )}
           </div>
           {isShowChooseLanguage && (
-            <div onClick={() => {}} className="absolute flex top-full min-w-[150px] mt-2 right-0 z-20">
+            <div onClick={() => {}} className="absolute flex top-full min-w-[150px] mt-2 right-0 z-50">
               <div className="rounded-lg bg-white w-full p-2 relative flex items-center shadow-2xl ring-1 ring-black ring-opacity-5">
                 <div className="absolute top-[-10px] right-3">
                   <FontAwesomeIcon icon={faSortUp} color="white" size="lg" />

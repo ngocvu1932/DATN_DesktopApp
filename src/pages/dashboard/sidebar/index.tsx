@@ -18,12 +18,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../../redux/slices/authSlice';
 import {setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
+import {useTranslation} from 'react-i18next';
 
 interface ISidebarProps {
   width: number;
 }
 
 const Sidebar: React.FC<ISidebarProps> = ({width}) => {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const layout = useSelector((state: any) => state.layout.layout);
@@ -34,7 +36,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     dispatch(setIsLogin(false));
-    navigate('/', {state: {message: 'Đăng xuất thành công!', autoClose: 3000}});
+    navigate('/', {
+      state: {
+        message: t('auth_logout_success'),
+        type: 'success',
+      },
+    });
   };
 
   const toggleMenu = (menuName: string) => {
@@ -51,7 +58,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
       className="text-white m-1 rounded-lg relative h-[89vh] flex flex-col box-border"
       style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
     >
-      <h2 className="text-2xl mb-4 text-center mt-3">Menu</h2>
+      <h2 className="text-2xl mb-4 text-center mt-3">{t('sidebar_title')}</h2>
       <ul className="p-4 overflow-y-auto overflow-x-hidden">
         <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
@@ -66,7 +73,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <div className="flex w-[30px]">
               <FontAwesomeIcon icon={faHouse} />
             </div>
-            <p>Trang chủ</p>
+            <p>{t('sidebar_home')}</p>
           </div>
         </button>
 
@@ -86,7 +93,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 <FontAwesomeIcon icon={faCalendarDays} />
               </div>
 
-              <p>Quản lý lịch hẹn</p>
+              <p>{t('sidebar_appointment_management')}</p>
             </div>
             <FontAwesomeIcon
               className="ml-2"
@@ -107,7 +114,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                   <div className="flex w-[30px]">
                     <FontAwesomeIcon icon={faCalendar} />
                   </div>
-                  <p>Lịch hẹn</p>
+                  <p>{t('sidebar_appointment')}</p>
                 </div>
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
@@ -135,7 +142,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <div className="flex w-[30px]">
                 <FontAwesomeIcon icon={faCalendarDays} />
               </div>
-              <p>Quản lý liệu trình</p>
+              <p>{t('sidebar_treatment_management')}</p>
             </div>
             <FontAwesomeIcon
               className="ml-2"
@@ -156,7 +163,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                   <div className="flex w-[30px]">
                     <FontAwesomeIcon icon={faCalendar} />
                   </div>
-                  <p>Liệu trình</p>
+                  <p>{t('sidebar_treatment_management')}</p>
                 </div>
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
@@ -184,7 +191,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <div className="flex w-[30px]">
                 <FontAwesomeIcon icon={faUsersGear} />
               </div>
-              <p>Quản lý khách hàng</p>
+              <p>{t('sidebar_customer_management')}</p>
             </div>
             <FontAwesomeIcon
               className="ml-2"
@@ -201,7 +208,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.AllCustomer))}
               >
-                Tất cả khách hàng
+                {t('sidebar_customer_management_all')}
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 1.2
@@ -228,7 +235,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <div className="flex w-[30px]">
                 <FontAwesomeIcon icon={faAddressBook} />
               </div>
-              <p>Quản lý dịch vụ</p>
+              <p>{t('sidebar_service_management')}</p>
             </div>
             <FontAwesomeIcon
               className="ml-2"
@@ -247,7 +254,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               >
                 <div className="flex items-center">
                   <FontAwesomeIcon icon={faAddressBook} /> &nbsp;&nbsp;
-                  <p>Tất cả dịch vụ</p>
+                  <p>{t('sidebar_service_management_all')}</p>
                 </div>
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
@@ -273,7 +280,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <div className="flex w-[30px]">
               <FontAwesomeIcon icon={faReceipt} />
             </div>
-            <p>Hóa đơn</p>
+            <p>{t('sidebar_bills')}</p>
           </div>
         </button>
 
@@ -291,7 +298,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <div className="flex w-[30px]">
               <FontAwesomeIcon icon={faChartSimple} />
             </div>
-            <p>Báo cáo doanh thu</p>
+            <p>{t('sidebar_revenue_report')}</p>
           </div>
         </button>
 
@@ -317,7 +324,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <div className="flex w-[30px]">
               <FontAwesomeIcon icon={faLocationDot} />
             </div>
-            <p>Chi nhánh</p>
+            <p>{t('sidebar_branchs')}</p>
           </div>
         </button>
       </ul>
@@ -329,7 +336,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             className="flex hover:bg-red-600 bg-red-400 text-white rounded-xl cursor-pointer shadow-xl px-9 py-1.5 items-center"
             onClick={handleLogout}
           >
-            <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; Đăng xuất
+            <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; {t('sidebar_logout')}
           </div>
         </div>
       )}
