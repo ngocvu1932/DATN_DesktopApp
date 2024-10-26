@@ -77,7 +77,7 @@ const BranchManagement: React.FC = () => {
       if (response?.statusCode === 200) {
         setBranchs(response?.data);
         setBranchsTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }

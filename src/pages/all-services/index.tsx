@@ -1,27 +1,27 @@
-import React, {useEffect, useState} from 'react';
-import {updateStatusAppointment} from '../../api/appointment';
-import {toast} from 'react-toastify';
+import React, { useEffect, useState } from 'react';
+import { updateStatusAppointment } from '../../api/appointment';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoadingSpinner from '../../components/loading-spinner';
-import {useDispatch, useSelector} from 'react-redux';
-import {setWidth} from '../../redux/slices/sideBarWidthSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setWidth } from '../../redux/slices/sideBarWidthSlice';
 import SwitchSideBar from '../../components/switch-sidebar';
 import TextInput from '../../components/text-input';
 import Drawer from '../../components/drawer';
-import {allServices} from '../../api/services';
-import {IService} from '../../models/service';
-import {ETypeAdd} from '../../components/drawer/enum';
+import { allServices } from '../../api/services';
+import { IService } from '../../models/service';
+import { ETypeAdd } from '../../components/drawer/enum';
 import Filter from '../../components/filter';
-import {EFilterType} from '../../components/filter/enum';
+import { EFilterType } from '../../components/filter/enum';
 import Pagination from '../../components/pagination';
 import Breadcrumb from '../../components/breadcrumb';
-import {ELayoutInfo} from '../../constants/layout';
-import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
+import { ELayoutInfo } from '../../constants/layout';
+import { setInfoLayout } from '../../redux/slices/layoutInfoSlice';
 import InfoDetail from '../../components/info-detail';
-import {ETypeInfoDetail} from '../../components/info-detail/enum';
-import {getAllBranch, getAllBranchNoLimit} from '../../api/branch';
-import {IBranch} from '../../models/branch';
-import {formatPrice} from '../../utils/formatPrice';
+import { ETypeInfoDetail } from '../../components/info-detail/enum';
+import { getAllBranch, getAllBranchNoLimit } from '../../api/branch';
+import { IBranch } from '../../models/branch';
+import { formatPrice } from '../../utils/formatPrice';
 
 export interface IDataChoose {
   id: number;
@@ -35,7 +35,7 @@ const AllServices: React.FC = () => {
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
-  const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
+  const [editStatuses, setEditStatuses] = useState<{ [key: number]: boolean }>({});
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const dispatch = useDispatch();
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutService);
@@ -69,7 +69,7 @@ const AllServices: React.FC = () => {
       const response = await getAllBranchNoLimit();
       if (response?.statusCode === 200) {
         const filteredData = response?.data.map((branch: IBranch) => {
-          return {id: branch.id, value: branch.name};
+          return { id: branch.id, value: branch.name };
         });
         console.log('branchs:', filteredData);
 
@@ -87,7 +87,7 @@ const AllServices: React.FC = () => {
       if (response?.statusCode === 200) {
         setAllservices(response?.data);
         setAllServicesTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -115,13 +115,13 @@ const AllServices: React.FC = () => {
   const showToast = (message: string, type: string) => {
     switch (type) {
       case 'error':
-        toast.error(message, {autoClose: 2000});
+        toast.error(message, { autoClose: 2000 });
         break;
       case 'success':
-        toast.success(message, {autoClose: 2000});
+        toast.success(message, { autoClose: 2000 });
         break;
       case 'warning':
-        toast.warning(message, {autoClose: 2000});
+        toast.warning(message, { autoClose: 2000 });
         break;
       default:
         break;
@@ -131,10 +131,10 @@ const AllServices: React.FC = () => {
   const handleViewDetail = (service: any) => {
     dispatch(
       setInfoLayout({
-        layoutBranch: {layout: ELayoutInfo.Home, data: null},
-        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-        layoutService: {layout: ELayoutInfo.Details, data: service},
-        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
+        layoutBranch: { layout: ELayoutInfo.Home, data: null },
+        layoutAppointment: { layout: ELayoutInfo.Home, data: null },
+        layoutService: { layout: ELayoutInfo.Details, data: service },
+        layoutCustomer: { layout: ELayoutInfo.Home, data: null },
       })
     );
   };
@@ -183,9 +183,8 @@ const AllServices: React.FC = () => {
                           setSelectedServices([]);
                         }}
                         key={service.id}
-                        className={`${
-                          index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
-                        } border-b cursor-pointer border-gray-300 hover:bg-slate-200`}
+                        className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+                          } border-b cursor-pointer border-gray-300 hover:bg-slate-200`}
                       >
                         {renderServices(service, index)}
                       </tr>
@@ -249,8 +248,8 @@ const AllServices: React.FC = () => {
         >
           {new Date(service.updated_at).toLocaleDateString()}
         </td>
-        <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price)}`}>
-          {formatPrice(service.price)}
+        <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price as any)}`}>
+          {formatPrice(service.price as any)}
         </td>
         <td
           className="h-full justify-center items-center p-0 max-w-[110px]"

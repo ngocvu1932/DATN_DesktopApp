@@ -6,8 +6,8 @@ interface IStatusUpdate {
 
 interface IAppointmentUpdate {
   status: number;
-  reminder_sent: number;
-  service_id: number;
+  reminderSent: number;
+  serviceId: number;
   note: string;
 }
 

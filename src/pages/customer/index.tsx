@@ -79,7 +79,7 @@ const Customer: React.FC = () => {
       if (response?.statusCode === 200) {
         setCustomers(response?.data);
         setCustomersTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -201,8 +201,8 @@ const Customer: React.FC = () => {
         <td className="border border-gray-300 p-1" title={`Giới tính: ${customer.gender}`}>
           {customer.gender}
         </td>
-        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyalty_points}`}>
-          {customer.loyalty_points}
+        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyaltyPoints}`}>
+          {customer.loyaltyPoints}
         </td>
         <td
           className="h-full justify-center items-center p-0"

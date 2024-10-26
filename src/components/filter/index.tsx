@@ -59,7 +59,7 @@ const Filter: React.FC<IFilterProps> = ({
     description: '',
 
     gender: '',
-    loyalty_points: '',
+    loyaltyPoints: '',
   });
 
   const [tempFilter, setTempFilter] = useState(filter);
@@ -124,8 +124,8 @@ const Filter: React.FC<IFilterProps> = ({
           (filter.phone ? item.phone.toLowerCase().includes(filter.phone.toLowerCase()) : true) &&
           (filter.email ? item.email.toLowerCase().includes(filter.email.toLowerCase()) : true) &&
           (filter.gender ? item.gender.toLowerCase().includes(filter.gender.toLowerCase()) : true) &&
-          (filter.loyalty_points
-            ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase())
+          (filter.loyaltyPoints
+            ? item.loyaltyPoints.toLowerCase().includes(filter.loyaltyPoints.toLowerCase())
             : true)
         );
       });
@@ -491,7 +491,7 @@ const Filter: React.FC<IFilterProps> = ({
                 title="Giới tính"
               />
               <TextInput
-                changeText={(text) => handleChange('loyalty_points', text)}
+                changeText={(text) => handleChange('loyaltyPoints', text)}
                 className="h-8 w-44"
                 placeholder="Điểm"
                 title="Điểm"

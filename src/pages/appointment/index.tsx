@@ -96,7 +96,7 @@ const Appointment: React.FC = () => {
       if (response?.statusCode === 200) {
         setAppointments(response?.data);
         setAppointmentsTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -266,10 +266,10 @@ const Appointment: React.FC = () => {
           {appointment.id}
         </td>
         <td className="border border-gray-300 p-1" title={`Tên khách hàng: ${appointment.id}`}>
-          {appointment.customer_id}
+          {appointment.customerName}
         </td>
         <td className="border border-gray-300 p-1" title={`Tên dịch vụ: ${appointment.id}`}>
-          {appointment.service_id}
+          {appointment.serviceName}
         </td>
         <td className="border border-gray-300 p-1" title={`Ngày: ${getFormattedDate(appointment.time)}`}>
           {getFormattedDate(appointment.time)}
@@ -278,7 +278,7 @@ const Appointment: React.FC = () => {
           {getFormattedTime(appointment.time)}
         </td>
         <td className="border border-gray-300 p-1" title={`Tên nhân viên: ${appointment.id}`}>
-          {appointment.employee_id ? appointment.employee_id : ''}
+          {appointment.employeeName ? appointment.employeeName : ''}
         </td>
         <td
           className="h-full justify-center items-center p-0"
@@ -292,8 +292,8 @@ const Appointment: React.FC = () => {
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đã xác nhận</span>
           )}
         </td>
-        <td className="border border-gray-300 p-1">{appointment.reminder_sent}</td>
-        <td className="border border-gray-300 p-1 max-w-[200px]">{appointment.note}</td>
+        <td className="border border-gray-300 p-1">{appointment.reminderSent == 1 ? 'Đã gởi' : 'Chưa'}</td>
+        <td className="border border-gray-300 p-1 max-w-[200px]">{appointment.note == null ? '-' : appointment.note}</td>
       </>
     );
   };
