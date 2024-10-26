@@ -184,7 +184,7 @@ const Appointment: React.FC = () => {
                   <thead className="bg-gray-200 sticky top-[-1px] z-10">
                     <tr>
                       <td></td>
-                      <th className="border border-gray-300 p-1">ID</th>
+                      <th className="border border-gray-300 p-1">Mã lịch hẹn</th>
                       <th className="border border-gray-300 p-1">Khách hàng</th>
                       <th className="border border-gray-300 p-1">Dịch vụ</th>
                       <th className="border border-gray-300 p-1">Ngày</th>
@@ -262,8 +262,8 @@ const Appointment: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${appointment.id}`}>
-          {appointment.id}
+        <td className="border border-gray-300 p-1 font-semibold" title={`Mã lịch hẹn: ${appointment.code}`}>
+          {appointment.code}
         </td>
         <td className="border border-gray-300 p-1" title={`Tên khách hàng: ${appointment.id}`}>
           {appointment.customerName}

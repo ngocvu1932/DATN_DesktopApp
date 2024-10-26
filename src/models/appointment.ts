@@ -1,4 +1,5 @@
 export interface IAppointment {
+  code: string;
   branchId: number;
   createdAt?: string;
   customerId: number;
