@@ -22,6 +22,7 @@ import {getAllBranchNoLimit} from '../../api/branch';
 import {allServicesNoLimit} from '../../api/services';
 import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
+import {formatISO, getDate} from 'date-fns';
 
 const Appointment: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
@@ -65,7 +66,7 @@ const Appointment: React.FC = () => {
       const response = await getAllBranchNoLimit();
       if (response?.statusCode === 200) {
         const filteredData = response?.data.map((branch: IBranch) => {
-          return {id: branch.id, value: branch.name};
+          return {id: branch.id, value: branch.name, status: branch.status};
         });
         setBranchs(filteredData);
       }
@@ -79,7 +80,7 @@ const Appointment: React.FC = () => {
       const response = await allServicesNoLimit();
       if (response?.statusCode === 200) {
         const filteredData = response?.data.map((service: IService) => {
-          return {id: service.id, value: service.name};
+          return {id: service.id, value: service.name, status: service.status};
         });
         setServices(filteredData);
       }
@@ -196,6 +197,7 @@ const Appointment: React.FC = () => {
                       <th className="border border-gray-300 p-1">Trạng thái</th>
                       <th className="border border-gray-300 p-1">Chi nhánh</th>
                       <th className="border border-gray-300 p-1">Nhắc hẹn</th>
+                      <th className="border border-gray-300 p-1">Ngày tạo</th>
                       <th className="border border-gray-300 p-1">Ghi chú</th>
                     </tr>
                   </thead>
@@ -305,6 +307,7 @@ const Appointment: React.FC = () => {
           {appointment.branchName}
         </td>
         <td className="border border-gray-300 p-1">{appointment.reminderSent}</td>
+        <td className="border border-gray-300 p-1">{getFormattedDate(appointment.createdAt)}</td>
         <td className="border border-gray-300 p-1 max-w-[200px]">{appointment.note}</td>
       </>
     );

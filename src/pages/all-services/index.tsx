@@ -22,10 +22,12 @@ import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import {getAllBranch, getAllBranchNoLimit} from '../../api/branch';
 import {IBranch} from '../../models/branch';
 import {formatPrice} from '../../utils/formatPrice';
+import {getFormattedDate} from '../../utils/dateTime';
 
 export interface IDataChoose {
   id: number;
   value: string;
+  status: boolean | number;
 }
 
 const AllServices: React.FC = () => {
@@ -33,7 +35,7 @@ const AllServices: React.FC = () => {
   const [servicesTemp, setAllServicesTemp] = useState<IService[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(true);
@@ -69,10 +71,8 @@ const AllServices: React.FC = () => {
       const response = await getAllBranchNoLimit();
       if (response?.statusCode === 200) {
         const filteredData = response?.data.map((branch: IBranch) => {
-          return {id: branch.id, value: branch.name};
+          return {id: branch.id, value: branch.name, status: branch.status};
         });
-        console.log('branchs:', filteredData);
-
         setBranchs(filteredData);
       }
     } catch (error) {
@@ -87,7 +87,7 @@ const AllServices: React.FC = () => {
       if (response?.statusCode === 200) {
         setAllservices(response?.data);
         setAllServicesTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -167,7 +167,7 @@ const AllServices: React.FC = () => {
                   <thead className="bg-gray-200 sticky top-[-1px] z-10">
                     <tr>
                       <th></th>
-                      <th className="border border-gray-300 p-1">ID</th>
+                      {/* <th className="border border-gray-300 p-1">ID</th> */}
                       <th className="border border-gray-300 p-1">Tên dịch vụ</th>
                       <th className="border border-gray-300 p-1">Ngày tạo</th>
                       <th className="border border-gray-300 p-1">Giá tiền</th>
@@ -222,7 +222,9 @@ const AllServices: React.FC = () => {
   };
 
   const renderServices = (service: IService, index: number) => {
-    // console.log('price: ', formatPrice(10000000));
+    if (service.isRemoved == true) {
+      return;
+    }
 
     return (
       <>
@@ -237,29 +239,29 @@ const AllServices: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1" title={`ID: ${service.id}`}>
+        {/* <td className="border border-gray-300 p-1" title={`ID: ${service.id}`}>
           {service.id}
-        </td>
+        </td> */}
         <td className="border border-gray-300 p-1 max-w-[130px]" title={`Tên dịch vụ: ${service.name}`}>
           {service.name}
         </td>
         <td
           className="border border-gray-300 p-1"
-          title={`Ngày tạo: ${new Date(service.updated_at).toLocaleDateString()}`}
+          title={`Ngày tạo: ${new Date(service.createdAt).toLocaleDateString()}`}
         >
-          {new Date(service.updated_at).toLocaleDateString()}
+          {getFormattedDate(service.createdAt)}
         </td>
         <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price)}`}>
           {formatPrice(service.price)}
         </td>
         <td
           className="h-full justify-center items-center p-0 max-w-[110px]"
-          title={`Trạng thái: ${service.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
+          title={`Trạng thái: ${service.status == false ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
-          {/* // 1 Tạm dừng, 0 là Đang hoạt động */}
-          {service.status == 1 ? (
+          {/* // false 0 tạm dừng, true  1 là Đang hoạt động */}
+          {service.status == false ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
-          ) : service.status == 0 ? (
+          ) : service.status == true ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center justify-center ">
               Đang hoạt động
             </span>

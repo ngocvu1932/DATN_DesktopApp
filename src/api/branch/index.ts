@@ -38,7 +38,7 @@ export const updateStatusBranch = async (id: number, body: any): Promise<CustomA
 
 export const updateBranch = async (id: number, body: any): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.put(`/api/v1/branch/${id}`, body);
+    const res = await axios.patch(`/api/v1/branch/${id}`, body);
     return res;
   } catch (error) {
     console.log(error);

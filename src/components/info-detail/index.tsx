@@ -39,41 +39,12 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
 
   const layoutInfoAppointment = useSelector((state: any) => state.layoutInfo.layoutAppointment);
   const [dataAppointment, setDataAppointment] = useState<IAppointment>(layoutInfoAppointment?.data);
+  const [isShowModalChooseTime, setIsShowModalChooseTime] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<string>(dataAppointment?.time ?? '2000-01-01 00:00');
 
   const layoutInfoService = useSelector((state: any) => state.layoutInfo.layoutService);
   const [dataService, setDataService] = useState<IService>(layoutInfoService?.data);
   const [titleServiceName, setTitleServiceName] = useState(layoutInfoService?.data?.name);
-
-  const [isShowModalChooseTime, setIsShowModalChooseTime] = useState(false);
-  const [selectedTime, setSelectedTime] = useState<string>(dataAppointment?.time ?? '2000-01-01 00:00');
-
-  const handleSaveBranch = async () => {
-    const filledData = {
-      name: dataBranch.name,
-      status: dataBranch.status,
-      address: dataBranch.address,
-      phone: dataBranch.phone,
-      email: dataBranch.email,
-    };
-    setIsSave(true);
-    const res = await updateBranch(dataBranch.id, filledData);
-    if (res?.statusCode === 200) {
-      setIsEdit(!isEdit);
-      setTitleBranchName(res?.data?.name);
-      setIsSave(false);
-      dispatch(
-        setInfoLayout({
-          layoutBranch: {layout: ELayoutInfo.Details, data: res?.data},
-          layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-          layoutService: {layout: ELayoutInfo.Home, data: null},
-          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
-        })
-      );
-      toast.success('Cập nhật thành công!', {autoClose: 2000});
-    } else {
-      toast.error('Có lỗi xảy ra!', {autoClose: 2000});
-    }
-  };
 
   useEffect(() => {
     setDataAppointment({...dataAppointment, time: selectedTime});
@@ -119,12 +90,40 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
     }
   };
 
+  const handleSaveBranch = async () => {
+    const filledData = {
+      name: dataBranch.name,
+      status: dataBranch.status,
+      address: dataBranch.address,
+      phone: dataBranch.phone,
+      email: dataBranch.email,
+    };
+
+    setIsSave(true);
+    const res = await updateBranch(dataBranch.id, filledData);
+    if (res?.statusCode === 200) {
+      setIsEdit(!isEdit);
+      setTitleBranchName(res?.data?.name);
+      setIsSave(false);
+      dispatch(
+        setInfoLayout({
+          layoutBranch: {layout: ELayoutInfo.Details, data: res?.data},
+          layoutAppointment: {layout: ELayoutInfo.Home, data: null},
+          layoutService: {layout: ELayoutInfo.Home, data: null},
+          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
+        })
+      );
+      toast.success('Cập nhật thành công!', {autoClose: 2000});
+    } else {
+      toast.error('Có lỗi xảy ra!', {autoClose: 2000});
+    }
+  };
+
   const handleSaveService = async () => {
-    // console.log('dataService', dataService);
     const filteredData = {
       name: dataService.name,
       price: dataService.price,
-      total_sessions: dataService.total_sessions,
+      total_sessions: dataService.totalSessions,
       description: dataService.description,
       status: 1,
     };
@@ -237,18 +236,20 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
-                  {/*     // 1 là OFF, 0 là đang hoạt động*/}
+                  {/*     true là đang hoạt động, false OFFF */}
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataBranch?.status == 1
+                      dataBranch?.status == false
                         ? 'bg-yellow-200'
-                        : dataBranch?.status == 0
+                        : dataBranch?.status == true
                         ? 'bg-green-400'
                         : 'bg-red-400'
                     } rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataBranch?.status ?? 0}
-                    onChange={(event) => setDataBranch({...dataBranch, status: Number(event.target.value)})}
+                    defaultValue={dataBranch?.status == true ? 0 : 1}
+                    onChange={(event) =>
+                      setDataBranch({...dataBranch, status: Number(event.target.value) == 0 ? true : false})
+                    }
                     disabled={!isEdit}
                   >
                     <option value="0">Đang hoạt động</option>
@@ -318,7 +319,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <label className="font-semibold text-base pl-1">{'Ngày cập nhật'}</label>
                   <TextInput
                     disabled
-                    value={dataBranch?.updated_at}
+                    value={dataBranch?.updatedAt}
                     type="text"
                     title="Ngày cập nhật"
                     placeholder={'Ngày cập nhật'}
@@ -329,7 +330,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <label className="font-semibold text-base pl-1">{'Ngày tạo'}</label>
                   <TextInput
                     disabled
-                    value={dataBranch?.created_at}
+                    value={dataBranch?.createdAt}
                     type="text"
                     title="Ngày tạo"
                     placeholder={'Ngày tạo'}
@@ -453,7 +454,9 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <div className="flex flex-col relative">
                     <label className="font-semibold text-base pl-1">{'Ngày giờ hẹn'}</label>
                     <div
-                      className="flex items-center h-8 rounded-xl bg-white pl-3 m-1 relative border border-slate-300 hover:border-blue-500 focus:ring-blue-500"
+                      className={`flex ${
+                        isEdit ? '' : 'bg-slate-300'
+                      } items-center h-8 rounded-xl bg-white pl-3 m-1 relative border border-slate-300 hover:border-blue-500 focus:ring-blue-500`}
                       onClick={() => handleChooseDateTime()}
                     >
                       <p className="">
@@ -578,14 +581,16 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataService?.status == 0 ? 'bg-green-400' : dataService?.status == 1 ? 'bg-yellow-200' : ''
+                      dataService?.status == true ? 'bg-green-400' : dataService?.status == false ? 'bg-yellow-200' : ''
                     } rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataService?.status ?? 0}
-                    onChange={(event) => setDataService({...dataService, status: Number(event.target.value)})}
+                    defaultValue={dataService?.status == true ? 1 : 0}
+                    onChange={(event) =>
+                      setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})
+                    }
                     disabled={!isEdit}
                   >
-                    <option value="1">Tạm dừng</option>
-                    <option value="0">Đang hoạt động</option>
+                    <option value="0">Tạm dừng</option>
+                    <option value="1">Đang hoạt động</option>
                   </select>
                 </div>
               </div>
@@ -607,7 +612,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                 <div className="flex flex-col w-1/2  pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Giá dịch vụ'}</label>
                   <TextInput
-                    changeText={(text) => setDataService({...dataService, price: Number(text)})}
+                    changeText={(text) => setDataService({...dataService, price: text})}
                     disabled={!isEdit}
                     value={dataService?.price.toString()}
                     type="number"
@@ -623,8 +628,8 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
                   <label className="font-semibold text-base pl-1">{'Tổng liệu trình'}</label>
                   <TextInput
-                    changeText={(text) => setDataService({...dataService, total_sessions: Number(text)})}
-                    value={dataService?.total_sessions.toString()}
+                    changeText={(text) => setDataService({...dataService, totalSessions: Number(text)})}
+                    value={dataService?.totalSessions.toString()}
                     type="number"
                     title="Tổng liệu trình"
                     placeholder={'Tổng liệu trình'}
@@ -637,13 +642,13 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <select
                     title="Chi nhánh"
                     className={`rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataService?.branch_id ?? 0}
+                    defaultValue={dataService?.branchId ?? 0}
                     // onChange={(event) => setDataBranch({...dataBranch, status: Number(event.target.value)})}
                     // disabled={!isEdit}
                     disabled
                   >
-                    <option value="0">{dataService?.branch_id ?? 0}</option>
-                    <option value="1">{dataService?.branch_id ?? 0}</option>
+                    <option value="0">{dataService?.branchId ?? 0}</option>
+                    <option value="1">{dataService?.branchId ?? 0}</option>
                   </select>
                 </div>
               </div>
@@ -652,7 +657,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
               <div className="flex w-full h-fit mt-5">
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
                   <label className="font-semibold text-base pl-1">{'Gói dịch vụ'}</label>
-                  <select
+                  {/* <select
                     title="Gói dịch vụ"
                     className={`rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataService?.service_package_id ?? 0}
@@ -662,7 +667,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   >
                     <option value="0">{dataService?.service_package_id ?? 0}</option>
                     <option value="1">{dataService?.service_package_id ?? 0}</option>
-                  </select>
+                  </select> */}
                 </div>
                 <div className="flex flex-col w-1/2  pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Mô tả chi tiết'}</label>
@@ -709,7 +714,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <label className="font-semibold text-base pl-1">{'Ngày cập nhật'}</label>
                   <TextInput
                     disabled
-                    value={dataService?.updated_at}
+                    value={dataService?.updatedAt}
                     type="text"
                     title="Ngày cập nhật"
                     placeholder={'Ngày cập nhật'}
@@ -720,7 +725,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <label className="font-semibold text-base pl-1">{'Ngày tạo'}</label>
                   <TextInput
                     disabled
-                    value={dataService?.created_at}
+                    value={dataService?.createdAt}
                     type="text"
                     title="Ngày tạo"
                     placeholder={'Ngày tạo'}

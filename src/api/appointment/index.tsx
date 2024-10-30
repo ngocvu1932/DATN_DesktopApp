@@ -35,7 +35,7 @@ export const createAppointment = async (data: any): Promise<CustomAxiosResponse<
 
 export const deleteAppointment = async (id: number): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.delete(`/api/v1/services/${id}`);
+    const res = await axios.delete(`/api/v1/appointments/${id}`);
     return res;
   } catch (error) {
     console.log(error);

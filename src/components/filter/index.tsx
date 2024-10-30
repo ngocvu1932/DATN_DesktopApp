@@ -209,14 +209,13 @@ const Filter: React.FC<IFilterProps> = ({
   };
 
   const handleChangeBranch = async (type: string) => {
-    // 1 là OFF, 0 là đang hoạt động
+    // false là OFF, true là đang hoạt động
     setLoader && setLoader(true);
 
-    const newStatus = type === 'Submit' ? 0 : 1;
-    const currentStatus = type === 'Submit' ? 1 : 0;
+    const newStatus = type === 'Submit' ? true : false;
 
     const selectedBranches = dataAction
-      .filter((item: any) => item.status === currentStatus)
+      .filter((item: any) => item.status === !newStatus)
       .map((item: any) => ({id: item.id, status: item.status}));
 
     if (selectedBranches.length <= 0) {
@@ -255,14 +254,13 @@ const Filter: React.FC<IFilterProps> = ({
   };
 
   const handleChangeService = async (type: string) => {
-    // 1 Tạm dừng, 0 là Đang hoạt động
+    //  // false tạm dừng, true là Đang hoạt động
     setLoader && setLoader(true);
 
-    const newStatus = type === 'Submit' ? 0 : 1;
-    const currentStatus = type === 'Submit' ? 1 : 0;
+    const newStatus = type === 'Submit' ? true : false;
 
     const selectedServices = dataAction
-      .filter((item: any) => item.status === currentStatus)
+      .filter((item: any) => item.status === !newStatus)
       .map((item: any) => ({id: item.id, status: item.status}));
 
     if (selectedServices.length <= 0) {
@@ -590,13 +588,22 @@ const Filter: React.FC<IFilterProps> = ({
                           handleChangeAppointments(EChangeStatus.Cancel);
                         }}
                       >
+                        Làm mới lịch hẹn
+                      </div>
+
+                      <div
+                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
+                        onClick={() => {
+                          handleChangeAppointments(EChangeStatus.Delete); // không phải xóa, chuyển trạng thái thôi
+                        }}
+                      >
                         Hủy lịch hẹn
                       </div>
 
                       <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
                         onClick={() => {
-                          handleChangeAppointments(EChangeStatus.Delete);
+                          handleDelete(EFilterType.APPOINTMENT);
                         }}
                       >
                         Xóa lịch hẹn
@@ -623,6 +630,15 @@ const Filter: React.FC<IFilterProps> = ({
                       >
                         Hủy chi nhánh
                       </div>
+
+                      <div
+                        className="block px-4 mx-1 rounded-md hover:text-red-500 cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                        onClick={() => {
+                          handleDelete(EFilterType.BRANCH);
+                        }}
+                      >
+                        Xóa chi nhánh
+                      </div>
                     </>
                   )}
 
@@ -644,6 +660,15 @@ const Filter: React.FC<IFilterProps> = ({
                         }}
                       >
                         Tạm dừng dịch vụ
+                      </div>
+
+                      <div
+                        className="block px-4 mx-1 rounded-md hover:text-red-500 cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                        onClick={() => {
+                          handleDelete(EFilterType.SERVICE);
+                        }}
+                      >
+                        Xóa dịch vụ
                       </div>
                     </>
                   )}

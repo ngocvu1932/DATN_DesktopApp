@@ -96,13 +96,6 @@ const BranchManagement: React.FC = () => {
     });
   };
 
-  const handleToggleEdit = (index: number) => {
-    setEditStatuses((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
   const renderContent = () => {
     switch (layoutInfo?.layout) {
       case ELayoutInfo.Home:
@@ -132,7 +125,7 @@ const BranchManagement: React.FC = () => {
                   <thead className="bg-gray-200 sticky top-0 z-10">
                     <tr>
                       <th></th>
-                      <th className="border border-gray-300 p-1">ID</th>
+                      {/* <th className="border border-gray-300 p-1">ID</th> */}
                       <th className="border border-gray-300 p-1">Tên chi nhánh</th>
                       <th className="border border-gray-300 p-1">Địa chỉ</th>
                       <th className="border border-gray-300 p-1">Số điện thoại</th>
@@ -177,15 +170,9 @@ const BranchManagement: React.FC = () => {
   };
 
   const renderBranch = (branch: IBranch, index: number) => {
-    const statuses = {
-      appointmentId: branch.id,
-      status: branch.status === 1 ? 1 : 2,
-    };
-
-    const handleChangeStatus = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      statuses.status = Number(event.target.value);
-    };
-
+    if (branch.isRemoved == true) {
+      return;
+    }
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -199,7 +186,7 @@ const BranchManagement: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold">{branch.id}</td>
+        {/* <td className="border border-gray-300 p-1 font-semibold">{branch.id}</td> */}
         <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${branch.name}`}>
           {branch.name}
         </td>
@@ -214,12 +201,12 @@ const BranchManagement: React.FC = () => {
         </td>
         <td
           className="h-full justify-center items-center p-0"
-          title={`Trạng thái: ${branch.status == 1 ? 'OFF' : 'Đang hoạt động'}`}
+          title={`Trạng thái: ${branch.status == false ? 'OFF' : 'Đang hoạt động'}`}
         >
-          {/*     // 1 là OFF, 0 là đang hoạt động*/}
-          {branch.status == 1 ? (
+          {/*   true là đang hoạt động, false OFFF*/}
+          {branch.status == false ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : branch.status == 0 ? (
+          ) : branch.status == true ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
           ) : (
             <>Error</>
