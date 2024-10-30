@@ -1,29 +1,19 @@
 export interface IAppointment {
-  branch_id: number;
-  created_at?: string;
-  customer_id: number;
-  date: string;
-  employee_id: null;
   id: number;
-  note: string;
-  reminder_sent: number;
-  service_id: number;
+  code: string;
+  branchId: number;
+  customerId: number;
+  employeeId: number;
   status: number;
+  note: string;
+  isRemoved: boolean;
+  createdAt: string;
+  updatedAt: string;
+  serviceId: number;
+  serviceName: string;
+  branchName: string;
+  customerName: string;
+  employeeName: string;
   time: string;
-  updated_at?: string;
-  user_id: number;
+  reminderSent: boolean;
 }
-// export interface IAppointment {
-//   branch_id: number;   DONE
-//   created_at: string;
-//   customer_id: number;   DONE
-//   employee_id: null;  DONE
-//   id: number;    DONE
-//   note: string;   DONE
-//   reminder_sent: number;  DONE
-//   service_id: number;   DONE
-//   status: number;    DONE
-//   time: string;   DONE
-//   updated_at: string;
-//   user_id: number;   DONE
-// }

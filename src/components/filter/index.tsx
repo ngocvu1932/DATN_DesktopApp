@@ -22,6 +22,12 @@ interface IFilterProps {
   setLoader?: (isLoading: boolean) => void;
 }
 
+enum EChangeStatus {
+  Submit = 'Submit',
+  Cancel = 'Cancel',
+  Delete = 'Delete',
+}
+
 interface IUpdateAppointmentStatus {
   id: number;
   status: number;
@@ -142,23 +148,27 @@ const Filter: React.FC<IFilterProps> = ({
     }
   }, [dataAction]);
 
-  const handleChangeAppointments = async (type: string) => {
-    // 1 là mới, 0 là đã xác nhận
+  const handleChangeAppointments = async (type: EChangeStatus) => {
+    /* 0 MỚi, 1 Đã xác nhận, 2 Hủy */
     setLoader && setLoader(true);
 
-    const newStatus = type === 'Submit' ? 0 : 1;
-    const currentStatus = type === 'Submit' ? 1 : 0;
+    const newStatus =
+      type === EChangeStatus.Submit ? 1 : type === EChangeStatus.Cancel ? 0 : type === EChangeStatus.Delete ? 2 : 0;
 
     const selectedAppointments = dataAction
-      .filter((item: any) => item.status === currentStatus)
+      .filter((item: any) => item.status !== newStatus)
       .map((item: any) => ({id: item.id, status: item.status}));
 
     if (selectedAppointments.length <= 0) {
       showToast &&
         showToast(
-          type === 'Submit'
+          type == EChangeStatus.Submit
             ? 'Lịch hẹn chọn đang trong trạng thái xác nhận!'
-            : 'Lịch hẹn chọn đang trong trạng thái hủy!',
+            : type == EChangeStatus.Cancel
+            ? 'Lịch hẹn chọn đang trong trạng thái hủy!'
+            : type == EChangeStatus.Delete
+            ? 'Lịch hẹn chọn đang trong trạng thái xóa!'
+            : 'error!',
           'warning'
         );
       setLoader && setLoader(false);
@@ -166,7 +176,7 @@ const Filter: React.FC<IFilterProps> = ({
     }
 
     try {
-      const promises = selectedAppointments.map((element: IUpdateAppointmentStatus) =>
+      const promises = dataAction.map((element: IUpdateAppointmentStatus) =>
         updateStatusAppointment(element.id, {status: newStatus})
       );
 
@@ -176,7 +186,17 @@ const Filter: React.FC<IFilterProps> = ({
       if (allSuccess) {
         setDataAction && setDataAction([]);
         reloadData && reloadData();
-        showToast && showToast(type === 'Submit' ? 'Xác nhận thành công!' : 'Hủy thành công!', 'success');
+        showToast &&
+          showToast(
+            type === EChangeStatus.Submit
+              ? 'Xác nhận thành công!'
+              : type === EChangeStatus.Cancel
+              ? 'Hủy thành công!'
+              : type === EChangeStatus.Delete
+              ? 'Xóa thành công!'
+              : 'erorr',
+            'success'
+          );
       } else {
         showToast && showToast('Có lỗi xảy ra!', 'error');
       }
@@ -558,7 +578,7 @@ const Filter: React.FC<IFilterProps> = ({
                       <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
                         onClick={() => {
-                          handleChangeAppointments('Submit');
+                          handleChangeAppointments(EChangeStatus.Submit);
                         }}
                       >
                         Xác nhận lịch hẹn
@@ -567,10 +587,19 @@ const Filter: React.FC<IFilterProps> = ({
                       <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
                         onClick={() => {
-                          handleChangeAppointments('Cancel');
+                          handleChangeAppointments(EChangeStatus.Cancel);
                         }}
                       >
                         Hủy lịch hẹn
+                      </div>
+
+                      <div
+                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
+                        onClick={() => {
+                          handleChangeAppointments(EChangeStatus.Delete);
+                        }}
+                      >
+                        Xóa lịch hẹn
                       </div>
                     </>
                   )}
@@ -619,7 +648,7 @@ const Filter: React.FC<IFilterProps> = ({
                     </>
                   )}
 
-                  <div
+                  {/* <div
                     onClick={() => {
                       type == EFilterType.SERVICE
                         ? handleDelete(EFilterType.SERVICE)
@@ -630,7 +659,7 @@ const Filter: React.FC<IFilterProps> = ({
                     className="block px-4 mx-1 rounded-md  py-2 text-base cursor-pointer text-gray-700 hover:bg-gray-200 hover:text-red-500"
                   >
                     Xóa
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}

@@ -8,6 +8,7 @@
   "auth_logout_success": "Đăng xuất thành công!",
   "auth_login_fail": "Đăng nhập thất bại!",
   "auth_logout_fail": "Đăng xuất thất bại!",
+  "auth_reLogin_success": "Chào mừng trở lại!",
 
   "account_title": "Tài khoản",
   "account_info_title": "Thông tin cá nhân",

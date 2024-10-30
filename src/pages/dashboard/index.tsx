@@ -21,6 +21,7 @@ import AllServices from '../all-services';
 import SessionsTracking from '../sessions-tracking';
 import LoadingOverlay from '../../components/loading-overlay';
 import Customer from '../customer';
+import {getInfo} from '../../api/auth';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -32,12 +33,26 @@ const Dashboard: React.FunctionComponent = () => {
   const minWidth = 250;
   const location = useLocation();
   const layout = useSelector((state: any) => state.layout.layout);
-  // const location = useLocation();
   const {message, type} = location.state || {};
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getInfo();
+        // console.log('Dữ liệu API:', response.data);
+      } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+      }
+    };
+
+    // fetchData();
+    const intervalId = setInterval(fetchData, 180000); // 300000 ms = 5 phút, 10000 ms = 10 giây, 180000 ms = 3 phút
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
     if (message && type) {
-      // Gọi showToast dựa vào message và type từ state
       switch (type) {
         case 'error':
           toast.error(message, {autoClose: 2000});
@@ -53,12 +68,6 @@ const Dashboard: React.FunctionComponent = () => {
       }
     }
   }, [message, type]);
-
-  // useEffect(() => {
-  //   if (location?.state && location?.state?.message) {
-  //     toast.success(location.state.message ?? 'test', {autoClose: location.state.autoClose ?? 3000});
-  //   }
-  // }, [location?.state]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();

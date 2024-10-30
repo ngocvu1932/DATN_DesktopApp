@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 function createWindow() {
   const {width: screenWidth, height: screenHeight} = screen.getPrimaryDisplay().workAreaSize;
 
-  const windowWidth = Math.round(screenWidth * 0.92); // 92% width
+  const windowWidth = Math.round(screenWidth * 0.95); // 92% width
   const windowHeight = Math.round(screenHeight * 0.94); // 94% height
   const window = new BrowserWindow({
     width: windowWidth,

@@ -1,3 +1,4 @@
+import {b} from 'vite/dist/node/types.d-aGj9QkWt';
 import axios, {CustomAxiosResponse} from '../axiosConfig';
 
 interface IStatusUpdate {
@@ -6,9 +7,12 @@ interface IStatusUpdate {
 
 interface IAppointmentUpdate {
   status: number;
-  reminder_sent: number;
-  service_id: number;
+  reminderSent: boolean;
+  serviceId: number;
   note: string;
+  branchId: number;
+  employeeId: number;
+  time: string;
 }
 
 export const allAppointment = async (page: number, limit: number): Promise<CustomAxiosResponse<any> | undefined> => {
@@ -52,7 +56,7 @@ export const updateStatusAppointment = async (
   data: IStatusUpdate
 ): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.put(`/api/v1/appointments/update-status/${id}`, data);
+    const res = await axios.patch(`/api/v1/appointments/${id}`, data);
     return res;
   } catch (error) {
     console.log(error);
@@ -64,7 +68,7 @@ export const updateAppointment = async (
   data: IAppointmentUpdate
 ): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.put(`/api/v1/appointments/${id}`, data);
+    const res = await axios.patch(`/api/v1/appointments/${id}`, data);
     return res;
   } catch (error) {
     console.log(error);

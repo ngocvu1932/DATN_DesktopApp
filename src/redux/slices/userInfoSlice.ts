@@ -1,7 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {IUserInfo} from '../../models/userInfo';
 
 const initialState = {
-  userInfo: null,
+  userInfo: {} as IUserInfo,
 };
 
 const userInfoSlice = createSlice({
