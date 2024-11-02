@@ -1,4 +1,11 @@
-import {faArrowsUpDown, faCalendarPlus, faFilter, faRotate, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowsUpDown,
+  faCalendarPlus,
+  faFilter,
+  faMagnifyingGlass,
+  faRotate,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import React, {useEffect, useState} from 'react';
 import TextInput from '../text-input';
@@ -8,6 +15,9 @@ import {ETypeAdd} from '../drawer/enum';
 import {deleteAppointment, updateStatusAppointment} from '../../api/appointment';
 import {deleteBranch, updateStatusBranch} from '../../api/branch';
 import {deleteService, updateStatusService} from '../../api/services';
+import DatePicker from 'react-datepicker';
+import DatePickerCustom from '../date-picker';
+import {approveAppointment} from '../../api/reception';
 
 interface IFilterProps {
   clearFilter?: () => void;
@@ -31,6 +41,11 @@ enum EChangeStatus {
 interface IUpdateAppointmentStatus {
   id: number;
   status: number;
+}
+
+interface IFilterTime {
+  from: string;
+  to: string;
 }
 
 const Filter: React.FC<IFilterProps> = ({
@@ -66,6 +81,11 @@ const Filter: React.FC<IFilterProps> = ({
 
     gender: '',
     loyalty_points: '',
+  });
+
+  const [dateTimeChoose, setDateTimeChoose] = useState<IFilterTime>({
+    from: '',
+    to: '',
   });
 
   const [tempFilter, setTempFilter] = useState(filter);
@@ -340,9 +360,45 @@ const Filter: React.FC<IFilterProps> = ({
     }
   };
 
+  const handleApproveAppointment = async () => {
+    setLoader && setLoader(true);
+
+    const selectedAppointments = dataAction
+      .filter((item: any) => item.status !== 1)
+      .map((item: any) => ({id: item.id, status: item.status}));
+
+    if (selectedAppointments.length <= 0) {
+      showToast && showToast('Lịch hẹn chọn đang trong trạng thái xác nhận!', 'warning');
+      setLoader && setLoader(false);
+      return;
+    }
+
+    try {
+      const promises = dataAction.map((element: IUpdateAppointmentStatus) =>
+        approveAppointment(element.id, {status: 1})
+      );
+
+      const results = await Promise.all(promises);
+      const allSuccess = results.every((res) => res?.statusCode === 200);
+
+      if (allSuccess) {
+        setDataAction && setDataAction([]);
+        reloadData && reloadData();
+        showToast && showToast('Xác nhận thành công!', 'success');
+      } else {
+        showToast && showToast('Có lỗi xảy ra!', 'error');
+      }
+    } catch (error) {
+      showToast && showToast('Có lỗi xảy ra trong quá trình xử lý!', 'error');
+      console.error(error);
+    } finally {
+      setLoader && setLoader(false);
+    }
+  };
+
   return (
-    <div className="flex items-center flex-grow py-1">
-      <div className="w-[70%] flex flex-col">
+    <div className="flex w-full items-center justify-between my-1.5">
+      {/* <div className="w-[70%] flex flex-col">
         <div className="flex">
           <TextInput changeText={(text) => handleChange('id', text)} className="h-8 w-36" placeholder="ID" title="ID" />
           {type == EFilterType.BRANCH && (
@@ -523,29 +579,37 @@ const Filter: React.FC<IFilterProps> = ({
             </>
           )}
         </div>
-      </div>
+      </div> */}
 
-      <div className="w-[30%] flex justify-end self-start mt-[4px] ">
-        {/* <div className="flex relative border border-white rounded-md">
-          <div
-            className="flex items-center cursor-pointer px-3 rounded-l-md py-1 bg-slate-300 hover:bg-slate-400"
-            onClick={() => setIsShowFilter(!isShowFilter)}
-          >
-            <FontAwesomeIcon icon={faFilter} />
-            <p className="ml-3">Lọc</p>
-          </div>
+      <div className="flex items-center">
+        <TextInput placeholder="Tìm kiếm" className="h-8 ml-0" />
 
-          <div
-            onClick={clearFilter}
-            className="flex items-center cursor-pointer justify-center rounded-r-md border-l border-slate-400 px-2 py-1 bg-slate-300 hover:bg-slate-400"
-          >
-            <FontAwesomeIcon icon={faXmark} />
-          </div>
-          {isShowFilter && <div className="flex bg-red-500 absolute top-8 right-0">ádasdasd</div>}
-        </div> */}
+        <DatePickerCustom
+          className="m-1"
+          placeholder="From"
+          onChooseDate={(date) => setDateTimeChoose({...dateTimeChoose, from: date})}
+        />
+
+        <DatePickerCustom
+          className="m-1"
+          placeholder="To"
+          onChooseDate={(date) => setDateTimeChoose({...dateTimeChoose, to: date})}
+        />
 
         <button
-          className="border border-white  text-white bg-slate-500 hover:bg-slate-800 px-3.5 py-1 mr-2 rounded-md"
+          className="border border-white m-1 text-white bg-slate-500 hover:bg-slate-800 px-3.5 h-8 rounded-xl"
+          title="Lọc"
+          onClick={() => {
+            console.log('dateTimeChoose', dateTimeChoose);
+          }}
+        >
+          <FontAwesomeIcon icon={faMagnifyingGlass} />
+        </button>
+      </div>
+
+      <div className="flex">
+        <button
+          className="border border-white  text-white bg-slate-500 hover:bg-slate-800 px-3.5 h-8 mr-2 rounded-xl"
           title="Làm mới"
           onClick={() => reloadData && reloadData()}
         >
@@ -560,7 +624,7 @@ const Filter: React.FC<IFilterProps> = ({
               onClick={() => setIsShowActions(!isShowActions)}
               className={`${
                 isShowActions ? 'bg-slate-800' : 'bg-slate-500'
-              } inline-flex justify-center items-center w-full text-white rounded-md border border-white shadow-sm px-3.5 py-1 hover:bg-slate-800 focus:outline-none`}
+              } inline-flex justify-center items-center w-full text-white rounded-xl border border-white shadow-sm px-3.5 h-8 hover:bg-slate-800 focus:outline-none`}
             >
               Hành động &nbsp; <FontAwesomeIcon icon={faArrowsUpDown} />
             </button>
@@ -568,37 +632,35 @@ const Filter: React.FC<IFilterProps> = ({
             {isShowActions && (
               <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
                 <div className="py-1">
-                  {/* <div className="block px-4 mx-1 rounded-md cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200">
-                    Sửa
-                  </div> */}
                   {type == EFilterType.APPOINTMENT && (
                     <>
                       <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
                         onClick={() => {
-                          handleChangeAppointments(EChangeStatus.Submit);
+                          // handleChangeAppointments(EChangeStatus.Submit);
+                          handleApproveAppointment();
                         }}
                       >
                         Xác nhận lịch hẹn
                       </div>
 
-                      <div
+                      {/* <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
                         onClick={() => {
                           handleChangeAppointments(EChangeStatus.Cancel);
                         }}
                       >
                         Làm mới lịch hẹn
-                      </div>
+                      </div> */}
 
-                      <div
+                      {/* <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
                         onClick={() => {
                           handleChangeAppointments(EChangeStatus.Delete); // không phải xóa, chuyển trạng thái thôi
                         }}
                       >
                         Hủy lịch hẹn
-                      </div>
+                      </div> */}
 
                       <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
@@ -672,19 +734,6 @@ const Filter: React.FC<IFilterProps> = ({
                       </div>
                     </>
                   )}
-
-                  {/* <div
-                    onClick={() => {
-                      type == EFilterType.SERVICE
-                        ? handleDelete(EFilterType.SERVICE)
-                        : type == EFilterType.APPOINTMENT
-                        ? handleDelete(EFilterType.APPOINTMENT)
-                        : handleDelete(EFilterType.BRANCH);
-                    }}
-                    className="block px-4 mx-1 rounded-md  py-2 text-base cursor-pointer text-gray-700 hover:bg-gray-200 hover:text-red-500"
-                  >
-                    Xóa
-                  </div> */}
                 </div>
               </div>
             )}
@@ -692,7 +741,7 @@ const Filter: React.FC<IFilterProps> = ({
         ) : (
           <>
             <button
-              className="border border-white text-white bg-slate-500 hover:bg-slate-800 px-3.5 py-1 rounded-md"
+              className="border border-white text-white bg-slate-500 hover:bg-slate-800 px-3.5 h-8 rounded-xl"
               onClick={toggleDrawer}
               title={`${
                 type === EFilterType.SERVICE

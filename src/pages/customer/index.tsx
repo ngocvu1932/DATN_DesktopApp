@@ -79,7 +79,7 @@ const Customer: React.FC = () => {
       if (response?.statusCode === 200) {
         setCustomers(response?.data);
         setCustomersTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -103,7 +103,7 @@ const Customer: React.FC = () => {
       case ELayoutInfo.Home:
         return (
           <>
-            <div className="h-[13%] flex w-full">
+            <div className="h-[7%] flex w-full">
               <Filter
                 setDataFilter={setCustomersTemp}
                 dataFilter={customers}
@@ -117,7 +117,7 @@ const Customer: React.FC = () => {
               />
             </div>
 
-            <div className="h-[75%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
+            <div className="h-[81%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -186,8 +186,8 @@ const Customer: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.id}`}>
-          {customer.id}
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.code}`}>
+          {customer.code}
         </td>
         <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${customer.name}`}>
           {customer.name}
@@ -201,8 +201,8 @@ const Customer: React.FC = () => {
         <td className="border border-gray-300 p-1" title={`Giới tính: ${customer.gender}`}>
           {customer.gender}
         </td>
-        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyalty_points}`}>
-          {customer.loyalty_points}
+        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyaltyPoints}`}>
+          {customer.loyaltyPoints}
         </td>
         <td
           className="h-full justify-center items-center p-0"

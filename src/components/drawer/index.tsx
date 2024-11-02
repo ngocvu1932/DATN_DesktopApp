@@ -14,7 +14,7 @@ import {createBranch} from '../../api/branch';
 import {EFilterType} from '../filter/enum';
 import {IDataChoose} from '../../pages/all-services';
 import {IAppointmentRequest} from '../../api/appointment/interface';
-import ChooseDateTime from '../choose-date-time';
+import ChooseDateTime from '../date-time-picker';
 import {addHours, format, isEqual} from 'date-fns';
 import {app} from 'electron';
 import {createAppointment} from '../../api/appointment';

@@ -117,8 +117,20 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                   <p>{t('sidebar_appointment')}</p>
                 </div>
               </li>
-              <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
-                Mục con 2.2
+
+              <li
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
+                  layout == ELayout.ServiceRequest ? 'bg-gray-400 border border-white' : ''
+                }`}
+                onClick={() => dispatch(setLayout(ELayout.ServiceRequest))}
+              >
+                <div className="flex items-center">
+                  <div className="flex w-[30px]">
+                    <FontAwesomeIcon icon={faCalendar} />
+                  </div>
+                  {/* <p>{t('sidebar_appointment')}</p> */}
+                  <p>{t('sidebar_service_request')}</p>
+                </div>
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 2.3

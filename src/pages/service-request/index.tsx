@@ -24,7 +24,7 @@ import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
 import {formatISO, getDate} from 'date-fns';
 
-const Appointment: React.FC = () => {
+const ServiceRequest: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -338,4 +338,4 @@ const Appointment: React.FC = () => {
   );
 };
 
-export default Appointment;
+export default ServiceRequest;

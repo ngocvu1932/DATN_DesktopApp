@@ -101,7 +101,7 @@ const BranchManagement: React.FC = () => {
       case ELayoutInfo.Home:
         return (
           <>
-            <div className="h-[13%] flex w-full">
+            <div className="h-[7%] flex w-full">
               <Filter
                 setDataFilter={setBranchsTemp}
                 dataFilter={branchs}
@@ -115,7 +115,7 @@ const BranchManagement: React.FC = () => {
               />
             </div>
 
-            <div className="h-[75%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
+            <div className="h-[81%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />

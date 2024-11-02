@@ -20,7 +20,7 @@ import {updateService} from '../../api/services';
 import {IDataChoose} from '../../pages/all-services';
 import {time} from 'console';
 import {updateAppointment} from '../../api/appointment';
-import ChooseDateTime from '../choose-date-time';
+import ChooseDateTime from '../date-time-picker';
 import {format, isEqual} from 'date-fns';
 
 interface IInfoDetailProps {

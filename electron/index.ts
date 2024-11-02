@@ -1,8 +1,9 @@
-import {join} from 'path';
+import path, {join} from 'path';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
-import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut, screen} from 'electron';
+import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut, screen, dialog} from 'electron';
 import isDev from 'electron-is-dev';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -62,6 +63,14 @@ function createWindow() {
 
   ipcMain.on('close', () => {
     window.close();
+  });
+
+  // Lắng nghe sự kiện save-pdf
+  ipcMain.handle('save-pdf', async (event, pdfData) => {
+    const filePath = path.join(app.getPath('downloads'), `invoice-${Date.now()}.pdf`);
+    const buffer = Buffer.from(pdfData, 'base64');
+    fs.writeFileSync(filePath, buffer);
+    return `Hóa đơn đã được lưu tại ${filePath}`;
   });
 
   nativeTheme.themeSource = 'system';

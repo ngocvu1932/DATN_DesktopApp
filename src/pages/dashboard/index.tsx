@@ -22,6 +22,7 @@ import SessionsTracking from '../sessions-tracking';
 import LoadingOverlay from '../../components/loading-overlay';
 import Customer from '../customer';
 import {getInfo} from '../../api/auth';
+import ServiceRequest from '../service-request';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -111,6 +112,8 @@ const Dashboard: React.FunctionComponent = () => {
         return <SessionsTracking />;
       case ELayout.AllCustomer:
         return <Customer />;
+      case ELayout.ServiceRequest:
+        return <ServiceRequest />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }

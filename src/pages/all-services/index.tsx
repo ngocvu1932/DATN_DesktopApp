@@ -144,7 +144,7 @@ const AllServices: React.FC = () => {
       case ELayoutInfo.Home:
         return (
           <>
-            <div className="h-[13%] flex w-full">
+            <div className="h-[7%] flex w-full">
               <Filter
                 showToast={showToast}
                 setDataFilter={setAllServicesTemp}
@@ -157,7 +157,7 @@ const AllServices: React.FC = () => {
                 setLoader={setIsLoading}
               />
             </div>
-            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400">
+            <div className="overflow-y-auto scrollbar-thin h-[81%] border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
