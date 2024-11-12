@@ -23,10 +23,12 @@ import {allServicesNoLimit} from '../../api/services';
 import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
 import {formatISO, getDate} from 'date-fns';
+import {getAllServiceRequest} from '../../api/service-requests';
+import {IServiceRequest} from '../../models/service-request';
 
 const ServiceRequest: React.FC = () => {
-  const [appointments, setAppointments] = useState<IAppointment[]>([]);
-  const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>([]);
+  const [serviceRequest, setServiceRequest] = useState<IServiceRequest[]>([]);
+  const [serviceRequestsTemp, setServiceRequestsTemp] = useState<IServiceRequest[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit, setLimit] = useState(30);
@@ -34,83 +36,92 @@ const ServiceRequest: React.FC = () => {
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
-  const [selectedAppointments, setSelectedAppointments] = useState<IAppointment[]>([]);
+  const [selectedServiceRequest, setSelectedServiceRequest] = useState<IServiceRequest[]>([]);
+
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [branchs, setBranchs] = useState<IDataChoose[]>([]);
-  const [services, setServices] = useState<IDataChoose[]>([]);
+  // const [branchs, setBranchs] = useState<IDataChoose[]>([]);
+  // const [services, setServices] = useState<IDataChoose[]>([]);
+
+  // useEffect(() => {
+  //   if (isLoading) {
+  //     setIsLoadingPage(isLoading);
+  //   }
+  // }, [isLoading]);
 
   useEffect(() => {
-    if (isLoading) {
-      setIsLoadingPage(isLoading);
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
-    fetchAppointments();
+    fetchServiceRequest();
   }, [currentPage, layoutInfo, limit]);
 
-  useEffect(() => {
-    if (isOpenDrawer == false) {
-      fetchAppointments();
-    }
-  }, [isOpenDrawer]);
+  // useEffect(() => {
+  //   if (isOpenDrawer == false) {
+  //     fetchAppointments();
+  //   }
+  // }, [isOpenDrawer]);
 
-  useEffect(() => {
-    fetchBranchs();
-    fetchServices();
-  }, []);
+  // useEffect(() => {
+  //   fetchBranchs();
+  //   fetchServices();
+  // }, []);
 
-  const fetchBranchs = async () => {
+  const fetchServiceRequest = async () => {
     try {
-      const response = await getAllBranchNoLimit();
+      const response = await getAllServiceRequest();
       if (response?.statusCode === 200) {
-        const filteredData = response?.data.map((branch: IBranch) => {
-          return {id: branch.id, value: branch.name, status: branch.status};
-        });
-        setBranchs(filteredData);
+        // const filteredData = response?.data.map((appointment: IAppointment) => {
+        //   return {
+        //     ...appointment,
+        //     time: appointment.time.replace(/\.\d{3}Z$/, ''),
+        //   };
+        // });
+
+        setServiceRequest(response?.data);
+        setServiceRequestsTemp(response?.data);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
+        setCurrentPageRes(response?.pagination?.page ?? 0);
+        setIsLoadingPage(false);
       }
     } catch (error) {
       console.error('Error fetching branchs:', error);
     }
   };
 
-  const fetchServices = async () => {
-    try {
-      const response = await allServicesNoLimit();
-      if (response?.statusCode === 200) {
-        const filteredData = response?.data.map((service: IService) => {
-          return {id: service.id, value: service.name, status: service.status};
-        });
-        setServices(filteredData);
-      }
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    }
-  };
+  // const fetchServices = async () => {
+  //   try {
+  //     const response = await allServicesNoLimit();
+  //     if (response?.statusCode === 200) {
+  //       const filteredData = response?.data.map((service: IService) => {
+  //         return {id: service.id, value: service.name, status: service.status};
+  //       });
+  //       setServices(filteredData);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching services:', error);
+  //   }
+  // };
 
-  const fetchAppointments = async () => {
-    try {
-      setIsLoadingPage(true);
-      const response = await allAppointment(currentPage, limit);
-      if (response?.statusCode === 200) {
-        const filteredData = response?.data.map((appointment: IAppointment) => {
-          return {
-            ...appointment,
-            time: appointment.time.replace(/\.\d{3}Z$/, ''),
-          };
-        });
+  // const fetchAppointments = async () => {
+  //   try {
+  //     setIsLoadingPage(true);
+  //     const response = await allAppointment(currentPage, limit);
+  //     if (response?.statusCode === 200) {
+  //       const filteredData = response?.data.map((appointment: IAppointment) => {
+  //         return {
+  //           ...appointment,
+  //           time: appointment.time.replace(/\.\d{3}Z$/, ''),
+  //         };
+  //       });
 
-        setAppointments(filteredData);
-        setAppointmentsTemp(filteredData);
-        setTotalPages(response?.pagination?.totalPages ?? 0);
-        setCurrentPageRes(response?.pagination?.page ?? 0);
-        setIsLoadingPage(false);
-      }
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    }
-  };
+  //       setAppointments(filteredData);
+  //       setAppointmentsTemp(filteredData);
+  //       setTotalPages(response?.pagination?.totalPages ?? 0);
+  //       setCurrentPageRes(response?.pagination?.page ?? 0);
+  //       setIsLoadingPage(false);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching appointments:', error);
+  //   }
+  // };
 
   const showToast = (message: string, type: string) => {
     switch (type) {
@@ -163,16 +174,16 @@ const ServiceRequest: React.FC = () => {
             <div className="h-[7%] flex w-full">
               <Filter
                 showToast={showToast}
-                setDataFilter={setAppointmentsTemp}
-                dataFilter={appointments}
+                setDataFilter={setServiceRequestsTemp}
+                dataFilter={serviceRequest}
                 toggleDrawer={toggleDrawer}
-                type={EFilterType.APPOINTMENT}
-                dataAction={selectedAppointments}
-                setDataAction={setSelectedAppointments}
+                type={EFilterType.SERVICE_REQUEST}
+                dataAction={selectedServiceRequest}
+                setDataAction={setSelectedServiceRequest}
                 reloadData={() => {
-                  fetchAppointments();
-                  fetchBranchs();
-                  fetchServices();
+                  // fetchAppointments();
+                  // fetchBranchs();
+                  // fetchServices();
                 }}
                 setLoader={setIsLoading}
               />
@@ -189,31 +200,25 @@ const ServiceRequest: React.FC = () => {
                     <tr>
                       <td></td>
                       <th className="border border-gray-300 p-1">ID</th>
-                      <th className="border border-gray-300 p-1">Khách hàng</th>
-                      <th className="border border-gray-300 p-1">Dịch vụ</th>
-                      <th className="border border-gray-300 p-1">Ngày</th>
-                      <th className="border border-gray-300 p-1">Giờ</th>
-                      <th className="border border-gray-300 p-1">Nhân viên</th>
+                      <th className="border border-gray-300 p-1">Lịch hẹn</th>
+                      <th className="border border-gray-300 p-1">Thời gian đến</th>
                       <th className="border border-gray-300 p-1">Trạng thái</th>
-                      <th className="border border-gray-300 p-1">Chi nhánh</th>
-                      <th className="border border-gray-300 p-1">Nhắc hẹn</th>
-                      <th className="border border-gray-300 p-1">Ngày tạo</th>
-                      <th className="border border-gray-300 p-1">Ghi chú</th>
+                      <th className="border border-gray-300 p-1">Thời gian hoàn thành</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {appointmentsTemp.map((appointment, index) => (
+                    {serviceRequestsTemp.map((serviceRequest, index) => (
                       <tr
                         onClick={() => {
-                          handleViewDetail(appointment);
-                          setSelectedAppointments([]);
+                          //   handleViewDetail(appointment);
+                          //   setSelectedAppointments([]);
                         }}
-                        key={appointment.id}
+                        key={serviceRequest.id}
                         className={`${
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
                         } border-b cursor-pointer border-gray-300 hover:bg-slate-200`}
                       >
-                        {renderAppointment(appointment, index)}
+                        {renderServiceRequest(serviceRequest, index)}
                       </tr>
                     ))}
                   </tbody>
@@ -234,28 +239,28 @@ const ServiceRequest: React.FC = () => {
             </div>
           </div>
         );
-      case ELayoutInfo.Details:
-        return (
-          <InfoDetail type={ETypeInfoDetail.APPOINTMENT} dataChooseBranchs={branchs} dataChooseServices={services} />
-        );
+      // case ELayoutInfo.Details:
+      //   return (
+      //     <InfoDetail type={ETypeInfoDetail.APPOINTMENT} dataChooseBranchs={branchs} dataChooseServices={services} />
+      //   );
       default:
         return <></>;
     }
   };
 
-  const handleCheckboxChange = (appointment: IAppointment) => {
-    setSelectedAppointments((prevSelected) => {
-      if (prevSelected.find((a) => a.id === appointment.id)) {
-        return prevSelected.filter((a) => a.id !== appointment.id);
+  const handleCheckboxChange = (serviceRequest: IServiceRequest) => {
+    setSelectedServiceRequest((prevSelected) => {
+      if (prevSelected.find((a) => a.id === serviceRequest.id)) {
+        return prevSelected.filter((a) => a.id !== serviceRequest.id);
       } else {
-        return [...prevSelected, appointment];
+        return [...prevSelected, serviceRequest];
       }
     });
   };
 
-  const renderAppointment = (appointment: IAppointment, index: number) => {
+  const renderServiceRequest = (serviceRequest: IServiceRequest, index: number) => {
     // không hiện licjk với trạng thái đã xóa!
-    if (appointment.isRemoved) {
+    if (serviceRequest.isRemoved) {
       return;
     }
     return (
@@ -265,52 +270,28 @@ const ServiceRequest: React.FC = () => {
             <input
               type="checkbox"
               className="h-5 w-5"
-              checked={selectedAppointments.some((a) => a.id === appointment.id)}
-              onChange={() => handleCheckboxChange(appointment)}
+              checked={selectedServiceRequest.some((a) => a.id === serviceRequest.id)}
+              onChange={() => handleCheckboxChange(serviceRequest)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${appointment.code}`}>
-          {appointment.code}
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${serviceRequest.code}`}>
+          {serviceRequest.code}
         </td>
-        <td className="border border-gray-300 p-1" title={`Tên khách hàng: ${appointment.customerName}`}>
-          {appointment.customerName}
+        <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
+          {serviceRequest.appointmentId}
         </td>
-        <td className="border border-gray-300 p-1" title={`Tên dịch vụ: ${appointment.serviceName}`}>
-          {appointment.serviceName}
+        <td className="border border-gray-300 p-1" title={`Thời gian đến: ${serviceRequest.checkInTime}`}>
+          {serviceRequest.checkInTime}
         </td>
-        <td className="border border-gray-300 p-1" title={`Ngày: ${getFormattedDate(appointment.time)}`}>
-          {getFormattedDate(appointment.time)}
-        </td>
-        <td className="border border-gray-300 p-1" title={`Giờ: ${getFormattedTime(appointment.time)}`}>
-          {getFormattedTime(appointment.time)}
-        </td>
-        <td className="border border-gray-300 p-1" title={`Tên nhân viên: ${appointment.employeeName}`}>
-          {appointment.employeeName ? appointment.employeeName : ''}
-        </td>
-        <td
-          className="h-full justify-center items-center p-0"
-          title={`Trạng thái: ${appointment.status == 0 ? 'Mới' : appointment.status == 1 ? 'Đã xác nhận' : 'Hủy'}`}
-        >
-          {/* 0 MỚi, 1 Đã xác nhận, 2 Hủy */}
 
-          {appointment.status == 0 ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Mới</span>
-          ) : appointment.status == 1 ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đã xác nhận</span>
-          ) : appointment.status == 2 ? (
-            <span className="bg-red-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Hủy</span>
-          ) : (
-            ''
-          )}
+        <td className="border border-gray-300 p-1" title={`Trạng thái: ${serviceRequest.currentStatus}`}>
+          {serviceRequest.currentStatus}
         </td>
-        <td className="border border-gray-300 p-1" title="Tên chi nhánh">
-          {appointment.branchName}
+        <td className="border border-gray-300 p-1" title={`Thời gian hoàn thành: ${serviceRequest.checkInTime}`}>
+          {serviceRequest.checkInTime}
         </td>
-        <td className="border border-gray-300 p-1">{appointment.reminderSent}</td>
-        <td className="border border-gray-300 p-1">{getFormattedDate(appointment.createdAt)}</td>
-        <td className="border border-gray-300 p-1 max-w-[200px]">{appointment.note}</td>
       </>
     );
   };
@@ -321,15 +302,15 @@ const ServiceRequest: React.FC = () => {
   return (
     <div className="w-full h-full">
       <div className="h-[6%] flex border-b border-slate-400 box-border">
-        <SwitchSideBar title="Danh sách lịch hẹn" className="font-bold text-lg" />
+        <SwitchSideBar title="Danh sách lịch hẹn đang xử lý" className="font-bold text-lg" />
         <Breadcrumb />
       </div>
 
       {renderContent()}
 
       <Drawer
-        dataBranchsChoose={branchs}
-        dataServicesChoose={services}
+        // dataBranchsChoose={branchs}
+        // dataServicesChoose={services}
         isOpen={isOpenDrawer}
         onClose={toggleDrawer}
         type={ETypeAdd.APPOINTMENT}

@@ -17,6 +17,7 @@ import {
   Filler,
 } from 'chart.js';
 import {Chart, Bar, Line, Pie, Doughnut, Radar} from 'react-chartjs-2';
+import {IDayTotal, IFilterForYear, IMonthTotal, IServiceForMonth} from '../../pages/home/interface';
 
 ChartJS.register(
   CategoryScale,
@@ -38,6 +39,8 @@ ChartJS.register(Filler); // Đăng ký plugin Filler
 
 interface BarChartProps {
   type: ETypeChart;
+  title?: string;
+  data?: IMonthTotal[] | IServiceForMonth[] | IDayTotal[];
 }
 
 export enum ETypeChart {
@@ -49,13 +52,20 @@ export enum ETypeChart {
   RADAR = 'RADAR',
 }
 
-const BarChart: React.FC<BarChartProps> = ({type}) => {
+const BarChart: React.FC<BarChartProps> = ({type, title = 'Chart', data}) => {
   const dataBar = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    labels: data
+      ? data.map((item) => {
+          if ('month' in item) return (item as IMonthTotal).month; // Nếu item có thuộc tính month
+          if ('day' in item) return (item as IDayTotal).day; // Nếu item có thuộc tính day
+          // if ('service' in item) return (item as IServiceForMonth).service; // Nếu item có thuộc tính service
+          return 'Unknown'; // Phòng trường hợp không match kiểu nào
+        })
+      : ['Error'],
     datasets: [
       {
-        label: 'Sales 2024 (in USD)',
-        data: [3000, 2000, 1500, 5000, 7000, 4000, 6000],
+        label: 'Lịch hẹn',
+        data: data ? data.map((item) => item.count) : [0],
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
@@ -140,7 +150,7 @@ const BarChart: React.FC<BarChartProps> = ({type}) => {
     plugins: {
       title: {
         display: true,
-        text: 'Chart',
+        text: title,
       },
     },
   };

@@ -22,18 +22,20 @@ import {getAllBranchNoLimit} from '../../api/branch';
 import {allServicesNoLimit} from '../../api/services';
 import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
-import {formatISO, getDate} from 'date-fns';
+import {setAppointments} from '../../redux/slices/appointmentsSlice';
 
 const Appointment: React.FC = () => {
-  const [appointments, setAppointments] = useState<IAppointment[]>([]);
-  const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>([]);
+  const appointments = useSelector((state: any) => state.appointments.appointments);
+  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
+  const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>(appointments);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit, setLimit] = useState(30);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
+
   const [selectedAppointments, setSelectedAppointments] = useState<IAppointment[]>([]);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +103,7 @@ const Appointment: React.FC = () => {
           };
         });
 
-        setAppointments(filteredData);
+        dispatch(setAppointments(filteredData));
         setAppointmentsTemp(filteredData);
         setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);

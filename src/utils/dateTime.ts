@@ -10,3 +10,8 @@ export const getFormattedTime = (dateString: string) => {
   const timePart = dateString.substring(11, 16);
   return timePart;
 };
+
+export const getDaysArrayInMonth = (year: number, month: number) => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  return Array.from({length: daysInMonth}, (_, index) => index + 1);
+};

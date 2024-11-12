@@ -310,7 +310,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <div className="flex w-[30px]">
               <FontAwesomeIcon icon={faChartSimple} />
             </div>
-            <p>{t('sidebar_revenue_report')}</p>
+            <p>{t('Thống kê')}</p>
           </div>
         </button>
 
