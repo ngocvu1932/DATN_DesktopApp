@@ -249,7 +249,7 @@ const RevenueManagement: React.FC = () => {
                   />
 
                   <SelectOption
-                    titleText={`Tháng: ${month.appointment}`}
+                    titleText={`Tháng: ${month.appointment == 0 ? 'Tất cả' : month.appointment}`}
                     onClose={() =>
                       setIsOpen({
                         ...isOpen,

@@ -11,6 +11,8 @@ import {IAppointment} from '../../models/appointment';
 import {IFilterForYear} from './interface';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faAngleDown, faAngleUp, faSortDown, faSortUp} from '@fortawesome/free-solid-svg-icons';
+import CircularProgress from '../../components/process-provider';
+import ProcessView from '../../components/process-view';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
@@ -41,6 +43,7 @@ const Home: React.FC = () => {
       {month: 'December', count: 0},
     ],
     dataServicesForMonth: [],
+    dataAppointmentsForDay: [],
   });
 
   const years = ['2022', '2023', '2024', '2025', '2026']; // list year
@@ -88,6 +91,9 @@ const Home: React.FC = () => {
       </div>
 
       <div className="flex flex-grow h-[94%] scrollbar-thin flex-col overflow-y-auto">
+        <div className="flex mt-2 p-2">
+          <ProcessView title="Số lịch hẹn mới" value={400} />
+        </div>
         <div className="flex w-full min-h-[350px] mt-5 p-2">
           <div className="flex w-full bg-white p-3 rounded-xl shadow-md">
             <div className="flex w-4/5 justify-start h-full">
