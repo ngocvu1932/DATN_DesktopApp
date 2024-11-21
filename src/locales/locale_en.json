@@ -5,7 +5,10 @@
   "auth_login_forget_password": "Foget password?",
   "auth_login_version": "Version",
   "auth_login_success": "Login success!",
+  "auth_logout_success": "Logout success!",
   "auth_login_fail": "Login fail!",
+  "auth_logout_fail": "Logout fail!",
+  "auth_reLogin_success": "Welcome back!",
 
   "account_title": "Account",
   "account_info_title": "Personal information",
@@ -25,6 +28,20 @@
   "account_info_password_new": "New password",
   "account_info_password_renew": "Re-enter new password",
   "account_info_button_logout": "Log out",
+
+  "sidebar_title": "Menu",
+  "sidebar_home": "Home",
+  "sidebar_appointment_management": "Appointments",
+  "sidebar_appointment": "All appointments",
+  "sidebar_treatment_management": "Treatments",
+  "sidebar_customer_management": "Customers",
+  "sidebar_customer_management_all": "All customers",
+  "sidebar_service_management": "Services",
+  "sidebar_service_management_all": "All services",
+  "sidebar_bills": "Bills",
+  "sidebar_revenue_report": "Revenue report",
+  "sidebar_branchs": "Branchs",
+  "sidebar_logout": "Log out",
 
   "home_title": "Hi"
 }

@@ -23,7 +23,7 @@ const Account: React.FC = () => {
     dispatch(setIsLogin(false));
     navigate('/', {
       state: {
-        message: t('auth_login_successxxxxx'),
+        message: t('auth_logout_success'),
         type: 'success',
       },
     });

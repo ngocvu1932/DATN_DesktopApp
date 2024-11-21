@@ -24,7 +24,7 @@ const BranchManagement: React.FC = () => {
   const [branchsTemp, setBranchsTemp] = useState<IBranch[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(12);
+  const [limit, setLimit] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(false);
@@ -42,7 +42,7 @@ const BranchManagement: React.FC = () => {
 
   useEffect(() => {
     fetchBranchs();
-  }, [currentPage, layoutInfo]);
+  }, [currentPage, layoutInfo, limit]);
 
   useEffect(() => {
     if (isOpenDrawer == false) {
@@ -77,7 +77,7 @@ const BranchManagement: React.FC = () => {
       if (response?.statusCode === 200) {
         setBranchs(response?.data);
         setBranchsTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -96,19 +96,12 @@ const BranchManagement: React.FC = () => {
     });
   };
 
-  const handleToggleEdit = (index: number) => {
-    setEditStatuses((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
   const renderContent = () => {
     switch (layoutInfo?.layout) {
       case ELayoutInfo.Home:
         return (
           <>
-            <div className="h-[13%] flex w-full">
+            <div className="h-[7%] flex w-full">
               <Filter
                 setDataFilter={setBranchsTemp}
                 dataFilter={branchs}
@@ -122,7 +115,7 @@ const BranchManagement: React.FC = () => {
               />
             </div>
 
-            <div className="h-[75%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
+            <div className="h-[81%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -132,7 +125,7 @@ const BranchManagement: React.FC = () => {
                   <thead className="bg-gray-200 sticky top-0 z-10">
                     <tr>
                       <th></th>
-                      <th className="border border-gray-300 p-1">ID</th>
+                      {/* <th className="border border-gray-300 p-1">ID</th> */}
                       <th className="border border-gray-300 p-1">Tên chi nhánh</th>
                       <th className="border border-gray-300 p-1">Địa chỉ</th>
                       <th className="border border-gray-300 p-1">Số điện thoại</th>
@@ -162,6 +155,9 @@ const BranchManagement: React.FC = () => {
 
             <div className="flex justify-between items-center h-[6%]">
               <Pagination
+                limit={limit}
+                // totalRecords={totalRecords}
+                setLimit={setLimit}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 goToPage={(page) => handleGoToPage(page)}
@@ -177,15 +173,9 @@ const BranchManagement: React.FC = () => {
   };
 
   const renderBranch = (branch: IBranch, index: number) => {
-    const statuses = {
-      appointmentId: branch.id,
-      status: branch.status === 1 ? 1 : 2,
-    };
-
-    const handleChangeStatus = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      statuses.status = Number(event.target.value);
-    };
-
+    if (branch.isRemoved == true) {
+      return;
+    }
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -199,20 +189,27 @@ const BranchManagement: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold">{branch.id}</td>
+        {/* <td className="border border-gray-300 p-1 font-semibold">{branch.id}</td> */}
         <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${branch.name}`}>
           {branch.name}
         </td>
-        <td className="border border-gray-300 p-1" title={`Address: ${branch.address}`}>
+        <td className="border border-gray-300 p-1" title={`Địa chỉ: ${branch.address}`}>
           {branch.address}
         </td>
-        <td className="border border-gray-300 p-1">{branch.phone}</td>
-        <td className="border border-gray-300 p-1">{branch.email}</td>
-        <td className="h-full justify-center items-center p-0">
-          {/*     // 1 là OFF, 0 là đang hoạt động*/}
-          {branch.status == 1 ? (
+        <td className="border border-gray-300 p-1" title={`Số điện thoại: ${branch.phone}`}>
+          {branch.phone}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Email: ${branch.email}`}>
+          {branch.email}
+        </td>
+        <td
+          className="h-full justify-center items-center p-0"
+          title={`Trạng thái: ${branch.status == false ? 'OFF' : 'Đang hoạt động'}`}
+        >
+          {/*   true là đang hoạt động, false OFFF*/}
+          {branch.status == false ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : branch.status == 0 ? (
+          ) : branch.status == true ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
           ) : (
             <>Error</>

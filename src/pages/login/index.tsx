@@ -21,10 +21,7 @@ const Login: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [isFilled, setIsFilled] = useState(false);
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
-
   const reLogin = useSelector((state: any) => state.reLogin.reLogin);
-
-  console.log('reLogin:', reLogin);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -64,12 +61,12 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsLoadingLogin(true);
     const res = await login({username: phone, password: password});
+    // console.log('res:', res);
+
     if (res?.statusCode === 200) {
-      dispatch(setUserInfo(res.data.user));
-      // Cookies.set('accessToken', res.data.accessToken, {expires: 1 / 24, secure: true});
+      dispatch(setUserInfo(res?.data?.user));
       localStorage.setItem('accessToken', res.data.accessToken);
       localStorage.setItem('refreshToken', res.data.refreshToken);
-      // Cookies.set('refreshToken', res.data.refreshToken, {expires: 7, secure: true});
       setIsLoadingLogin(false);
       navigate('/dashboard', {
         state: {

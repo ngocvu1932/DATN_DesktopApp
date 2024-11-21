@@ -1,10 +1,17 @@
 export interface IBranch {
   id: number;
   name: string;
-  status: number;
+  status: boolean;
   address: string;
   phone: string;
   email: string;
-  created_at?: string;
-  updated_at?: string;
+  userId: null;
+  createdAt: string;
+  updatedAt: string;
+  isRemoved: boolean;
+  description: string;
+  avatar: string;
+  city: string;
+  district: string;
+  ward: string;
 }

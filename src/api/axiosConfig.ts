@@ -2,9 +2,10 @@ import axios, {AxiosResponse} from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 
 interface IPagination {
-  totalPage: number;
+  totalPages: number;
   limit: number;
   page: number;
+  totalRecords: number;
 }
 
 export interface CustomAxiosResponse<T = any> extends AxiosResponse<T> {

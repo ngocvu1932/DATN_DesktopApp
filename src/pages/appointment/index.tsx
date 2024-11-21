@@ -24,16 +24,17 @@ import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
 
 const Appointment: React.FC = () => {
+  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
-  const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>([]);
+  const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>(appointments);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(30);
+  const [limit, setLimit] = useState(30);
   const [totalPages, setTotalPages] = useState(0);
-  const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
+
   const [selectedAppointments, setSelectedAppointments] = useState<IAppointment[]>([]);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +49,7 @@ const Appointment: React.FC = () => {
 
   useEffect(() => {
     fetchAppointments();
-  }, [currentPage, layoutInfo]);
+  }, [currentPage, layoutInfo, limit]);
 
   useEffect(() => {
     if (isOpenDrawer == false) {
@@ -66,7 +67,7 @@ const Appointment: React.FC = () => {
       const response = await getAllBranchNoLimit();
       if (response?.statusCode === 200) {
         const filteredData = response?.data.map((branch: IBranch) => {
-          return {id: branch.id, value: branch.name};
+          return {id: branch.id, value: branch.name, status: branch.status};
         });
         setBranchs(filteredData);
       }
@@ -80,7 +81,7 @@ const Appointment: React.FC = () => {
       const response = await allServicesNoLimit();
       if (response?.statusCode === 200) {
         const filteredData = response?.data.map((service: IService) => {
-          return {id: service.id, value: service.name};
+          return {id: service.id, value: service.name, status: service.status};
         });
         setServices(filteredData);
       }
@@ -94,9 +95,16 @@ const Appointment: React.FC = () => {
       setIsLoadingPage(true);
       const response = await allAppointment(currentPage, limit);
       if (response?.statusCode === 200) {
-        setAppointments(response?.data);
-        setAppointmentsTemp(response?.data);
-        setTotalPages(response?.pagination?.totalPage ?? 0);
+        const filteredData = response?.data.map((appointment: IAppointment) => {
+          return {
+            ...appointment,
+            time: appointment.time.replace(/\.\d{3}Z$/, ''),
+          };
+        });
+
+        setAppointments(filteredData);
+        setAppointmentsTemp(filteredData);
+        setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -137,14 +145,7 @@ const Appointment: React.FC = () => {
     }
   };
 
-  const handleToggleEdit = (index: number) => {
-    setEditStatuses((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
-  const handleViewDetail = (appointment: any) => {
+  const handleViewDetail = (appointment: IAppointment) => {
     dispatch(
       setInfoLayout({
         layoutBranch: {layout: ELayoutInfo.Home, data: null},
@@ -160,7 +161,7 @@ const Appointment: React.FC = () => {
       case ELayoutInfo.Home:
         return (
           <div className="h-full w-full relative">
-            <div className="h-[13%] flex w-full">
+            <div className="h-[7%] flex w-full">
               <Filter
                 showToast={showToast}
                 setDataFilter={setAppointmentsTemp}
@@ -169,12 +170,16 @@ const Appointment: React.FC = () => {
                 type={EFilterType.APPOINTMENT}
                 dataAction={selectedAppointments}
                 setDataAction={setSelectedAppointments}
-                reloadData={() => fetchAppointments()}
+                reloadData={() => {
+                  fetchAppointments();
+                  fetchBranchs();
+                  fetchServices();
+                }}
                 setLoader={setIsLoading}
               />
             </div>
 
-            <div className="overflow-y-auto scrollbar-thin h-[75%] border border-slate-400 box-border">
+            <div className="overflow-y-auto scrollbar-thin h-[81%] border border-slate-400 box-border">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -191,7 +196,9 @@ const Appointment: React.FC = () => {
                       <th className="border border-gray-300 p-1">Giờ</th>
                       <th className="border border-gray-300 p-1">Nhân viên</th>
                       <th className="border border-gray-300 p-1">Trạng thái</th>
+                      <th className="border border-gray-300 p-1">Chi nhánh</th>
                       <th className="border border-gray-300 p-1">Nhắc hẹn</th>
+                      <th className="border border-gray-300 p-1">Ngày tạo</th>
                       <th className="border border-gray-300 p-1">Ghi chú</th>
                     </tr>
                   </thead>
@@ -217,6 +224,8 @@ const Appointment: React.FC = () => {
 
             <div className="flex justify-between items-center h-[6%]">
               <Pagination
+                limit={limit}
+                setLimit={setLimit}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 goToPage={(page) => handleGoToPage(page)}
@@ -227,7 +236,7 @@ const Appointment: React.FC = () => {
           </div>
         );
       case ELayoutInfo.Details:
-        return <InfoDetail type={ETypeInfoDetail.APPOINTMENT} />;
+        return <InfoDetail type={ETypeInfoDetail.APPOINTMENT} dataChooseBranchs={branchs} dataChooseServices={services} />;
       default:
         return <></>;
     }
@@ -244,11 +253,10 @@ const Appointment: React.FC = () => {
   };
 
   const renderAppointment = (appointment: IAppointment, index: number) => {
-    const statuses = {
-      appointmentId: appointment.id,
-      status: appointment.status === 1 ? 1 : 2,
-    };
-
+    // không hiện licjk với trạng thái đã xóa!
+    if (appointment.isRemoved) {
+      return;
+    }
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -262,22 +270,45 @@ const Appointment: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold">{appointment.id}</td>
-        <td className="border border-gray-300 p-1">{appointment.customer_id}</td>
-        <td className="border border-gray-300 p-1">{appointment.service_id}</td>
-        <td className="border border-gray-300 p-1">{getFormattedDate(appointment.time)}</td>
-        <td className="border border-gray-300 p-1">{getFormattedTime(appointment.time)}</td>
-        <td className="border border-gray-300 p-1">{appointment.employee_id ? appointment.employee_id : ''}</td>
-        <td className="h-full justify-center items-center p-0">
-          {/* // 1 là mới, 0 là đã xác nhận */}
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${appointment.code}`}>
+          {appointment.code}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Tên khách hàng: ${appointment.customerName}`}>
+          {appointment.customerName}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Tên dịch vụ: ${appointment.serviceName}`}>
+          {appointment.serviceName}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Ngày: ${getFormattedDate(appointment.time)}`}>
+          {getFormattedDate(appointment.time)}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Giờ: ${getFormattedTime(appointment.time)}`}>
+          {getFormattedTime(appointment.time)}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Tên nhân viên: ${appointment.employeeName}`}>
+          {appointment.employeeName ? appointment.employeeName : ''}
+        </td>
+        <td
+          className="h-full justify-center items-center p-0"
+          title={`Trạng thái: ${appointment.status == 0 ? 'Mới' : appointment.status == 1 ? 'Đã xác nhận' : 'Hủy'}`}
+        >
+          {/* 0 MỚi, 1 Đã xác nhận, 2 Hủy */}
 
-          {appointment.status === 1 ? (
+          {appointment.status == 0 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Mới</span>
-          ) : (
+          ) : appointment.status == 1 ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đã xác nhận</span>
+          ) : appointment.status == 2 ? (
+            <span className="bg-red-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Hủy</span>
+          ) : (
+            ''
           )}
         </td>
-        <td className="border border-gray-300 p-1">{appointment.reminder_sent}</td>
+        <td className="border border-gray-300 p-1" title="Tên chi nhánh">
+          {appointment.branchName}
+        </td>
+        <td className="border border-gray-300 p-1">{appointment.reminderSent}</td>
+        <td className="border border-gray-300 p-1">{getFormattedDate(appointment.createdAt)}</td>
         <td className="border border-gray-300 p-1 max-w-[200px]">{appointment.note}</td>
       </>
     );

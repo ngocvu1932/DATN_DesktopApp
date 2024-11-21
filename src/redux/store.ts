@@ -6,6 +6,9 @@ import loadingSlice from './slices/loadingSlice';
 import authSlice from './slices/authSlice';
 import layoutInfoSlice from './slices/layoutInfoSlice';
 import reLoginSlice from './slices/reLoginSlice';
+import {app} from 'electron';
+import appointmentsSlice from './slices/appointmentsSlice';
+import servicesSlice from './slices/servicesSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +19,8 @@ const store = configureStore({
     auth: authSlice.reducer,
     layoutInfo: layoutInfoSlice.reducer,
     reLogin: reLoginSlice.reducer,
+    appointments: appointmentsSlice.reducer,
+    services: servicesSlice.reducer,
   },
 });
 

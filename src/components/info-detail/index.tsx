@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import {ELayoutInfo} from '../../constants/layout';
@@ -14,17 +14,22 @@ import {getFormattedDate, getFormattedTime} from '../../utils/dateTime';
 import '../../global.css';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {updateAppointment} from '../../api/appointment';
 import LoadingSpinner from '../loading-spinner';
 import {IService} from '../../models/service';
-import {s} from 'vite/dist/node/types.d-aGj9QkWt';
 import {updateService} from '../../api/services';
+import {IDataChoose} from '../../pages/all-services';
+import {time} from 'console';
+import {updateAppointment} from '../../api/appointment';
+import ChooseDateTime from '../date-time-picker';
+import {format, isEqual} from 'date-fns';
 
 interface IInfoDetailProps {
   type?: ETypeInfoDetail;
+  dataChooseBranchs?: IDataChoose[];
+  dataChooseServices?: IDataChoose[];
 }
 
-const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
+const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataChooseServices}) => {
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(false);
   const [isSave, setIsSave] = useState(false);
@@ -34,10 +39,56 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
 
   const layoutInfoAppointment = useSelector((state: any) => state.layoutInfo.layoutAppointment);
   const [dataAppointment, setDataAppointment] = useState<IAppointment>(layoutInfoAppointment?.data);
+  const [isShowModalChooseTime, setIsShowModalChooseTime] = useState(false);
+  const [selectedTime, setSelectedTime] = useState<string>(dataAppointment?.time ?? '2000-01-01 00:00');
 
   const layoutInfoService = useSelector((state: any) => state.layoutInfo.layoutService);
   const [dataService, setDataService] = useState<IService>(layoutInfoService?.data);
   const [titleServiceName, setTitleServiceName] = useState(layoutInfoService?.data?.name);
+
+  useEffect(() => {
+    setDataAppointment({...dataAppointment, time: selectedTime});
+  }, [selectedTime]);
+
+  const handleSaveAppointment = async () => {
+    const filteredData = {
+      status: dataAppointment.status,
+      reminderSent: dataAppointment.reminderSent,
+      serviceId: dataAppointment.serviceId,
+      note: dataAppointment.note,
+      branchId: dataAppointment.branchId,
+      employeeId: dataAppointment.employeeId,
+      time: dataAppointment.time,
+    };
+
+    setIsSave(true);
+    const res = await updateAppointment(dataAppointment.id, filteredData);
+    if (res?.statusCode === 200) {
+      const resData = {
+        ...dataAppointment,
+        status: res?.data?.status,
+        reminderSent: res?.data?.reminderSent,
+        serviceId: res?.data?.serviceId,
+        note: res?.data?.note,
+        branchId: res?.data?.branchId,
+        employeeId: res?.data?.employeeId,
+        time: res?.data?.time,
+      };
+      setIsEdit(false);
+      setIsSave(false);
+      dispatch(
+        setInfoLayout({
+          layoutBranch: {layout: ELayoutInfo.Home, data: null},
+          layoutAppointment: {layout: ELayoutInfo.Details, data: resData},
+          layoutService: {layout: ELayoutInfo.Home, data: null},
+          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
+        })
+      );
+      toast.success('Cập nhật thành công!', {autoClose: 2000});
+    } else {
+      toast.error('Có lỗi xảy ra!', {autoClose: 2000});
+    }
+  };
 
   const handleSaveBranch = async () => {
     const filledData = {
@@ -47,6 +98,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
       phone: dataBranch.phone,
       email: dataBranch.email,
     };
+
     setIsSave(true);
     const res = await updateBranch(dataBranch.id, filledData);
     if (res?.statusCode === 200) {
@@ -67,39 +119,11 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
     }
   };
 
-  const handleSaveAppointment = async () => {
-    const filteredData = {
-      status: dataAppointment.status,
-      reminder_sent: dataAppointment.reminder_sent,
-      service_id: dataAppointment.service_id,
-      note: dataAppointment.note,
-    };
-
-    setIsSave(true);
-    const res = await updateAppointment(dataAppointment.id, filteredData);
-    if (res?.statusCode === 200) {
-      setIsEdit(!isEdit);
-      setIsSave(false);
-      dispatch(
-        setInfoLayout({
-          layoutBranch: {layout: ELayoutInfo.Home, data: null},
-          layoutAppointment: {layout: ELayoutInfo.Details, data: res?.data},
-          layoutService: {layout: ELayoutInfo.Home, data: null},
-          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
-        })
-      );
-      toast.success('Cập nhật thành công!', {autoClose: 2000});
-    } else {
-      toast.error('Có lỗi xảy ra!', {autoClose: 2000});
-    }
-  };
-
   const handleSaveService = async () => {
-    // console.log('dataService', dataService);
     const filteredData = {
       name: dataService.name,
       price: dataService.price,
-      total_sessions: dataService.total_sessions,
+      total_sessions: dataService.totalSessions,
       description: dataService.description,
       status: 1,
     };
@@ -124,6 +148,10 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
     }
   };
 
+  const handleChooseDateTime = () => {
+    setIsShowModalChooseTime((prev) => !prev);
+  };
+
   return (
     <div className={`h-[94%] flex flex-col overflow-hidden`}>
       <div className="flex justify-between cursor-pointer w-full h-fit items-center p-2">
@@ -146,7 +174,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
             {type == ETypeInfoDetail.BRANCH
               ? titleBranchName
               : type == ETypeInfoDetail.APPOINTMENT
-              ? `Lịch hẹn ${dataAppointment?.id} `
+              ? `Lịch hẹn ${dataAppointment?.code} `
               : `${titleServiceName} #${dataService?.id}`}
           </p>
         </div>
@@ -155,14 +183,18 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
           <button
             className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
             onClick={() => {
+              setIsShowModalChooseTime(false);
               setIsEdit(!isEdit);
-              type == ETypeInfoDetail.BRANCH
-                ? setDataBranch(layoutInfoBranch?.data)
-                : type == ETypeInfoDetail.APPOINTMENT
-                ? setDataAppointment(layoutInfoAppointment?.data)
-                : type == ETypeInfoDetail.SERVICE
-                ? setDataService(layoutInfoService?.data)
-                : '';
+              if (type == ETypeInfoDetail.BRANCH) {
+                setDataBranch(layoutInfoBranch?.data);
+              } else if (type == ETypeInfoDetail.APPOINTMENT) {
+                setDataAppointment(layoutInfoAppointment?.data);
+                if (layoutInfoAppointment?.data?.time) {
+                  setSelectedTime(layoutInfoAppointment?.data?.time);
+                }
+              } else if (type == ETypeInfoDetail.SERVICE) {
+                setDataService(layoutInfoService?.data);
+              }
             }}
           >
             {!isEdit ? 'Sửa' : 'Hủy'}
@@ -204,18 +236,20 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
-                  {/*     // 1 là OFF, 0 là đang hoạt động*/}
+                  {/*     true là đang hoạt động, false OFFF */}
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataBranch?.status == 1
+                      dataBranch?.status == false
                         ? 'bg-yellow-200'
-                        : dataBranch?.status == 0
+                        : dataBranch?.status == true
                         ? 'bg-green-400'
                         : 'bg-red-400'
                     } rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataBranch?.status ?? 0}
-                    onChange={(event) => setDataBranch({...dataBranch, status: Number(event.target.value)})}
+                    defaultValue={dataBranch?.status == true ? 0 : 1}
+                    onChange={(event) =>
+                      setDataBranch({...dataBranch, status: Number(event.target.value) == 0 ? true : false})
+                    }
                     disabled={!isEdit}
                   >
                     <option value="0">Đang hoạt động</option>
@@ -285,7 +319,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <label className="font-semibold text-base pl-1">{'Ngày cập nhật'}</label>
                   <TextInput
                     disabled
-                    value={dataBranch?.updated_at}
+                    value={dataBranch?.updatedAt}
                     type="text"
                     title="Ngày cập nhật"
                     placeholder={'Ngày cập nhật'}
@@ -296,7 +330,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <label className="font-semibold text-base pl-1">{'Ngày tạo'}</label>
                   <TextInput
                     disabled
-                    value={dataBranch?.created_at}
+                    value={dataBranch?.createdAt}
                     type="text"
                     title="Ngày tạo"
                     placeholder={'Ngày tạo'}
@@ -313,7 +347,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <label className="font-semibold text-base pl-1">{'ID'}</label>
                   <TextInput
                     disabled
-                    value={dataAppointment?.id.toString()}
+                    value={dataAppointment?.code}
                     type="text"
                     title="ID"
                     placeholder={'ID'}
@@ -322,22 +356,23 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
-                  {/* // 1 là mới, 0 là đã xác nhận */}
+                  {/* 0 MỚi, 1 Đã xác nhận, 2 Hủy */}
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataAppointment?.status == 1
+                      dataAppointment?.status == 0
                         ? 'bg-yellow-200'
-                        : dataAppointment?.status == 0
+                        : dataAppointment?.status == 1
                         ? 'bg-green-400'
                         : 'bg-red-400'
-                    } rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataAppointment?.status}
+                    } rounded-xl p-1 mx-1 mt-1 focus:ring-blue-500 border border-slate-300 hover:border-blue-500`}
+                    defaultValue={dataAppointment?.status ?? 0}
                     onChange={(event) => setDataAppointment({...dataAppointment, status: Number(event.target.value)})}
                     disabled={!isEdit}
                   >
-                    <option value="1">Mới</option>
-                    <option value="0">Đã xác nhận</option>
+                    <option value="0">Mới</option>
+                    <option value="1">Đã xác nhận</option>
+                    <option value="2">Hủy</option>
                   </select>
                 </div>
               </div>
@@ -345,11 +380,12 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
               {/* hàng 2 */}
               <div className="flex w-full h-fit mt-8">
                 <div className="flex flex-col w-1/2  pl-16 pr-4">
-                  <label className="font-semibold text-base pl-1">{'Tên khách hàng'}</label>
+                  <label className="font-semibold text-base pl-1">{'Khách hàng'}</label>
                   <TextInput
-                    changeText={(text) => setDataBranch({...dataBranch, name: text})}
-                    disabled={!isEdit}
-                    value={dataAppointment?.customer_id.toString()}
+                    // changeText={(text) => setDataBranch({...dataBranch, name: text})}
+                    // disabled={!isEdit}
+                    disabled
+                    value={dataAppointment?.customerName}
                     type="text"
                     title="Tên khách hàng"
                     placeholder={'Tên khách hàng'}
@@ -374,23 +410,36 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
               {/* hàng 3 */}
               <div className="flex w-full h-fit mt-8">
                 <div className="flex flex-col w-1/2  pl-16 pr-4">
-                  <label className="font-semibold text-base pl-1">{'Tên dịch vụ'}</label>
-                  <TextInput
-                    changeText={(text) => {}}
+                  <label className="font-semibold ml-1">Dịch vụ</label>
+                  <select
+                    title="Chọn dịch vụ"
+                    className="rounded-xl p-1 mx-1 mt-1 focus:ring-blue-500 border border-slate-300 hover:border-blue-500"
                     disabled={!isEdit}
-                    value={(dataAppointment?.service_id ?? '').toString()}
-                    type="text"
-                    title="Tên dịch vụ"
-                    placeholder={'Tên dịch vụ'}
-                    className="h-8"
-                  />
+                    value={dataAppointment.serviceId ?? 1}
+                    onChange={(e) => {
+                      setDataAppointment((prevState) => ({
+                        ...prevState,
+                        serviceId: Number(e.target.value),
+                      }));
+                    }}
+                  >
+                    <option value="">---Chọn dịch vụ--- </option>
+                    {dataChooseServices?.map((item, index) => {
+                      return (
+                        <option key={index} value={item.id}>
+                          {item.value}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
-                  <label className="font-semibold text-base pl-1">{'Tên nhân viên'}</label>
+                  <label className="font-semibold text-base pl-1">{'Nhân viên'}</label>
                   <TextInput
                     changeText={(text) => {}}
-                    disabled={!isEdit}
-                    value={(dataAppointment?.employee_id ?? '').toString()}
+                    // disabled={!isEdit}
+                    disabled
+                    value={dataAppointment?.employeeName ?? ''}
                     type="text"
                     title="Tên nhân viên"
                     placeholder={'Tên nhân viên'}
@@ -402,26 +451,47 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
               {/* hàng 4 */}
               <div className="flex w-full h-fit mt-8">
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
-                  <label className="font-semibold text-base pl-1">{'Ngày đặt hẹn'}</label>
-                  <TextInput
-                    disabled
-                    value={getFormattedDate(dataAppointment?.time)}
-                    type="text"
-                    title="Ngày đặt hẹn"
-                    placeholder={'Ngày đặt hẹn'}
-                    className="h-8"
-                  />
+                  <div className="flex flex-col relative">
+                    <label className="font-semibold text-base pl-1">{'Ngày giờ hẹn'}</label>
+                    <div
+                      className={`flex ${
+                        isEdit ? '' : 'bg-slate-300'
+                      } items-center h-8 rounded-xl bg-white pl-3 m-1 relative border border-slate-300 hover:border-blue-500 focus:ring-blue-500`}
+                      onClick={() => handleChooseDateTime()}
+                    >
+                      <p className="">
+                        {isEqual(selectedTime, '2000-01-01 00:00')
+                          ? 'Chọn thời gian'
+                          : format(selectedTime, 'dd/MM/yyyy HH:mm')}
+                      </p>
+                    </div>
+                    {isShowModalChooseTime && isEdit && (
+                      <ChooseDateTime
+                        onClose={handleChooseDateTime}
+                        nowDate={new Date()}
+                        onChooseTime={setSelectedTime}
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-col w-1/2  pr-16 pl-4">
-                  <label className="font-semibold text-base pl-1">{'Giờ đặt hẹn'}</label>
-                  <TextInput
-                    disabled
-                    value={getFormattedTime(dataAppointment?.time)}
-                    type="text"
-                    title="Giờ đặt hẹn"
-                    placeholder={'Giờ đặt hẹn'}
-                    className="h-8"
-                  />
+                  <label className="font-semibold text-base pl-1">{'Nhắc nhở'}</label>
+                  <select
+                    title="Nhắc nhở"
+                    className="rounded-xl p-1 mx-1 mt-1 focus:ring-blue-500 border border-slate-300 hover:border-blue-500"
+                    disabled={!isEdit}
+                    value={dataAppointment.reminderSent == true ? 0 : 1}
+                    onChange={(e) => {
+                      setDataAppointment((prevState) => ({
+                        ...prevState,
+                        reminderSent: Number(e.target.value) == 0 ? true : false,
+                      }));
+                    }}
+                  >
+                    <option value="">---Nhắc nhở--- </option>
+                    <option value="0">Có</option>
+                    <option value="1">Không</option>
+                  </select>
                 </div>
               </div>
 
@@ -429,38 +499,51 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
               <div className="flex w-full h-fit mt-8">
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
                   <label className="font-semibold text-base pl-1">{'Chi nhánh'}</label>
-                  <TextInput
-                    disabled
-                    value={dataAppointment?.branch_id.toString()}
-                    type="text"
-                    title="Chi nhánh"
-                    placeholder={'Chi nhánh'}
-                    className="h-8"
-                  />
+                  <select
+                    title="Chọn chi nhánh"
+                    className="rounded-xl p-1 mx-1 mt-1 focus:ring-blue-500 border border-slate-300 hover:border-blue-500"
+                    disabled={!isEdit}
+                    value={dataAppointment.branchId ?? ''}
+                    onChange={(e) => {
+                      setDataAppointment((prevState) => ({
+                        ...prevState,
+                        branchId: Number(e.target.value),
+                      }));
+                    }}
+                  >
+                    <option value="">---Chọn chi nhánh--- </option>
+                    {dataChooseBranchs?.map((item, index) => {
+                      return (
+                        <option key={index} value={item.id}>
+                          {item.value}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
-                <div className="flex flex-col w-1/2  pr-16 pl-4">
+                <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Ghi chú'}</label>
                   <TextArea
                     title="Ghi chú"
                     disabled={!isEdit}
                     placeholder="Ghi chú"
-                    value={dataAppointment?.note}
-                    className="focus:outline-none resize-none scrollbar-thin"
+                    value={dataAppointment?.note ?? ''}
+                    className="focus:outline-none h-28 resize-none scrollbar-thin"
                     changeText={(text) => setDataAppointment({...dataAppointment, note: text})}
                   />
                 </div>
               </div>
 
               {/* hàng 6*/}
-              <div className="flex w-full h-fit my-8">
+              {/* <div className="flex w-full h-fit my-8">
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
-                  <label className="font-semibold text-base pl-1">{'Nhắc nhở'}</label>
+                  <label className="font-semibold text-base pl-1">{'Ngày cập nhật'}</label>
                   <TextInput
                     disabled
-                    value={dataAppointment?.branch_id.toString()}
+                    value={dataAppointment?.updatedAt}
                     type="text"
-                    title="Nhắc nhở"
-                    placeholder={'Nhắc nhở'}
+                    title="Ngày đặt lịch"
+                    placeholder={'Ngày đặt lịch'}
                     className="h-8"
                   />
                 </div>
@@ -468,14 +551,14 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <label className="font-semibold text-base pl-1">{'Ngày đặt lịch'}</label>
                   <TextInput
                     disabled
-                    value={dataAppointment?.created_at}
+                    value={dataAppointment?.createdAt}
                     type="text"
                     title="Ngày đặt lịch"
                     placeholder={'Ngày đặt lịch'}
                     className="h-8"
                   />
                 </div>
-              </div>
+              </div> */}
             </>
           ) : type == ETypeInfoDetail.SERVICE ? (
             <>
@@ -498,14 +581,16 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataService?.status == 0 ? 'bg-green-400' : dataService?.status == 1 ? 'bg-yellow-200' : ''
+                      dataService?.status == true ? 'bg-green-400' : dataService?.status == false ? 'bg-yellow-200' : ''
                     } rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataService?.status ?? 0}
-                    onChange={(event) => setDataService({...dataService, status: Number(event.target.value)})}
+                    defaultValue={dataService?.status == true ? 1 : 0}
+                    onChange={(event) =>
+                      setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})
+                    }
                     disabled={!isEdit}
                   >
-                    <option value="1">Tạm dừng</option>
-                    <option value="0">Đang hoạt động</option>
+                    <option value="0">Tạm dừng</option>
+                    <option value="1">Đang hoạt động</option>
                   </select>
                 </div>
               </div>
@@ -527,7 +612,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 <div className="flex flex-col w-1/2  pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Giá dịch vụ'}</label>
                   <TextInput
-                    changeText={(text) => setDataService({...dataService, price: Number(text)})}
+                    changeText={(text) => setDataService({...dataService, price: text})}
                     disabled={!isEdit}
                     value={dataService?.price.toString()}
                     type="number"
@@ -543,8 +628,8 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
                   <label className="font-semibold text-base pl-1">{'Tổng liệu trình'}</label>
                   <TextInput
-                    changeText={(text) => setDataService({...dataService, total_sessions: Number(text)})}
-                    value={dataService?.total_sessions.toString()}
+                    changeText={(text) => setDataService({...dataService, totalSessions: Number(text)})}
+                    value={dataService?.totalSessions.toString()}
                     type="number"
                     title="Tổng liệu trình"
                     placeholder={'Tổng liệu trình'}
@@ -557,13 +642,13 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <select
                     title="Chi nhánh"
                     className={`rounded-lg p-1 mx-1 mt-1`}
-                    defaultValue={dataService?.branch_id ?? 0}
+                    defaultValue={dataService?.branchId ?? 0}
                     // onChange={(event) => setDataBranch({...dataBranch, status: Number(event.target.value)})}
                     // disabled={!isEdit}
                     disabled
                   >
-                    <option value="0">{dataService?.branch_id ?? 0}</option>
-                    <option value="1">{dataService?.branch_id ?? 0}</option>
+                    <option value="0">{dataService?.branchId ?? 0}</option>
+                    <option value="1">{dataService?.branchId ?? 0}</option>
                   </select>
                 </div>
               </div>
@@ -572,7 +657,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
               <div className="flex w-full h-fit mt-5">
                 <div className="flex flex-col w-1/2 pl-16 pr-4">
                   <label className="font-semibold text-base pl-1">{'Gói dịch vụ'}</label>
-                  <select
+                  {/* <select
                     title="Gói dịch vụ"
                     className={`rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataService?.service_package_id ?? 0}
@@ -582,7 +667,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   >
                     <option value="0">{dataService?.service_package_id ?? 0}</option>
                     <option value="1">{dataService?.service_package_id ?? 0}</option>
-                  </select>
+                  </select> */}
                 </div>
                 <div className="flex flex-col w-1/2  pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Mô tả chi tiết'}</label>
@@ -629,7 +714,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <label className="font-semibold text-base pl-1">{'Ngày cập nhật'}</label>
                   <TextInput
                     disabled
-                    value={dataService?.updated_at}
+                    value={dataService?.updatedAt}
                     type="text"
                     title="Ngày cập nhật"
                     placeholder={'Ngày cập nhật'}
@@ -640,7 +725,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type}) => {
                   <label className="font-semibold text-base pl-1">{'Ngày tạo'}</label>
                   <TextInput
                     disabled
-                    value={dataService?.created_at}
+                    value={dataService?.createdAt}
                     type="text"
                     title="Ngày tạo"
                     placeholder={'Ngày tạo'}

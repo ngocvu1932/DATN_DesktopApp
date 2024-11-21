@@ -1,27 +1,22 @@
 export interface IService {
-  branch_id: number;
-  created_at: string;
-  description: string;
   id: number;
   name: string;
-  price: number;
-  service_package_id: number;
-  status: number;
-  total_sessions: number;
-  updated_at: string;
-  user_id: number;
+  description: string;
+  price: string;
+  status: boolean;
+  categoryId: number;
+  branchId: number;
+  totalSessions: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  isRemoved: boolean;
+  category?: {
+    id: number;
+    name: string;
+  };
+  branch?: {
+    id: number;
+    name: string;
+  };
 }
-
-// export interface IService {
-//   branch_id: number;
-//   created_at: string;
-//   description: string;
-//   id: number;
-//   name: string;
-//   price: number;
-//   service_package_id: number;
-//   status: number;
-//   total_sessions: number;
-//   updated_at: string;
-//   user_id: number;              ??????????
-// }
