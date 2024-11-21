@@ -5,7 +5,7 @@ import {toast} from 'react-toastify';
 import LoadingSpinner from '../../components/loading-spinner';
 import SwitchSideBar from '../../components/switch-sidebar';
 import Drawer from '../../components/drawer';
-import {getFormattedDate, getFormattedTime} from '../../utils/dateTime';
+import {getFormattedDate, getFormattedDateTime, getFormattedTime} from '../../utils/dateTime';
 import {ETypeAdd} from '../../components/drawer/enum';
 import {EFilterType} from '../../components/filter/enum';
 import Filter from '../../components/filter';
@@ -33,6 +33,7 @@ const ServiceRequest: React.FC = () => {
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit, setLimit] = useState(30);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
@@ -65,19 +66,14 @@ const ServiceRequest: React.FC = () => {
   // }, []);
 
   const fetchServiceRequest = async () => {
+    setIsLoadingPage(true);
     try {
-      const response = await getAllServiceRequest();
+      const response = await getAllServiceRequest(currentPage, limit);
       if (response?.statusCode === 200) {
-        // const filteredData = response?.data.map((appointment: IAppointment) => {
-        //   return {
-        //     ...appointment,
-        //     time: appointment.time.replace(/\.\d{3}Z$/, ''),
-        //   };
-        // });
-
         setServiceRequest(response?.data);
         setServiceRequestsTemp(response?.data);
         setTotalPages(response?.pagination?.totalPages ?? 0);
+        setTotalRecords(response?.pagination?.totalRecords ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
       }
@@ -85,43 +81,6 @@ const ServiceRequest: React.FC = () => {
       console.error('Error fetching branchs:', error);
     }
   };
-
-  // const fetchServices = async () => {
-  //   try {
-  //     const response = await allServicesNoLimit();
-  //     if (response?.statusCode === 200) {
-  //       const filteredData = response?.data.map((service: IService) => {
-  //         return {id: service.id, value: service.name, status: service.status};
-  //       });
-  //       setServices(filteredData);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching services:', error);
-  //   }
-  // };
-
-  // const fetchAppointments = async () => {
-  //   try {
-  //     setIsLoadingPage(true);
-  //     const response = await allAppointment(currentPage, limit);
-  //     if (response?.statusCode === 200) {
-  //       const filteredData = response?.data.map((appointment: IAppointment) => {
-  //         return {
-  //           ...appointment,
-  //           time: appointment.time.replace(/\.\d{3}Z$/, ''),
-  //         };
-  //       });
-
-  //       setAppointments(filteredData);
-  //       setAppointmentsTemp(filteredData);
-  //       setTotalPages(response?.pagination?.totalPages ?? 0);
-  //       setCurrentPageRes(response?.pagination?.page ?? 0);
-  //       setIsLoadingPage(false);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching appointments:', error);
-  //   }
-  // };
 
   const showToast = (message: string, type: string) => {
     switch (type) {
@@ -182,8 +141,10 @@ const ServiceRequest: React.FC = () => {
                 setDataAction={setSelectedServiceRequest}
                 reloadData={() => {
                   // fetchAppointments();
+
                   // fetchBranchs();
                   // fetchServices();
+                  fetchServiceRequest();
                 }}
                 setLoader={setIsLoading}
               />
@@ -229,6 +190,7 @@ const ServiceRequest: React.FC = () => {
             <div className="flex justify-between items-center h-[6%]">
               <Pagination
                 limit={limit}
+                totalRecords={totalRecords}
                 setLimit={setLimit}
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -282,15 +244,16 @@ const ServiceRequest: React.FC = () => {
         <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
           {serviceRequest.appointmentId}
         </td>
-        <td className="border border-gray-300 p-1" title={`Thời gian đến: ${serviceRequest.checkInTime}`}>
-          {serviceRequest.checkInTime}
+        <td className="border border-gray-300 p-1" title={`Thời gian đến: ${getFormattedDateTime(serviceRequest.checkInTime)}`}>
+          {getFormattedDateTime(serviceRequest.checkInTime)}
         </td>
 
         <td className="border border-gray-300 p-1" title={`Trạng thái: ${serviceRequest.currentStatus}`}>
           {serviceRequest.currentStatus}
         </td>
-        <td className="border border-gray-300 p-1" title={`Thời gian hoàn thành: ${serviceRequest.checkInTime}`}>
-          {serviceRequest.checkInTime}
+        <td className="border border-gray-300 p-1" title={`Thời gian hoàn thành: ${serviceRequest.completedTime}`}>
+          {serviceRequest.completedTime == null ? 'Chưa hoàn thành' : getFormattedDateTime(serviceRequest.completedTime)}
+          {/* {getFormattedDateTime(serviceRequest.completedTime)} */}
         </td>
       </>
     );

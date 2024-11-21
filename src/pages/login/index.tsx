@@ -61,7 +61,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsLoadingLogin(true);
     const res = await login({username: phone, password: password});
-    console.log('res:', res);
+    // console.log('res:', res);
 
     if (res?.statusCode === 200) {
       dispatch(setUserInfo(res?.data?.user));

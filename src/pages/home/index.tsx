@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import SwitchSideBar from '../../components/switch-sidebar';
 import {useTranslation} from 'react-i18next';
@@ -10,19 +10,55 @@ import {fetchAppointments, fetchServices} from '../../utils/redux-until';
 import {IAppointment} from '../../models/appointment';
 import {IFilterForYear} from './interface';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faAngleDown, faAngleUp, faSortDown, faSortUp} from '@fortawesome/free-solid-svg-icons';
-import CircularProgress from '../../components/process-provider';
+import {faAngleDown, faAngleUp} from '@fortawesome/free-solid-svg-icons';
 import ProcessView from '../../components/process-view';
+import {isEqual, startOfDay} from 'date-fns';
 
 const Home: React.FC = () => {
-  const dispatch = useDispatch();
-  const userInfo = useSelector((state: any) => state.user.userInfo);
-  const appointments: IAppointment[] = useSelector((state: any) => state.appointments.appointments);
   const {t} = useTranslation();
   const [isOpen, setIsOpen] = useState({
     year: false,
     typeChart: false,
   });
+  const toDay = new Date();
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state: any) => state.user.userInfo);
+  const appointments: IAppointment[] = useSelector((state: any) => state.appointments.appointments);
+
+  const appointmentsNew = useMemo(() => appointments.filter((appointment) => appointment.status == 0).length, [appointments]);
+
+  const appointmentsApproved = useMemo(
+    () => appointments.filter((appointment) => appointment.status == 1).length,
+    [appointments]
+  );
+
+  const appointmentsCancel = useMemo(() => appointments.filter((appointment) => appointment.status == 2).length, [appointments]);
+
+  const appointmentsNewToDay = useMemo(
+    () =>
+      appointments.filter(
+        (appointment) => appointment.status == 0 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time)))
+      ).length,
+    [appointments]
+  );
+
+  const appointmentsCancelToDay = useMemo(
+    () =>
+      appointments.filter(
+        (appointment) => appointment.status == 2 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time)))
+      ).length,
+    [appointments]
+  );
+
+  const appointmentsApprovedToDay = useMemo(
+    () =>
+      appointments.filter(
+        (appointment) => appointment.status == 1 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time)))
+      ).length,
+    [appointments]
+  );
+
+  // console.log('appointments', appointments);
 
   // filter for chart
   const [year, setYear] = useState<string>(new Date().getFullYear().toString());
@@ -87,12 +123,64 @@ const Home: React.FC = () => {
     <div className="w-full h-full">
       <div className="h-[6%] flex border-b border-slate-400">
         <SwitchSideBar title={`${t('home_title')}, ${userInfo?.name}!`} className="font-bold text-lg" />
-        <Breadcrumb />
+        {/* <Breadcrumb /> */}
       </div>
 
       <div className="flex flex-grow h-[94%] scrollbar-thin flex-col overflow-y-auto">
-        <div className="flex mt-2 p-2">
-          <ProcessView title="Số lịch hẹn mới" value={400} />
+        <div className="flex mt-2 p-2 justify-between">
+          <ProcessView
+            colorTitle="#facc15"
+            backgroundCircel="#EDEDED"
+            title="Số lịch hẹn mới trong hôm nay"
+            value={appointmentsNewToDay}
+            sizeCircle={45}
+            className="mr-3"
+          />
+
+          <ProcessView
+            colorTitle="#22c55e"
+            backgroundCircel="#EDEDED"
+            title="Số lịch hẹn đã duyệt trong hôm nay"
+            value={appointmentsApprovedToDay}
+            sizeCircle={45}
+            className="mr-3"
+          />
+
+          <ProcessView
+            colorTitle="#f87171"
+            backgroundCircel="#EDEDED"
+            title="Số lịch hẹn đã hủy trong hôm nay"
+            value={appointmentsCancelToDay}
+            sizeCircle={45}
+          />
+        </div>
+
+        <div className="flex p-2 justify-between">
+          <ProcessView
+            colorTitle="#facc15"
+            backgroundCircel="#EDEDED"
+            title="Tổng số lịch hẹn mới"
+            value={appointmentsNew}
+            sizeCircle={45}
+            className="mr-3"
+          />
+
+          <ProcessView
+            colorTitle="#22c55e"
+            backgroundCircel="#EDEDED"
+            title="Tổng số lịch hẹn đã duyệt"
+            value={appointmentsApproved}
+            sizeCircle={45}
+            className="mr-3"
+          />
+
+          <ProcessView
+            colorTitle="#f87171"
+            backgroundCircel="#EDEDED"
+            title="Tổng số lịch hẹn đã hủy"
+            value={appointmentsCancel}
+            sizeCircle={45}
+          />
         </div>
         <div className="flex w-full min-h-[350px] mt-5 p-2">
           <div className="flex w-full bg-white p-3 rounded-xl shadow-md">

@@ -5,6 +5,7 @@ interface IPagination {
   totalPages: number;
   limit: number;
   page: number;
+  totalRecords: number;
 }
 
 export interface CustomAxiosResponse<T = any> extends AxiosResponse<T> {

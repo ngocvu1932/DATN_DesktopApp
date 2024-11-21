@@ -56,10 +56,9 @@ const BarChart: React.FC<BarChartProps> = ({type, title = 'Chart', data}) => {
   const dataBar = {
     labels: data
       ? data.map((item) => {
-          if ('month' in item) return (item as IMonthTotal).month; // Nếu item có thuộc tính month
-          if ('day' in item) return (item as IDayTotal).day; // Nếu item có thuộc tính day
-          // if ('service' in item) return (item as IServiceForMonth).service; // Nếu item có thuộc tính service
-          return 'Unknown'; // Phòng trường hợp không match kiểu nào
+          if ('month' in item) return (item as IMonthTotal).month;
+          if ('day' in item) return (item as IDayTotal).day;
+          return 'Unknown';
         })
       : ['Error'],
     datasets: [

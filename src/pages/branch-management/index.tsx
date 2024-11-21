@@ -24,7 +24,7 @@ const BranchManagement: React.FC = () => {
   const [branchsTemp, setBranchsTemp] = useState<IBranch[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(12);
+  const [limit, setLimit] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(false);
@@ -42,7 +42,7 @@ const BranchManagement: React.FC = () => {
 
   useEffect(() => {
     fetchBranchs();
-  }, [currentPage, layoutInfo]);
+  }, [currentPage, layoutInfo, limit]);
 
   useEffect(() => {
     if (isOpenDrawer == false) {
@@ -155,6 +155,9 @@ const BranchManagement: React.FC = () => {
 
             <div className="flex justify-between items-center h-[6%]">
               <Pagination
+                limit={limit}
+                // totalRecords={totalRecords}
+                setLimit={setLimit}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 goToPage={(page) => handleGoToPage(page)}

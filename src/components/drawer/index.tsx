@@ -184,7 +184,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
     setIsLoadingAdd(true);
     const res = await createService(dataServiceAdd);
     if (res?.statusCode === 200) {
-      console.log('res', res.data);
+      // console.log('res', res.data);
       toast.success('Thêm dịch vụ thành công!', {autoClose: 1000});
       handleReset(ETypeAdd.SERVICE);
       setIsLoadingAdd(false);
@@ -193,7 +193,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
       toast.error('Thêm dịch vụ lỗi!', {autoClose: 1000});
 
       setIsLoadingAdd(false);
-      console.log('res', res);
+      // console.log('res', res);
     }
   };
 
@@ -201,7 +201,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
     setIsLoadingAdd(true);
     const res = await createBranch(dataBranchAdd);
     if (res?.statusCode === 200) {
-      console.log('res', res.data);
+      // console.log('res', res.data);
       toast.success('Thêm nrahc thành công!', {autoClose: 1000});
       handleReset(ETypeAdd.BRANCH);
       setIsLoadingAdd(false);
@@ -210,7 +210,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
       toast.error('Thêm dịch vụ lỗi!', {autoClose: 1000});
 
       setIsLoadingAdd(false);
-      console.log('res', res);
+      // console.log('res', res);
     }
   };
 
@@ -230,7 +230,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
       toast.error('Thêm dịch vụ lỗi!', {autoClose: 1000});
 
       setIsLoadingAdd(false);
-      console.log('res', res);
+      // console.log('res', res);
     }
   };
 
@@ -481,11 +481,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                           </p>
                         </div>
                         {isShowModalChooseTime && (
-                          <ChooseDateTime
-                            onClose={handleChooseDateTime}
-                            nowDate={new Date()}
-                            onChooseTime={setSelectedTime}
-                          />
+                          <ChooseDateTime onClose={handleChooseDateTime} nowDate={new Date()} onChooseTime={setSelectedTime} />
                         )}
                       </div>
                     </div>

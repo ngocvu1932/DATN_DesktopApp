@@ -35,7 +35,7 @@ const AllServices: React.FC = () => {
   const [servicesTemp, setAllServicesTemp] = useState<IService[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(20);
+  const [limit, setLimit] = useState(30);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(true);
@@ -48,7 +48,7 @@ const AllServices: React.FC = () => {
 
   useEffect(() => {
     fetchAllServices();
-  }, [currentPage, layoutInfo]);
+  }, [currentPage, layoutInfo, limit]);
 
   useEffect(() => {
     if (isOpenDrawer == false) {
@@ -197,6 +197,9 @@ const AllServices: React.FC = () => {
 
             <div className="flex justify-between items-center h-[6%]">
               <Pagination
+                limit={limit}
+                // totalRecords={totalRecords}
+                setLimit={setLimit}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 goToPage={(page) => handleGoToPage(page)}
@@ -245,10 +248,7 @@ const AllServices: React.FC = () => {
         <td className="border border-gray-300 p-1 max-w-[130px]" title={`Tên dịch vụ: ${service.name}`}>
           {service.name}
         </td>
-        <td
-          className="border border-gray-300 p-1"
-          title={`Ngày tạo: ${new Date(service.createdAt).toLocaleDateString()}`}
-        >
+        <td className="border border-gray-300 p-1" title={`Ngày tạo: ${new Date(service.createdAt).toLocaleDateString()}`}>
           {getFormattedDate(service.createdAt)}
         </td>
         <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price)}`}>
@@ -262,9 +262,7 @@ const AllServices: React.FC = () => {
           {service.status == false ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
           ) : service.status == true ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center justify-center ">
-              Đang hoạt động
-            </span>
+            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center justify-center ">Đang hoạt động</span>
           ) : (
             'error'
           )}

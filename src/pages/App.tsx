@@ -25,11 +25,11 @@ const App = () => {
     }
   }, [reLogin?.isCancel]);
 
-  console.log('reLogin:', reLogin);
+  // console.log('reLogin:', reLogin);
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
-    console.log('accessToken relogin:', accessToken);
+    // console.log('accessToken relogin:', accessToken);
 
     const getInfoUser = async () => {
       if (reLogin?.isCancel) return;
@@ -48,7 +48,7 @@ const App = () => {
         }
       } catch (error) {
         if (axios.isCancel(error)) {
-          console.log('Request canceled', error.message);
+          // console.log('Request canceled', error.message);
         } else {
           console.error('Error fetching user info:', error);
         }

@@ -22,11 +22,10 @@ import {getAllBranchNoLimit} from '../../api/branch';
 import {allServicesNoLimit} from '../../api/services';
 import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
-import {setAppointments} from '../../redux/slices/appointmentsSlice';
 
 const Appointment: React.FC = () => {
-  const appointments = useSelector((state: any) => state.appointments.appointments);
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
+  const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [appointmentsTemp, setAppointmentsTemp] = useState<IAppointment[]>(appointments);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,7 +102,7 @@ const Appointment: React.FC = () => {
           };
         });
 
-        dispatch(setAppointments(filteredData));
+        setAppointments(filteredData);
         setAppointmentsTemp(filteredData);
         setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
@@ -237,9 +236,7 @@ const Appointment: React.FC = () => {
           </div>
         );
       case ELayoutInfo.Details:
-        return (
-          <InfoDetail type={ETypeInfoDetail.APPOINTMENT} dataChooseBranchs={branchs} dataChooseServices={services} />
-        );
+        return <InfoDetail type={ETypeInfoDetail.APPOINTMENT} dataChooseBranchs={branchs} dataChooseServices={services} />;
       default:
         return <></>;
     }

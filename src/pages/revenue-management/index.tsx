@@ -14,6 +14,7 @@ import {IService} from '../../models/service';
 import {ETypeChooseForChart, IMonthChoose, ITypeChart, IYearChoose} from './interface';
 import {getDaysArrayInMonth} from '../../utils/dateTime';
 import SelectOption from '../../components/select-options';
+import {data} from '@remix-run/router/dist/utils';
 
 const RevenueManagement: React.FC = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ const RevenueManagement: React.FC = () => {
     service: ETypeChart.LINE,
   });
 
-  const years = ['2022', '2023', '2024', '2025', '2026']; // list year
+  const years = ['2023', '2024', '2025', '2026', '2027']; // list year
   const months = [
     'January',
     'February',
@@ -75,8 +76,6 @@ const RevenueManagement: React.FC = () => {
     dataAppointmentsForDay: days.appointment.map((day) => ({day: day.toString(), count: 0})),
     dataServicesForMonth: services.map((service) => ({id: service.id, month: service.name, count: 0})),
   });
-
-  // console.log('filterForYear', JSON.stringify(filterForYear.dataAppointmentsForDay));
 
   const typeCharts = [ETypeChart.LINE, ETypeChart.BAR];
 
@@ -110,16 +109,20 @@ const RevenueManagement: React.FC = () => {
     });
 
     // Cập nhật số lượng lịch hẹn theo ngày trong tháng đã chọn
-    appointments.forEach((appointment) => {
+    appointments.forEach((appointment, index) => {
       const appointmentDate = new Date(appointment.time);
       const appointmentYear = appointmentDate.getFullYear();
-      const appointmentMonth = appointmentDate.getMonth();
-      const appointmentDay = appointmentDate.getDate().toString();
-
-      if (appointmentYear.toString() === year.appointment && appointmentMonth === month.appointment) {
-        const dayIndex = updatedFilterForYear.dataAppointmentsForDay.findIndex((day) => day.day === appointmentDay);
+      const appointmentMonth = appointmentDate.getMonth() + 1; // hàm này lấy tháng từ 0-11 -> +1 để lấy tháng từ 1-12
+      const appointmentDay = appointmentDate.getDate();
+      if (appointmentYear == parseInt(year.appointment) && appointmentMonth == month.appointment) {
+        const dayIndex = updatedFilterForYear.dataAppointmentsForDay.findIndex((day) => day.day === appointmentDay.toString());
         if (dayIndex !== -1) {
           updatedFilterForYear.dataAppointmentsForDay[dayIndex].count += 1;
+        } else {
+          updatedFilterForYear.dataAppointmentsForDay.push({
+            day: appointmentDay.toString(),
+            count: 1,
+          });
         }
       }
     });
@@ -219,7 +222,7 @@ const RevenueManagement: React.FC = () => {
         ) : (
           <>
             <div className="flex w-full min-h-[400px] mt-5 p-2">
-              <div className="flex w-full bg-white p-3 rounded-xl shadow-md">
+              <div className="flex w-full p-3 rounded-xl shadow-md">
                 <div className="flex w-4/5 justify-start h-full">
                   <BarChart
                     data={
@@ -232,7 +235,15 @@ const RevenueManagement: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex w-1/5 border rounded-lg border-slate-300 flex-col">
+                <div className="flex relative w-1/5 border rounded-lg border-slate-300 flex-col">
+                  <div className="flex absolute bottom-2 left-0 right-0 w-full justify-center">
+                    Tổng:&nbsp;
+                    <span className="font-bold">
+                      {haveChooseMonth.appointment
+                        ? filterForYear.dataAppointmentsForDay.reduce((total, day) => total + day.count, 0)
+                        : filterForYear.dataAppointmentsForMonth.reduce((total, month) => total + month.count, 0)}
+                    </span>
+                  </div>
                   <SelectOption
                     titleText={`Năm: ${year.appointment}`}
                     onClose={() =>

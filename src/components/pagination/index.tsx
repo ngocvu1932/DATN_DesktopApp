@@ -8,6 +8,7 @@ import {set} from 'date-fns';
 interface IPaginationProps {
   currentPage: number;
   totalPages: number;
+  totalRecords?: number;
   previousPage: () => void;
   nextPage: () => void;
   goToPage: (page: number) => void;
@@ -21,6 +22,7 @@ const Pagination: React.FC<IPaginationProps> = ({
   previousPage,
   nextPage,
   goToPage,
+  totalRecords,
   limit,
   setLimit,
 }) => {
@@ -33,18 +35,20 @@ const Pagination: React.FC<IPaginationProps> = ({
 
   return (
     <>
-      <div>
-        Tổng {currentPage} / {totalPages}
+      <div className="flex">
+        Tổng {currentPage} / {totalPages} trang
       </div>
 
-      <div className="flex items-center">
+      {/* {limit && totalRecords && (
+        <div className="flex bg-blue-300">
+          Tổng {currentPage * limit > totalRecords ? totalRecords : currentPage * limit} / {totalRecords}
+        </div>
+      )} */}
+
+      <div className="flex items-center ">
         <div className="flex items-center mr-5">
           <span className="">Số hàng trên mỗi trang</span>
-          <TextInput
-            value={limitPage?.toString()}
-            className="h-7 w-12"
-            changeText={(text) => setLimitPage(Number(text))}
-          />
+          <TextInput value={limitPage?.toString()} className="h-7 w-12" changeText={(text) => setLimitPage(Number(text))} />
         </div>
         <button
           onClick={previousPage}

@@ -5,6 +5,13 @@ export const getFormattedDate = (dateString: string) => {
   return `${day}/${month}/${year}`;
 };
 
+export const getFormattedDateTime = (dateString: string) => {
+  const datePart = dateString.substring(0, 10);
+  const timePart = dateString.substring(11, 16);
+  const [year, month, day] = datePart.split('-');
+  return `${day}/${month}/${year} - ${timePart}`;
+};
+
 // Hàm lấy giờ
 export const getFormattedTime = (dateString: string) => {
   const timePart = dateString.substring(11, 16);
