@@ -19,6 +19,10 @@ export enum ELayout {
   SessionsTracking = 'SessionsTracking',
 
   Bills = 'Bills',
+
+  Skills = 'Skills',
+
+  Employee = 'Employee',
 }
 
 export enum ELayoutInfo {

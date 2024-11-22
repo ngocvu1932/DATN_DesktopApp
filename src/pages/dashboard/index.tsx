@@ -23,6 +23,8 @@ import LoadingOverlay from '../../components/loading-overlay';
 import Customer from '../customer';
 import {getInfo} from '../../api/auth';
 import ServiceRequest from '../service-request';
+import Skills from '../skills';
+import Employee from '../employee';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -114,6 +116,10 @@ const Dashboard: React.FunctionComponent = () => {
         return <Customer />;
       case ELayout.ServiceRequest:
         return <ServiceRequest />;
+      case ELayout.Skills:
+        return <Skills />;
+      case ELayout.Employee:
+        return <Employee />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }

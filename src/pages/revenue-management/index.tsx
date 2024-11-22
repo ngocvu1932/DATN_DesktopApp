@@ -14,7 +14,6 @@ import {IService} from '../../models/service';
 import {ETypeChooseForChart, IMonthChoose, ITypeChart, IYearChoose} from './interface';
 import {getDaysArrayInMonth} from '../../utils/dateTime';
 import SelectOption from '../../components/select-options';
-import {data} from '@remix-run/router/dist/utils';
 
 const RevenueManagement: React.FC = () => {
   const dispatch = useDispatch();
@@ -240,8 +239,8 @@ const RevenueManagement: React.FC = () => {
                     Tổng:&nbsp;
                     <span className="font-bold">
                       {haveChooseMonth.appointment
-                        ? filterForYear.dataAppointmentsForDay.reduce((total, day) => total + day.count, 0)
-                        : filterForYear.dataAppointmentsForMonth.reduce((total, month) => total + month.count, 0)}
+                        ? filterForYear.dataAppointmentsForDay.reduce((total, day) => total + day?.count, 0)
+                        : filterForYear.dataAppointmentsForMonth.reduce((total, month) => total + month?.count, 0)}
                     </span>
                   </div>
                   <SelectOption

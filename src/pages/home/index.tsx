@@ -4,7 +4,6 @@ import SwitchSideBar from '../../components/switch-sidebar';
 import {useTranslation} from 'react-i18next';
 import BarChart from '../../components/chart';
 import {ETypeChart} from '../../components/chart/enum';
-import Breadcrumb from '../../components/breadcrumb';
 import '../../global.css';
 import {fetchAppointments, fetchServices} from '../../utils/redux-until';
 import {IAppointment} from '../../models/appointment';
@@ -37,7 +36,8 @@ const Home: React.FC = () => {
   const appointmentsNewToDay = useMemo(
     () =>
       appointments.filter(
-        (appointment) => appointment.status == 0 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time)))
+        (appointment) =>
+          appointment.status == 0 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time.replace('Z', ''))))
       ).length,
     [appointments]
   );
@@ -45,7 +45,8 @@ const Home: React.FC = () => {
   const appointmentsCancelToDay = useMemo(
     () =>
       appointments.filter(
-        (appointment) => appointment.status == 2 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time)))
+        (appointment) =>
+          appointment.status == 2 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time.replace('Z', ''))))
       ).length,
     [appointments]
   );
@@ -53,7 +54,8 @@ const Home: React.FC = () => {
   const appointmentsApprovedToDay = useMemo(
     () =>
       appointments.filter(
-        (appointment) => appointment.status == 1 && isEqual(startOfDay(toDay), startOfDay(new Date(appointment.time)))
+        (appointment) =>
+          appointment.status == 1 && isEqual(startOfDay(new Date(appointment.time.replace('Z', ''))), startOfDay(new Date(toDay)))
       ).length,
     [appointments]
   );

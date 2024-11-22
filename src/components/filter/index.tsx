@@ -1,11 +1,4 @@
-import {
-  faArrowsUpDown,
-  faCalendarPlus,
-  faFilter,
-  faMagnifyingGlass,
-  faRotate,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
+import {faArrowsUpDown, faCalendarPlus, faFilter, faMagnifyingGlass, faRotate, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import React, {useEffect, useState} from 'react';
 import TextInput from '../text-input';
@@ -18,6 +11,7 @@ import {deleteService, updateStatusService} from '../../api/services';
 import DatePicker from 'react-datepicker';
 import DatePickerCustom from '../date-picker';
 import {approveAppointment} from '../../api/reception';
+import {updateServiceRequest} from '../../api/service-requests';
 
 interface IFilterProps {
   clearFilter?: () => void;
@@ -41,6 +35,12 @@ enum EChangeStatus {
 interface IUpdateAppointmentStatus {
   id: number;
   status: number;
+}
+
+interface IUpdateServiceRequest {
+  id: number;
+  currentStatus: number;
+  note: string;
 }
 
 interface IFilterTime {
@@ -123,9 +123,7 @@ const Filter: React.FC<IFilterProps> = ({
           // (filter.employee_name ? item.employee_id.toString().includes(filter.employee_name) : true) &&
           (filter.day ? item.time.toLowerCase().includes(filter.day.toLowerCase()) : true) &&
           (filter.time ? item.time.toLowerCase().includes(filter.time.toLowerCase()) : true) &&
-          (filter.reminder
-            ? item.reminder_sent.toString().toLowerCase().includes(filter.reminder.toLowerCase())
-            : true) &&
+          (filter.reminder ? item.reminder_sent.toString().toLowerCase().includes(filter.reminder.toLowerCase()) : true) &&
           (filter.note ? note.toLowerCase().includes(filter.note.toLowerCase()) : true) &&
           (filter.status ? itemStatus.toLowerCase().includes(filter.status.toLowerCase()) : true)
         );
@@ -137,9 +135,7 @@ const Filter: React.FC<IFilterProps> = ({
           (filter.name ? item.name.toString().toLowerCase().includes(filter.name.toLowerCase()) : true) &&
           (filter.day ? item.updated_at.toLowerCase().includes(filter.day.toLowerCase()) : true) &&
           (filter.price ? item.price.toLowerCase().includes(filter.price.toLowerCase()) : true) &&
-          (filter.description
-            ? item.description.toString().toLowerCase().includes(filter.description.toLowerCase())
-            : true)
+          (filter.description ? item.description.toString().toLowerCase().includes(filter.description.toLowerCase()) : true)
         );
       });
     } else if (type == EFilterType.CUSTOMER) {
@@ -150,9 +146,7 @@ const Filter: React.FC<IFilterProps> = ({
           (filter.phone ? item.phone.toLowerCase().includes(filter.phone.toLowerCase()) : true) &&
           (filter.email ? item.email.toLowerCase().includes(filter.email.toLowerCase()) : true) &&
           (filter.gender ? item.gender.toLowerCase().includes(filter.gender.toLowerCase()) : true) &&
-          (filter.loyalty_points
-            ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase())
-            : true)
+          (filter.loyalty_points ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase()) : true)
         );
       });
     }
@@ -241,9 +235,7 @@ const Filter: React.FC<IFilterProps> = ({
     if (selectedBranches.length <= 0) {
       showToast &&
         showToast(
-          type === 'Submit'
-            ? 'Chi nhánh chọn đang trong trạng thái xác nhận!'
-            : 'Chi nhánh chọn đang trong trạng thái hủy!',
+          type === 'Submit' ? 'Chi nhánh chọn đang trong trạng thái xác nhận!' : 'Chi nhánh chọn đang trong trạng thái hủy!',
           'warning'
         );
       setLoader && setLoader(false);
@@ -286,9 +278,7 @@ const Filter: React.FC<IFilterProps> = ({
     if (selectedServices.length <= 0) {
       showToast &&
         showToast(
-          type === 'Submit'
-            ? 'Dịch vụ chọn đang trong trạng thái hoạt động!'
-            : 'Dịch vụ chọn đang trong trạng thái tạm dừng!',
+          type === 'Submit' ? 'Dịch vụ chọn đang trong trạng thái hoạt động!' : 'Dịch vụ chọn đang trong trạng thái tạm dừng!',
           'warning'
         );
       setLoader && setLoader(false);
@@ -374,9 +364,7 @@ const Filter: React.FC<IFilterProps> = ({
     }
 
     try {
-      const promises = dataAction.map((element: IUpdateAppointmentStatus) =>
-        approveAppointment(element.id, {status: 1})
-      );
+      const promises = dataAction.map((element: IUpdateAppointmentStatus) => approveAppointment(element.id, {status: 1}));
 
       const results = await Promise.all(promises);
       const allSuccess = results.every((res) => res?.statusCode === 200);
@@ -385,6 +373,35 @@ const Filter: React.FC<IFilterProps> = ({
         setDataAction && setDataAction([]);
         reloadData && reloadData();
         showToast && showToast('Xác nhận thành công!', 'success');
+      } else {
+        showToast && showToast('Có lỗi xảy ra!', 'error');
+      }
+    } catch (error) {
+      showToast && showToast('Có lỗi xảy ra trong quá trình xử lý!', 'error');
+      console.error(error);
+    } finally {
+      setLoader && setLoader(false);
+    }
+  };
+
+  const handleUpdateNextStatus = async (type: string) => {
+    setLoader && setLoader(true);
+    // const selectedServiceRequest = dataAction.map((item: any) => ({id: item.id, currentStatus: item.currentStatus, note: ''}));
+    try {
+      const promises = dataAction.map((element: IUpdateServiceRequest) =>
+        updateServiceRequest(element.id, {
+          currentStatus: type == 'sumit' ? (element.currentStatus < 3 ? element.currentStatus + 1 : 3) : 4,
+          note: '',
+        })
+      );
+
+      const results = await Promise.all(promises);
+      const allSuccess = results.every((res) => res?.statusCode === 200);
+
+      if (allSuccess) {
+        setDataAction && setDataAction([]);
+        reloadData && reloadData();
+        showToast && showToast(type == 'sumit' ? 'Xác nhận thành công!' : 'Hủy thành công!', 'success');
       } else {
         showToast && showToast('Có lỗi xảy ra!', 'error');
       }
@@ -616,9 +633,10 @@ const Filter: React.FC<IFilterProps> = ({
           <FontAwesomeIcon icon={faRotate} />
         </button>
 
-        {dataAction?.length > 0 ? (
+        {type == EFilterType.SERVICE_REQUEST && (
           <div className="relative inline-block text-left">
             <button
+              disabled={dataAction?.length <= 0}
               title="Hành động"
               type="button"
               onClick={() => setIsShowActions(!isShowActions)}
@@ -632,19 +650,62 @@ const Filter: React.FC<IFilterProps> = ({
             {isShowActions && (
               <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
                 <div className="py-1">
-                  {type == EFilterType.APPOINTMENT && (
-                    <>
-                      <div
-                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
-                        onClick={() => {
-                          // handleChangeAppointments(EChangeStatus.Submit);
-                          handleApproveAppointment();
-                        }}
-                      >
-                        Xác nhận lịch hẹn
-                      </div>
+                  <div
+                    className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
+                    onClick={() => {
+                      // handleChangeAppointments(EChangeStatus.Submit);
+                      handleUpdateNextStatus('submit');
+                    }}
+                  >
+                    Trạng thái kế tiếp
+                  </div>
 
-                      {/* <div
+                  <div
+                    className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
+                    onClick={() => {
+                      // handleChangeAppointments(EChangeStatus.Submit);
+                      handleUpdateNextStatus('cancel');
+                    }}
+                  >
+                    Hủy yêu cầu
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {type != EFilterType.SERVICE_REQUEST && (
+          <>
+            {dataAction?.length > 0 ? (
+              <div className="relative inline-block text-left">
+                <button
+                  title="Hành động"
+                  type="button"
+                  onClick={() => setIsShowActions(!isShowActions)}
+                  className={`${
+                    isShowActions ? 'bg-slate-800' : 'bg-slate-500'
+                  } inline-flex justify-center items-center w-full text-white rounded-xl border border-white shadow-sm px-3.5 h-8 hover:bg-slate-800 focus:outline-none`}
+                >
+                  Hành động &nbsp; <FontAwesomeIcon icon={faArrowsUpDown} />
+                </button>
+
+                {isShowActions && (
+                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                    <div className="py-1">
+                      {type == EFilterType.APPOINTMENT && (
+                        <>
+                          <div
+                            className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
+                            onClick={() => {
+                              // handleChangeAppointments(EChangeStatus.Submit);
+                              handleApproveAppointment();
+                            }}
+                          >
+                            Xác nhận lịch hẹn
+                          </div>
+
+                          {/* <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
                         onClick={() => {
                           handleChangeAppointments(EChangeStatus.Cancel);
@@ -653,7 +714,7 @@ const Filter: React.FC<IFilterProps> = ({
                         Làm mới lịch hẹn
                       </div> */}
 
-                      {/* <div
+                          {/* <div
                         className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
                         onClick={() => {
                           handleChangeAppointments(EChangeStatus.Delete); // không phải xóa, chuyển trạng thái thôi
@@ -662,106 +723,108 @@ const Filter: React.FC<IFilterProps> = ({
                         Hủy lịch hẹn
                       </div> */}
 
-                      <div
-                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
-                        onClick={() => {
-                          handleDelete(EFilterType.APPOINTMENT);
-                        }}
-                      >
-                        Xóa lịch hẹn
-                      </div>
-                    </>
-                  )}
+                          <div
+                            className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 hover:text-red-500"
+                            onClick={() => {
+                              handleDelete(EFilterType.APPOINTMENT);
+                            }}
+                          >
+                            Xóa lịch hẹn
+                          </div>
+                        </>
+                      )}
 
-                  {type == EFilterType.BRANCH && (
-                    <>
-                      <div
-                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
-                        onClick={() => {
-                          handleChangeBranch('Submit');
-                        }}
-                      >
-                        Xác nhận chi nhánh
-                      </div>
+                      {type == EFilterType.BRANCH && (
+                        <>
+                          <div
+                            className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
+                            onClick={() => {
+                              handleChangeBranch('Submit');
+                            }}
+                          >
+                            Xác nhận chi nhánh
+                          </div>
 
-                      <div
-                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
-                        onClick={() => {
-                          handleChangeBranch('Cancel');
-                        }}
-                      >
-                        Hủy chi nhánh
-                      </div>
+                          <div
+                            className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                            onClick={() => {
+                              handleChangeBranch('Cancel');
+                            }}
+                          >
+                            Hủy chi nhánh
+                          </div>
 
-                      <div
-                        className="block px-4 mx-1 rounded-md hover:text-red-500 cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
-                        onClick={() => {
-                          handleDelete(EFilterType.BRANCH);
-                        }}
-                      >
-                        Xóa chi nhánh
-                      </div>
-                    </>
-                  )}
+                          <div
+                            className="block px-4 mx-1 rounded-md hover:text-red-500 cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                            onClick={() => {
+                              handleDelete(EFilterType.BRANCH);
+                            }}
+                          >
+                            Xóa chi nhánh
+                          </div>
+                        </>
+                      )}
 
-                  {type == EFilterType.SERVICE && (
-                    <>
-                      <div
-                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
-                        onClick={() => {
-                          handleChangeService('Submit');
-                        }}
-                      >
-                        Xác nhận dịch vụ
-                      </div>
+                      {type == EFilterType.SERVICE && (
+                        <>
+                          <div
+                            className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200 "
+                            onClick={() => {
+                              handleChangeService('Submit');
+                            }}
+                          >
+                            Xác nhận dịch vụ
+                          </div>
 
-                      <div
-                        className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
-                        onClick={() => {
-                          handleChangeService('Cancel');
-                        }}
-                      >
-                        Tạm dừng dịch vụ
-                      </div>
+                          <div
+                            className="block px-4 mx-1 rounded-md  cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                            onClick={() => {
+                              handleChangeService('Cancel');
+                            }}
+                          >
+                            Tạm dừng dịch vụ
+                          </div>
 
-                      <div
-                        className="block px-4 mx-1 rounded-md hover:text-red-500 cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
-                        onClick={() => {
-                          handleDelete(EFilterType.SERVICE);
-                        }}
-                      >
-                        Xóa dịch vụ
-                      </div>
-                    </>
-                  )}
-                </div>
+                          <div
+                            className="block px-4 mx-1 rounded-md hover:text-red-500 cursor-pointer py-2 text-base text-gray-700 hover:bg-gray-200"
+                            onClick={() => {
+                              handleDelete(EFilterType.SERVICE);
+                            }}
+                          >
+                            Xóa dịch vụ
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
+            ) : (
+              <>
+                <button
+                  className="border border-white text-white bg-slate-500 hover:bg-slate-800 px-3.5 h-8 rounded-xl"
+                  onClick={toggleDrawer}
+                  title={`${
+                    type === EFilterType.SERVICE
+                      ? 'Thêm dịch vụ'
+                      : type === EFilterType.CUSTOMER
+                      ? 'Thêm khách hàng'
+                      : type === EFilterType.BRANCH
+                      ? 'Thêm chi nhánh'
+                      : ''
+                  }`}
+                >
+                  {type === EFilterType.SERVICE
+                    ? 'Thêm dịch vụ'
+                    : type === EFilterType.CUSTOMER
+                    ? 'Thêm khách hàng'
+                    : type === EFilterType.BRANCH
+                    ? 'Thêm chi nhánh'
+                    : ''}
+                  &nbsp; <FontAwesomeIcon icon={faCalendarPlus} />
+                </button>
+              </>
             )}
-          </div>
-        ) : (
-          <>
-            <button
-              className="border border-white text-white bg-slate-500 hover:bg-slate-800 px-3.5 h-8 rounded-xl"
-              onClick={toggleDrawer}
-              title={`${
-                type === EFilterType.SERVICE
-                  ? 'Thêm dịch vụ'
-                  : type === EFilterType.CUSTOMER
-                  ? 'Thêm khách hàng'
-                  : type === EFilterType.BRANCH
-                  ? 'Thêm chi nhánh'
-                  : 'Thêm lịch hẹn'
-              }`}
-            >
-              {type === EFilterType.SERVICE
-                ? 'Thêm dịch vụ'
-                : type === EFilterType.CUSTOMER
-                ? 'Thêm khách hàng'
-                : type === EFilterType.BRANCH
-                ? 'Thêm chi nhánh'
-                : 'Thêm lịch hẹn'}{' '}
-              &nbsp; <FontAwesomeIcon icon={faCalendarPlus} />
-            </button>
           </>
         )}
       </div>
