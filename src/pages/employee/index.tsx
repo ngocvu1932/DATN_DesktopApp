@@ -20,10 +20,12 @@ import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import '../../global.css';
 import {ICustomer} from '../../models/customer';
 import {allCustomer} from '../../api/customer';
+import {allEmployee} from '../../api/employee';
+import {IEmployee} from '../../models/employee';
 
-const Customer: React.FC = () => {
-  const [customers, setCustomers] = useState<ICustomer[]>([]);
-  const [customersTemp, setCustomersTemp] = useState<ICustomer[]>([]);
+const Employee: React.FC = () => {
+  const [employees, setEmployees] = useState<IEmployee[]>([]);
+  const [employeesTemp, setEmployeesTemp] = useState<IEmployee[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
   const [limit] = useState(12);
@@ -32,7 +34,7 @@ const Customer: React.FC = () => {
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const dispatch = useDispatch();
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutCustomer);
-  const [selectedCustomers, setSelectedCustomers] = useState<ICustomer[]>([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<IEmployee[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,10 +77,10 @@ const Customer: React.FC = () => {
   const fetchCustomers = async () => {
     try {
       setIsLoadingPage(true);
-      const response = await allCustomer(currentPage, limit);
+      const response = await allEmployee(currentPage, limit);
       if (response?.statusCode === 200) {
-        setCustomers(response?.data);
-        setCustomersTemp(response?.data);
+        setEmployees(response?.data);
+        setEmployeesTemp(response?.data);
         setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
@@ -88,7 +90,7 @@ const Customer: React.FC = () => {
     }
   };
 
-  const handleCheckboxChange = (customer: ICustomer) => {
+  const handleCheckboxChange = (customer: IEmployee) => {
     setSelectedCustomers((prevSelected) => {
       if (prevSelected.find((b) => b.id === customer.id)) {
         return prevSelected.filter((b) => b.id !== customer.id);
@@ -105,8 +107,8 @@ const Customer: React.FC = () => {
           <>
             <div className="h-[7%] flex w-full">
               <Filter
-                setDataFilter={setCustomersTemp}
-                dataFilter={customers}
+                setDataFilter={setEmployeesTemp}
+                dataFilter={employees}
                 toggleDrawer={toggleDrawer}
                 type={EFilterType.CUSTOMER}
                 dataAction={selectedCustomers}
@@ -129,16 +131,16 @@ const Customer: React.FC = () => {
                       <th></th>
                       <th className="border border-gray-300 p-1">ID</th>
                       <th className="border border-gray-300 p-1">Ảnh</th>
-                      <th className="border border-gray-300 p-1">Tên khách hàng</th>
+                      <th className="border border-gray-300 p-1">Tên nhân viên</th>
                       <th className="border border-gray-300 p-1">Số điện thoại</th>
                       <th className="border border-gray-300 p-1">Email</th>
                       <th className="border border-gray-300 p-1">Giới tính</th>
-                      <th className="border border-gray-300 p-1">Điểm</th>
+                      {/* <th className="border border-gray-300 p-1">Điểm</th> */}
                       <th className="border border-gray-300 p-1">Trạng thái</th>
                     </tr>
                   </thead>
                   <tbody className="overflow-y-auto">
-                    {customersTemp.map((customer, index) => (
+                    {employeesTemp.map((customer, index) => (
                       <tr
                         onClick={() => {
                           handleViewDetail(customer);
@@ -149,7 +151,7 @@ const Customer: React.FC = () => {
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
                         } border-b cursor-pointer hover:bg-slate-200 border-gray-300`}
                       >
-                        {renderCustomer(customer, index)}
+                        {renderEmployee(customer, index)}
                       </tr>
                     ))}
                   </tbody>
@@ -173,7 +175,7 @@ const Customer: React.FC = () => {
     }
   };
 
-  const renderCustomer = (customer: ICustomer, index: number) => {
+  const renderEmployee = (employee: IEmployee, index: number) => {
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -181,44 +183,45 @@ const Customer: React.FC = () => {
             <input
               type="checkbox"
               className="h-5 w-5"
-              checked={selectedCustomers.some((b) => b.id === customer.id)}
-              onChange={() => handleCheckboxChange(customer)}
+              checked={selectedCustomers.some((b) => b.id === employee.id)}
+              onChange={() => handleCheckboxChange(employee)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.code}`}>
-          {customer.code}
+
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${employee.code}`}>
+          {employee.code}
         </td>
 
-        <td className="border border-gray-300 p-1" title={`ID: ${customer.id}`}>
-          <img src={customer.avatar ?? ''} className="h-10 w-10 rounded-full" />
+        <td className="border border-gray-300 p-1" title={`ID: ${employee.id}`}>
+          <img src={employee.avatar ?? ''} className="h-10 w-10 rounded-full" />
         </td>
 
-        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${customer.name}`}>
-          {customer.name}
+        <td className="border border-gray-300 p-1" title={`Tên nhân viên: ${employee.name}`}>
+          {employee.name}
         </td>
-        <td className="border border-gray-300 p-1" title={`Số điện thoại: ${customer.phone}`}>
-          {customer.phone}
+        <td className="border border-gray-300 p-1" title={`Số điện thoại: ${employee.phone}`}>
+          {employee.phone}
         </td>
-        <td className="border border-gray-300 p-1" title={`Email: ${customer.email}`}>
-          {customer.email}
+        <td className="border border-gray-300 p-1" title={`Email: ${employee.email}`}>
+          {employee.email}
         </td>
-        <td className="border border-gray-300 p-1" title={`Giới tính: ${customer.gender}`}>
+        <td className="border border-gray-300 p-1" title={`Giới tính: ${employee.gender}`}>
           {/* giới tính 0 nam 1 nữ2 khác */}
-          {Number(customer.gender) == 0 ? 'Nam' : Number(customer.gender) == 1 ? 'Nữ' : 'Khác'}
+          {employee.gender == 0 ? 'Nam' : employee.gender == 1 ? 'Nữ' : 'Khác'}
         </td>
-        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyaltyPoints}`}>
+        {/* <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyaltyPoints}`}>
           {customer.loyaltyPoints}
-        </td>
+        </td> */}
         <td
           className="h-full justify-center items-center p-0"
-          title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
+          //   title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
-          {/*     // 1 là OFF, 0 là đang hoạt động*/}
-          {customer.status == 1 ? (
+          {/*     // 0 là OFF, 1 là đang hoạt động*/}
+          {employee.status == 0 ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : customer.status == 0 ? (
+          ) : employee.status == 1 ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
           ) : (
             <>Error</>
@@ -231,7 +234,11 @@ const Customer: React.FC = () => {
   const handleViewDetail = (customer: any) => {
     dispatch(
       setInfoLayout({
+        layoutBranch: {layout: ELayoutInfo.Home, data: null},
+        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
+        layoutService: {layout: ELayoutInfo.Home, data: null},
         layoutCustomer: {layout: ELayoutInfo.Details, data: customer},
+        layoutOrder: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
@@ -255,7 +262,7 @@ const Customer: React.FC = () => {
   return (
     <div className="w-full h-full overflow-hidden">
       <div className="h-[6%] flex border-b border-slate-400 overflow-hidden">
-        <SwitchSideBar title="Danh sách khách hàng" className="font-bold text-lg" />
+        <SwitchSideBar title="Danh sách nhân viên" className="font-bold text-lg" />
         <Breadcrumb />
       </div>
 
@@ -266,4 +273,4 @@ const Customer: React.FC = () => {
   );
 };
 
-export default Customer;
+export default Employee;

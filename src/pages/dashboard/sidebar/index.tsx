@@ -14,10 +14,13 @@ import {
   faHouse,
   faLocationDot,
   faReceipt,
+  faStar,
+  faUser,
   faUsersGear,
+  faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../../redux/slices/authSlice';
-import {setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
+import {resetAllLayouts, setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
 import {useTranslation} from 'react-i18next';
 import Clock from '../../../components/clock';
 
@@ -68,6 +71,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.Home));
+            dispatch(resetAllLayouts());
           }}
         >
           <div className="flex items-center">
@@ -180,7 +184,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           )}
         </li> */}
 
-        {/* Quản lý khách hàng */}
+        {/* Quản lý Quản lý thông tin */}
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
@@ -195,7 +199,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <div className="flex w-[30px]">
                 <FontAwesomeIcon icon={faUsersGear} />
               </div>
-              <p>{t('sidebar_customer_management')}</p>
+              <p>{t('Quản lý thông tin')}</p>
             </div>
             <FontAwesomeIcon className="ml-2" flip={openMenu === 'menu3' ? 'vertical' : 'horizontal'} icon={faAngleDown} />
           </button>
@@ -208,7 +212,19 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.AllCustomer))}
               >
-                {t('sidebar_customer_management_all')}
+                <FontAwesomeIcon icon={faUser} /> &nbsp;&nbsp;
+                {t('Khách hàng')}
+              </li>
+
+              <li
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
+                  layout == ELayout.Employee ? 'bg-gray-400 border border-white' : ''
+                }`}
+                onClick={() => dispatch(setLayout(ELayout.Employee))}
+              >
+                {' '}
+                <FontAwesomeIcon icon={faUserTie} /> &nbsp;&nbsp;
+                {t('Nhân viên')}
               </li>
               {/* <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 1.2
@@ -263,6 +279,25 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           )}
         </li>
 
+        {/*Đơn hàng */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
+            layout == ELayout.Orders ? 'bg-gray-400 border border-white' : ''
+          }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.Orders));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faLocationDot} />
+            </div>
+            <p>{t('Đơn hàng')}</p>
+          </div>
+        </button>
+
         <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
             layout == ELayout.Bills ? 'bg-gray-400 border border-white' : ''
@@ -277,6 +312,44 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <FontAwesomeIcon icon={faReceipt} />
             </div>
             <p>{t('sidebar_bills')}</p>
+          </div>
+        </button>
+
+        {/*Chi nhánh */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
+            layout == ELayout.BranchManagement ? 'bg-gray-400 border border-white' : ''
+          }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.BranchManagement));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faLocationDot} />
+            </div>
+            <p>{t('sidebar_branchs')}</p>
+          </div>
+        </button>
+
+        {/*Kĩ năng */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
+            layout == ELayout.Skills ? 'bg-gray-400 border border-white' : ''
+          }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.Skills));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faStar} />
+            </div>
+            <p>{t('Kỹ năng')}</p>
           </div>
         </button>
 
@@ -295,32 +368,6 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <FontAwesomeIcon icon={faChartSimple} />
             </div>
             <p>{t('Thống kê')}</p>
-          </div>
-        </button>
-
-        {/*Chi nhánh */}
-        <button
-          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
-            layout == ELayout.BranchManagement ? 'bg-gray-400 border border-white' : ''
-          }`}
-          onClick={() => {
-            toggleMenu('');
-            dispatch(setLayout(ELayout.BranchManagement));
-            dispatch(
-              setInfoLayout({
-                layoutBranch: {layout: ELayoutInfo.Home, data: null},
-                layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-                layoutService: {layout: ELayoutInfo.Home, data: null},
-                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
-              })
-            );
-          }}
-        >
-          <div className="flex items-center">
-            <div className="flex w-[30px]">
-              <FontAwesomeIcon icon={faLocationDot} />
-            </div>
-            <p>{t('sidebar_branchs')}</p>
           </div>
         </button>
       </ul>

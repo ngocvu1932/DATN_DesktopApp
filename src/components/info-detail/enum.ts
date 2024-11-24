@@ -3,4 +3,5 @@ export enum ETypeInfoDetail {
   SERVICE = 'SERVICE',
   APPOINTMENT = 'APPOINTMENT',
   BRANCH = 'BRANCH',
+  ORDER = 'ORDER',
 }

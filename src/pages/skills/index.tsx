@@ -18,21 +18,21 @@ import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import Breadcrumb from '../../components/breadcrumb';
 import {ETypeInfoDetail} from '../../components/info-detail/enum';
 import '../../global.css';
-import {ICustomer} from '../../models/customer';
-import {allCustomer} from '../../api/customer';
+import {allSkills} from '../../api/skills';
+import {ISkill} from '../../models/skill';
 
-const Customer: React.FC = () => {
-  const [customers, setCustomers] = useState<ICustomer[]>([]);
-  const [customersTemp, setCustomersTemp] = useState<ICustomer[]>([]);
+const Skills: React.FC = () => {
+  const [skills, setSkills] = useState<ISkill[]>([]);
+  const [skillsTemp, setSkillsTemp] = useState<ISkill[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRes, setCurrentPageRes] = useState(1);
-  const [limit] = useState(12);
+  const [limit, setLimit] = useState(20);
   const [totalPages, setTotalPages] = useState(0);
   const [editStatuses, setEditStatuses] = useState<{[key: number]: boolean}>({});
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const dispatch = useDispatch();
-  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutCustomer);
-  const [selectedCustomers, setSelectedCustomers] = useState<ICustomer[]>([]);
+  const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutBranch);
+  const [selectedSkills, setSelectedSkills] = useState<ISkill[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,12 +43,12 @@ const Customer: React.FC = () => {
   }, [isLoading]);
 
   useEffect(() => {
-    fetchCustomers();
-  }, [currentPage, layoutInfo]);
+    fetchBranchs();
+  }, [currentPage, layoutInfo, limit]);
 
   useEffect(() => {
     if (isOpenDrawer == false) {
-      fetchCustomers();
+      fetchBranchs();
     }
   }, [isOpenDrawer]);
 
@@ -72,13 +72,13 @@ const Customer: React.FC = () => {
     setIsOpenDrawer(!isOpenDrawer);
   };
 
-  const fetchCustomers = async () => {
+  const fetchBranchs = async () => {
     try {
       setIsLoadingPage(true);
-      const response = await allCustomer(currentPage, limit);
+      const response = await allSkills(currentPage, limit);
       if (response?.statusCode === 200) {
-        setCustomers(response?.data);
-        setCustomersTemp(response?.data);
+        setSkills(response?.data);
+        setSkillsTemp(response?.data);
         setTotalPages(response?.pagination?.totalPages ?? 0);
         setCurrentPageRes(response?.pagination?.page ?? 0);
         setIsLoadingPage(false);
@@ -88,12 +88,12 @@ const Customer: React.FC = () => {
     }
   };
 
-  const handleCheckboxChange = (customer: ICustomer) => {
-    setSelectedCustomers((prevSelected) => {
-      if (prevSelected.find((b) => b.id === customer.id)) {
-        return prevSelected.filter((b) => b.id !== customer.id);
+  const handleCheckboxChange = (skill: ISkill) => {
+    setSelectedSkills((prevSelected) => {
+      if (prevSelected.find((b) => b.id === skill.id)) {
+        return prevSelected.filter((b) => b.id !== skill.id);
       } else {
-        return [...prevSelected, customer];
+        return [...prevSelected, skill];
       }
     });
   };
@@ -105,14 +105,14 @@ const Customer: React.FC = () => {
           <>
             <div className="h-[7%] flex w-full">
               <Filter
-                setDataFilter={setCustomersTemp}
-                dataFilter={customers}
+                setDataFilter={setSkillsTemp}
+                dataFilter={skills}
                 toggleDrawer={toggleDrawer}
-                type={EFilterType.CUSTOMER}
-                dataAction={selectedCustomers}
+                type={EFilterType.BRANCH}
+                dataAction={selectedSkills}
                 showToast={showToast}
-                reloadData={() => fetchCustomers()}
-                setDataAction={setSelectedCustomers}
+                reloadData={() => fetchBranchs()}
+                setDataAction={setSelectedSkills}
                 setLoader={setIsLoading}
               />
             </div>
@@ -127,29 +127,26 @@ const Customer: React.FC = () => {
                   <thead className="bg-gray-200 sticky top-0 z-10">
                     <tr>
                       <th></th>
-                      <th className="border border-gray-300 p-1">ID</th>
-                      <th className="border border-gray-300 p-1">Ảnh</th>
-                      <th className="border border-gray-300 p-1">Tên khách hàng</th>
-                      <th className="border border-gray-300 p-1">Số điện thoại</th>
-                      <th className="border border-gray-300 p-1">Email</th>
-                      <th className="border border-gray-300 p-1">Giới tính</th>
-                      <th className="border border-gray-300 p-1">Điểm</th>
+                      {/* <th className="border border-gray-300 p-1">ID</th> */}
+                      <th className="border border-gray-300 p-1">Kỹ năng</th>
+                      <th className="border border-gray-300 p-1">Danh mục</th>
+                      <th className="border border-gray-300 p-1">Mô tả</th>
                       <th className="border border-gray-300 p-1">Trạng thái</th>
                     </tr>
                   </thead>
                   <tbody className="overflow-y-auto">
-                    {customersTemp.map((customer, index) => (
+                    {skillsTemp.map((skill, index) => (
                       <tr
                         onClick={() => {
-                          handleViewDetail(customer);
-                          setSelectedCustomers([]);
+                          handleViewDetail(skill);
+                          setSelectedSkills([]);
                         }}
-                        key={customer.id}
+                        key={skill.id}
                         className={`${
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
                         } border-b cursor-pointer hover:bg-slate-200 border-gray-300`}
                       >
-                        {renderCustomer(customer, index)}
+                        {renderSkill(skill, index)}
                       </tr>
                     ))}
                   </tbody>
@@ -159,6 +156,9 @@ const Customer: React.FC = () => {
 
             <div className="flex justify-between items-center h-[6%]">
               <Pagination
+                limit={limit}
+                // totalRecords={totalRecords}
+                setLimit={setLimit}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 goToPage={(page) => handleGoToPage(page)}
@@ -169,11 +169,14 @@ const Customer: React.FC = () => {
           </>
         );
       case ELayoutInfo.Details:
-        return <InfoDetail type={ETypeInfoDetail.CUSTOMER} />;
+        return <InfoDetail type={ETypeInfoDetail.BRANCH} />;
     }
   };
 
-  const renderCustomer = (customer: ICustomer, index: number) => {
+  const renderSkill = (skill: ISkill, index: number) => {
+    if (skill.isRemoved == true) {
+      return;
+    }
     return (
       <>
         <td className="border border-gray-300" onClick={(e) => e.stopPropagation()}>
@@ -181,44 +184,29 @@ const Customer: React.FC = () => {
             <input
               type="checkbox"
               className="h-5 w-5"
-              checked={selectedCustomers.some((b) => b.id === customer.id)}
-              onChange={() => handleCheckboxChange(customer)}
+              checked={selectedSkills.some((b) => b.id === skill.id)}
+              onChange={() => handleCheckboxChange(skill)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.code}`}>
-          {customer.code}
+        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${skill.name}`}>
+          {skill.name}
         </td>
-
-        <td className="border border-gray-300 p-1" title={`ID: ${customer.id}`}>
-          <img src={customer.avatar ?? ''} className="h-10 w-10 rounded-full" />
+        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${skill.category}`}>
+          {skill.category}
         </td>
-
-        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${customer.name}`}>
-          {customer.name}
-        </td>
-        <td className="border border-gray-300 p-1" title={`Số điện thoại: ${customer.phone}`}>
-          {customer.phone}
-        </td>
-        <td className="border border-gray-300 p-1" title={`Email: ${customer.email}`}>
-          {customer.email}
-        </td>
-        <td className="border border-gray-300 p-1" title={`Giới tính: ${customer.gender}`}>
-          {/* giới tính 0 nam 1 nữ2 khác */}
-          {Number(customer.gender) == 0 ? 'Nam' : Number(customer.gender) == 1 ? 'Nữ' : 'Khác'}
-        </td>
-        <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyaltyPoints}`}>
-          {customer.loyaltyPoints}
+        <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${skill.description}`}>
+          {skill.description}
         </td>
         <td
           className="h-full justify-center items-center p-0"
-          title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
+          title={`Trạng thái: ${skill.status == false ? 'OFF' : 'Đang hoạt động'}`}
         >
-          {/*     // 1 là OFF, 0 là đang hoạt động*/}
-          {customer.status == 1 ? (
+          {/*   true là đang hoạt động, false OFFF*/}
+          {skill.status == false ? (
             <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : customer.status == 0 ? (
+          ) : skill.status == true ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
           ) : (
             <>Error</>
@@ -228,10 +216,10 @@ const Customer: React.FC = () => {
     );
   };
 
-  const handleViewDetail = (customer: any) => {
+  const handleViewDetail = (branch: any) => {
     dispatch(
       setInfoLayout({
-        layoutCustomer: {layout: ELayoutInfo.Details, data: customer},
+        layoutBranch: {layout: ELayoutInfo.Details, data: branch},
       })
     );
   };
@@ -255,15 +243,15 @@ const Customer: React.FC = () => {
   return (
     <div className="w-full h-full overflow-hidden">
       <div className="h-[6%] flex border-b border-slate-400 overflow-hidden">
-        <SwitchSideBar title="Danh sách khách hàng" className="font-bold text-lg" />
-        <Breadcrumb />
+        <SwitchSideBar title="Danh sách kỹ năng" className="font-bold text-lg" />
+        {/* <Breadcrumb /> */}
       </div>
 
       {renderContent()}
 
-      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.CUSTOMER} />
+      <Drawer isOpen={isOpenDrawer} onClose={toggleDrawer} type={ETypeAdd.BRANCH} />
     </div>
   );
 };
 
-export default Customer;
+export default Skills;

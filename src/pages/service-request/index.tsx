@@ -117,10 +117,7 @@ const ServiceRequest: React.FC = () => {
   const handleViewDetail = (appointment: IAppointment) => {
     dispatch(
       setInfoLayout({
-        layoutBranch: {layout: ELayoutInfo.Home, data: null},
         layoutAppointment: {layout: ELayoutInfo.Details, data: appointment},
-        layoutService: {layout: ELayoutInfo.Home, data: null},
-        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
@@ -162,9 +159,11 @@ const ServiceRequest: React.FC = () => {
                       <td></td>
                       <th className="border border-gray-300 p-1">ID</th>
                       <th className="border border-gray-300 p-1">Lịch hẹn</th>
+                      <th className="border border-gray-300 p-1">Tên nhân viên</th>
+                      <th className="border border-gray-300 p-1">Tên khách hàng</th>
                       <th className="border border-gray-300 p-1">Thời gian đến</th>
                       <th className="border border-gray-300 p-1">Trạng thái</th>
-                      <th className="border border-gray-300 p-1">Thời gian hoàn thành</th>
+                      {/* <th className="border border-gray-300 p-1">Thời gian hoàn thành</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -242,19 +241,61 @@ const ServiceRequest: React.FC = () => {
           {serviceRequest.code}
         </td>
         <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
-          {serviceRequest.appointmentId}
+          LH00{serviceRequest.appointmentId}
+        </td>
+        <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
+          Nguyễn Văn A
+        </td>
+        <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
+          Nguyễn Văn B
         </td>
         <td className="border border-gray-300 p-1" title={`Thời gian đến: ${getFormattedDateTime(serviceRequest.checkInTime)}`}>
           {getFormattedDateTime(serviceRequest.checkInTime)}
         </td>
 
-        <td className="border border-gray-300 p-1" title={`Trạng thái: ${serviceRequest.currentStatus}`}>
-          {serviceRequest.currentStatus}
+        <td className="border border-gray-300 p-1">
+          <div className="w-full flex justify-between px-4">
+            <div
+              title="Đang đợi"
+              className="flex rounded-full border border-gray-400 shadow-md"
+              style={{
+                height: '17px',
+                width: '17px',
+                backgroundColor: `${serviceRequest.currentStatus >= 1 ? '#fde047' : 'white'} `,
+              }}
+            />
+            <div
+              title="Đang phục vụ"
+              className="flex rounded-full border border-gray-400 shadow-md"
+              style={{
+                height: '17px',
+                width: '17px',
+                backgroundColor: `${serviceRequest.currentStatus >= 2 ? '#4ade80' : 'white'} `,
+              }}
+            />
+            <div
+              title="Hoàn thành"
+              className="flex rounded-full border border-gray-400 shadow-md"
+              style={{
+                height: '17px',
+                width: '17px',
+                backgroundColor: `${serviceRequest.currentStatus >= 3 ? '#4ade80' : 'white'} `,
+              }}
+            />
+            <div
+              title="Đã hủy"
+              className="flex rounded-full border border-gray-400 shadow-md"
+              style={{
+                height: '17px',
+                width: '17px',
+                backgroundColor: `${serviceRequest.currentStatus == 4 ? '#ef4444' : 'white'} `,
+              }}
+            />
+          </div>
         </td>
-        <td className="border border-gray-300 p-1" title={`Thời gian hoàn thành: ${serviceRequest.completedTime}`}>
+        {/* <td className="border border-gray-300 p-1" title={`Thời gian hoàn thành: ${serviceRequest.completedTime}`}>
           {serviceRequest.completedTime == null ? 'Chưa hoàn thành' : getFormattedDateTime(serviceRequest.completedTime)}
-          {/* {getFormattedDateTime(serviceRequest.completedTime)} */}
-        </td>
+        </td> */}
       </>
     );
   };
@@ -266,7 +307,7 @@ const ServiceRequest: React.FC = () => {
     <div className="w-full h-full">
       <div className="h-[6%] flex border-b border-slate-400 box-border">
         <SwitchSideBar title="Danh sách lịch hẹn đang xử lý" className="font-bold text-lg" />
-        <Breadcrumb />
+        {/* <Breadcrumb /> */}
       </div>
 
       {renderContent()}
@@ -276,7 +317,7 @@ const ServiceRequest: React.FC = () => {
         // dataServicesChoose={services}
         isOpen={isOpenDrawer}
         onClose={toggleDrawer}
-        type={ETypeAdd.APPOINTMENT}
+        type={ETypeAdd.SERVICE_REQUEST}
       />
     </div>
   );

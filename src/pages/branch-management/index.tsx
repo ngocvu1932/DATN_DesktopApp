@@ -223,9 +223,6 @@ const BranchManagement: React.FC = () => {
     dispatch(
       setInfoLayout({
         layoutBranch: {layout: ELayoutInfo.Details, data: branch},
-        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-        layoutService: {layout: ELayoutInfo.Home, data: null},
-        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
