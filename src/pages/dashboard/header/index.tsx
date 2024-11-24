@@ -34,7 +34,7 @@ const Header: React.FC = () => {
 
   return (
     <div className="flex h-[10vh] bg-slate-500 justify-between items-center rounded-lg mt-1 mx-1 px-4">
-      <div className="font-bold text-2xl">LOGO</div>
+      <h1 className="text-3xl font-bold mb-4 text-center font-source-code mt-3 text-white">GLAMOUR BEAUTY SPA</h1>
       <div className="flex items-center">
         {/* <div className="px-3" onClick={() => alert('ATin nhắnT')}>
           <FontAwesomeIcon icon={faMessage} />

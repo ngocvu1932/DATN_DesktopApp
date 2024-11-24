@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {resetAllLayouts, setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import {ELayoutInfo} from '../../constants/layout';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faAngleLeft} from '@fortawesome/free-solid-svg-icons';
+import {faAngleLeft, faXmark} from '@fortawesome/free-solid-svg-icons';
 import TextInput from '../text-input';
 import TextArea from '../text-aria';
 import {IBranch} from '../../models/branch';
@@ -25,6 +25,7 @@ import {format, isEqual} from 'date-fns';
 import {IOrder, IOrderDetail} from '../../models/order';
 import {formatPrice} from '../../utils/formatPrice';
 import Bills from '../../pages/bills';
+import {faEye, faFilePdf, faFloppyDisk, faPenToSquare} from '@fortawesome/free-regular-svg-icons';
 
 interface IInfoDetailProps {
   type?: ETypeInfoDetail;
@@ -187,7 +188,9 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                 setIsReviewOrder(true);
               }}
             >
-              Xem hóa đơn
+              <span className="flex justify-center items-center">
+                <FontAwesomeIcon className="mr-3" icon={faEye} /> Xem hóa đơn
+              </span>
             </button>
           )}
           <button
@@ -207,7 +210,15 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
               }
             }}
           >
-            {!isEdit ? 'Sửa' : 'Hủy'}
+            {!isEdit ? (
+              <span className="flex justify-center items-center">
+                <FontAwesomeIcon className="mr-3" icon={faPenToSquare} /> Sửa
+              </span>
+            ) : (
+              <span className="flex justify-center items-center">
+                <FontAwesomeIcon className="mr-3" icon={faXmark} /> Hủy
+              </span>
+            )}
           </button>
           <button
             className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex"
@@ -222,7 +233,13 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                 : '';
             }}
           >
-            {isSave ? <LoadingSpinner size={24} color="white" /> : 'Lưu'}
+            {isSave ? (
+              <LoadingSpinner size={24} color="white" />
+            ) : (
+              <span className="flex justify-center items-center">
+                <FontAwesomeIcon className="mr-3" icon={faFloppyDisk} /> Lưu
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -796,7 +813,9 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                     <label className="font-semibold text-base pl-1">{'Ngày tạo đơn'}</label>
                     <TextInput
                       disabled
-                      value={`${dataOrder?.createdAt}`}
+                      value={`${new Date(dataOrder?.createdAt).toLocaleDateString('vi-VN')} ${new Date(
+                        dataOrder?.createdAt
+                      ).toLocaleTimeString('vi-VN')}`}
                       type="text"
                       title="ID"
                       placeholder={'ID'}
@@ -881,13 +900,17 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
           <div className="flex w-[45%] p-3 h-[85%] bg-white rounded-md">
             <Bills onClosed={() => setIsReviewOrder(false)} ref={billsRef} data={dataOrder} />
           </div>
-          <div className="flex w-[45%] mt-3 justify-end bg-red-300">
+          <div className="flex w-[45%] mt-3 justify-end">
             <button className="flex px-4 py-1.5 rounded-lg bg-white mr-3 shadow-xl" onClick={() => setIsReviewOrder(false)}>
-              Đóng
+              <span className="flex justify-center items-center">
+                <FontAwesomeIcon className="mr-3" icon={faXmark} /> Đóng
+              </span>
             </button>
 
             <button className="flex px-4 py-1.5 rounded-lg bg-white shadow-xl" onClick={handleExportInvoice}>
-              Xuất hóa đơn
+              <span className="flex justify-center items-center">
+                <FontAwesomeIcon className="mr-3" icon={faFilePdf} /> Xuất hóa đơn
+              </span>
             </button>
           </div>
         </div>

@@ -11,16 +11,16 @@ import {
   faCalendar,
   faCalendarDays,
   faChartSimple,
+  faFileInvoiceDollar,
   faHouse,
   faLocationDot,
-  faReceipt,
   faStar,
   faUser,
   faUsersGear,
   faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../../redux/slices/authSlice';
-import {resetAllLayouts, setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
+import {resetAllLayouts} from '../../../redux/slices/layoutInfoSlice';
 import {useTranslation} from 'react-i18next';
 import Clock from '../../../components/clock';
 
@@ -49,7 +49,6 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   };
 
   const toggleMenu = (menuName: string) => {
-    // Nếu menu đã mở thì đóng nó, nếu chưa mở thì mở menu mới và đóng tất cả các menu khác
     setOpenMenu((prevMenu) => (prevMenu === menuName ? null : menuName));
   };
 
@@ -292,13 +291,14 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         >
           <div className="flex items-center">
             <div className="flex w-[30px]">
-              <FontAwesomeIcon icon={faLocationDot} />
+              <FontAwesomeIcon icon={faFileInvoiceDollar} />
             </div>
             <p>{t('Đơn hàng')}</p>
           </div>
         </button>
 
-        <button
+        {/*Hóa đơn */}
+        {/* <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
             layout == ELayout.Bills ? 'bg-gray-400 border border-white' : ''
           }`}
@@ -313,7 +313,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <p>{t('sidebar_bills')}</p>
           </div>
-        </button>
+        </button> */}
 
         {/*Chi nhánh */}
         <button
