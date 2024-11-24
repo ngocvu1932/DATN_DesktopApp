@@ -117,10 +117,7 @@ const ServiceRequest: React.FC = () => {
   const handleViewDetail = (appointment: IAppointment) => {
     dispatch(
       setInfoLayout({
-        layoutBranch: {layout: ELayoutInfo.Home, data: null},
         layoutAppointment: {layout: ELayoutInfo.Details, data: appointment},
-        layoutService: {layout: ELayoutInfo.Home, data: null},
-        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };

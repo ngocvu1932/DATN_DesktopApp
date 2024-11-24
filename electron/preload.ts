@@ -17,5 +17,6 @@
 const {contextBridge, ipcRenderer} = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  savePdf: (data: any) => ipcRenderer.invoke('save-pdf', data),
+  savePdf: (data: any, title: string) => ipcRenderer.invoke('save-pdf', data, title),
+  showAlertDialog: (message: string) => ipcRenderer.invoke('show-dialog', message),
 });

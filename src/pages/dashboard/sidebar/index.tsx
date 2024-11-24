@@ -20,7 +20,7 @@ import {
   faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../../redux/slices/authSlice';
-import {setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
+import {resetAllLayouts, setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
 import {useTranslation} from 'react-i18next';
 import Clock from '../../../components/clock';
 
@@ -71,6 +71,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.Home));
+            dispatch(resetAllLayouts());
           }}
         >
           <div className="flex items-center">
@@ -278,6 +279,25 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           )}
         </li>
 
+        {/*Đơn hàng */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
+            layout == ELayout.Orders ? 'bg-gray-400 border border-white' : ''
+          }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.Orders));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faLocationDot} />
+            </div>
+            <p>{t('Đơn hàng')}</p>
+          </div>
+        </button>
+
         <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
             layout == ELayout.Bills ? 'bg-gray-400 border border-white' : ''
@@ -303,14 +323,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.BranchManagement));
-            dispatch(
-              setInfoLayout({
-                layoutBranch: {layout: ELayoutInfo.Home, data: null},
-                layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-                layoutService: {layout: ELayoutInfo.Home, data: null},
-                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
-              })
-            );
+            dispatch(resetAllLayouts());
           }}
         >
           <div className="flex items-center">
@@ -329,14 +342,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.Skills));
-            dispatch(
-              setInfoLayout({
-                layoutBranch: {layout: ELayoutInfo.Home, data: null},
-                layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-                layoutService: {layout: ELayoutInfo.Home, data: null},
-                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
-              })
-            );
+            dispatch(resetAllLayouts());
           }}
         >
           <div className="flex items-center">

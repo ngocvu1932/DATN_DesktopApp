@@ -131,10 +131,7 @@ const AllServices: React.FC = () => {
   const handleViewDetail = (service: any) => {
     dispatch(
       setInfoLayout({
-        layoutBranch: {layout: ELayoutInfo.Home, data: null},
-        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
         layoutService: {layout: ELayoutInfo.Details, data: service},
-        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };

@@ -23,6 +23,8 @@ export enum ELayout {
   Skills = 'Skills',
 
   Employee = 'Employee',
+
+  Orders = 'Orders',
 }
 
 export enum ELayoutInfo {

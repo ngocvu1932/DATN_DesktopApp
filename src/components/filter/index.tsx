@@ -811,7 +811,7 @@ const Filter: React.FC<IFilterProps> = ({
                       ? 'Thêm khách hàng'
                       : type === EFilterType.BRANCH
                       ? 'Thêm chi nhánh'
-                      : ''
+                      : 'Thêm lịch hẹn'
                   }`}
                 >
                   {type === EFilterType.SERVICE
@@ -820,7 +820,7 @@ const Filter: React.FC<IFilterProps> = ({
                     ? 'Thêm khách hàng'
                     : type === EFilterType.BRANCH
                     ? 'Thêm chi nhánh'
-                    : ''}
+                    : 'Thêm lịch hẹn'}
                   &nbsp; <FontAwesomeIcon icon={faCalendarPlus} />
                 </button>
               </>

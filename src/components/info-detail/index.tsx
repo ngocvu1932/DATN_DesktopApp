@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
+import {resetAllLayouts, setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import {ELayoutInfo} from '../../constants/layout';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faAngleLeft} from '@fortawesome/free-solid-svg-icons';
@@ -22,6 +22,9 @@ import {time} from 'console';
 import {updateAppointment} from '../../api/appointment';
 import ChooseDateTime from '../date-time-picker';
 import {format, isEqual} from 'date-fns';
+import {IOrder, IOrderDetail} from '../../models/order';
+import {formatPrice} from '../../utils/formatPrice';
+import Bills from '../../pages/bills';
 
 interface IInfoDetailProps {
   type?: ETypeInfoDetail;
@@ -45,6 +48,18 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
   const layoutInfoService = useSelector((state: any) => state.layoutInfo.layoutService);
   const [dataService, setDataService] = useState<IService>(layoutInfoService?.data);
   const [titleServiceName, setTitleServiceName] = useState(layoutInfoService?.data?.name);
+
+  const layoutInfoOrder = useSelector((state: any) => state.layoutInfo.layoutOrder);
+  const [dataOrder, setDataOrder] = useState<IOrder>(layoutInfoOrder?.data);
+  const [titleOrderName, setTitleOrderName] = useState(layoutInfoOrder?.data?.name);
+  const [isReviewOrder, setIsReviewOrder] = useState(false);
+  const billsRef = useRef<any>(null);
+
+  const handleExportInvoice = () => {
+    if (billsRef.current) {
+      billsRef.current.exportInvoice();
+    }
+  };
 
   useEffect(() => {
     setDataAppointment({...dataAppointment, time: selectedTime});
@@ -78,10 +93,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
       setIsSave(false);
       dispatch(
         setInfoLayout({
-          layoutBranch: {layout: ELayoutInfo.Home, data: null},
           layoutAppointment: {layout: ELayoutInfo.Details, data: resData},
-          layoutService: {layout: ELayoutInfo.Home, data: null},
-          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
         })
       );
       toast.success('Cập nhật thành công!', {autoClose: 2000});
@@ -108,9 +120,6 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
       dispatch(
         setInfoLayout({
           layoutBranch: {layout: ELayoutInfo.Details, data: res?.data},
-          layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-          layoutService: {layout: ELayoutInfo.Home, data: null},
-          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
         })
       );
       toast.success('Cập nhật thành công!', {autoClose: 2000});
@@ -136,10 +145,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
       setTitleServiceName(res?.data?.name);
       dispatch(
         setInfoLayout({
-          layoutBranch: {layout: ELayoutInfo.Home, data: null},
-          layoutAppointment: {layout: ELayoutInfo.Home, data: null},
           layoutService: {layout: ELayoutInfo.Details, data: res?.data},
-          layoutCustomer: {layout: ELayoutInfo.Home, data: null},
         })
       );
       toast.success('Cập nhật thành công!', {autoClose: 2000});
@@ -158,15 +164,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
         <div
           className="flex items-center "
           onClick={() => {
-            dispatch(
-              setInfoLayout({
-                layoutBranch: {layout: ELayoutInfo.Home, data: null},
-                layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-                layoutService: {layout: ELayoutInfo.Home, data: null},
-                layoutCustomer: {layout: ELayoutInfo.Home, data: null},
-              })
-            ),
-              setIsEdit(false);
+            dispatch(resetAllLayouts()), setIsEdit(false);
           }}
         >
           <FontAwesomeIcon icon={faAngleLeft} /> &nbsp;
@@ -175,11 +173,23 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
               ? titleBranchName
               : type == ETypeInfoDetail.APPOINTMENT
               ? `Lịch hẹn ${dataAppointment?.code} `
+              : type == ETypeInfoDetail.ORDER
+              ? `Chi tiết đơn hàng ORD00${dataOrder?.id}`
               : `${titleServiceName} #${dataService?.id}`}
           </p>
         </div>
 
         <div className=" flex justify-center items-center">
+          {type == ETypeInfoDetail.ORDER && (
+            <button
+              className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
+              onClick={() => {
+                setIsReviewOrder(true);
+              }}
+            >
+              Xem hóa đơn
+            </button>
+          )}
           <button
             className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
             onClick={() => {
@@ -240,16 +250,10 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   <select
                     title="Trạng thái"
                     className={`${
-                      dataBranch?.status == false
-                        ? 'bg-yellow-200'
-                        : dataBranch?.status == true
-                        ? 'bg-green-400'
-                        : 'bg-red-400'
+                      dataBranch?.status == false ? 'bg-yellow-200' : dataBranch?.status == true ? 'bg-green-400' : 'bg-red-400'
                     } rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataBranch?.status == true ? 0 : 1}
-                    onChange={(event) =>
-                      setDataBranch({...dataBranch, status: Number(event.target.value) == 0 ? true : false})
-                    }
+                    onChange={(event) => setDataBranch({...dataBranch, status: Number(event.target.value) == 0 ? true : false})}
                     disabled={!isEdit}
                   >
                     <option value="0">Đang hoạt động</option>
@@ -345,14 +349,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
               <div className="flex w-full h-fit mt-5">
                 <div className="flex flex-col w-1/2  pl-16 pr-4">
                   <label className="font-semibold text-base pl-1">{'ID'}</label>
-                  <TextInput
-                    disabled
-                    value={dataAppointment?.code}
-                    type="text"
-                    title="ID"
-                    placeholder={'ID'}
-                    className="h-8 "
-                  />
+                  <TextInput disabled value={dataAppointment?.code} type="text" title="ID" placeholder={'ID'} className="h-8 " />
                 </div>
                 <div className="flex flex-col w-1/2 pr-16 pl-4">
                   <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
@@ -460,17 +457,11 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                       onClick={() => handleChooseDateTime()}
                     >
                       <p className="">
-                        {isEqual(selectedTime, '2000-01-01 00:00')
-                          ? 'Chọn thời gian'
-                          : format(selectedTime, 'dd/MM/yyyy HH:mm')}
+                        {isEqual(selectedTime, '2000-01-01 00:00') ? 'Chọn thời gian' : format(selectedTime, 'dd/MM/yyyy HH:mm')}
                       </p>
                     </div>
                     {isShowModalChooseTime && isEdit && (
-                      <ChooseDateTime
-                        onClose={handleChooseDateTime}
-                        nowDate={new Date()}
-                        onChooseTime={setSelectedTime}
-                      />
+                      <ChooseDateTime onClose={handleChooseDateTime} nowDate={new Date()} onChooseTime={setSelectedTime} />
                     )}
                   </div>
                 </div>
@@ -584,9 +575,7 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                       dataService?.status == true ? 'bg-green-400' : dataService?.status == false ? 'bg-yellow-200' : ''
                     } rounded-lg p-1 mx-1 mt-1`}
                     defaultValue={dataService?.status == true ? 1 : 0}
-                    onChange={(event) =>
-                      setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})
-                    }
+                    onChange={(event) => setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})}
                     disabled={!isEdit}
                   >
                     <option value="0">Tạm dừng</option>
@@ -734,11 +723,175 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                 </div>
               </div>
             </>
+          ) : type == ETypeInfoDetail.ORDER ? (
+            <>
+              <div className="flex w-full h-fit mt-5">
+                <div className="flex flex-col w-1/2  pl-16 pr-4">
+                  <label className="font-semibold text-base pl-1">{'ID'}</label>
+                  <TextInput
+                    disabled
+                    value={`ORD00${dataOrder?.id.toString()}`}
+                    type="text"
+                    title="ID"
+                    placeholder={'ID'}
+                    className="h-8 "
+                  />
+                </div>
+                <div className="flex flex-col w-1/2 pr-16 pl-4">
+                  <label className="font-semibold text-base pl-1">{'Tổng tiền'}</label>
+                  <TextInput
+                    disabled
+                    value={`${formatPrice(dataOrder?.totalAmount.toString())}`}
+                    type="text"
+                    title="ID"
+                    placeholder={'ID'}
+                    className="h-8 "
+                  />
+                </div>
+              </div>
+
+              <div className="flex w-full h-fit mt-5">
+                <div className="flex flex-col w-1/2  pl-16 pr-4">
+                  <label className="font-semibold text-base pl-1">{'Tên khách hàng'}</label>
+                  <TextInput
+                    disabled
+                    value={`ORD00${dataOrder?.id.toString()}`}
+                    type="text"
+                    title="ID"
+                    placeholder={'ID'}
+                    className="h-8 "
+                  />
+                </div>
+                <div className="flex w-1/2 flex-col pl-4 pr-16">
+                  <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
+                  {/*     // 1 Tạm dừng, 0 là Đang hoạt động*/}
+                  <select
+                    title="Trạng thái"
+                    className={`${
+                      dataOrder?.status == 0 ? 'bg-green-400' : dataOrder?.status == 1 ? 'bg-yellow-200' : ''
+                    } rounded-lg p-1 mx-1 mt-1 focus:ring-blue-500 border border-slate-300 hover:border-blue-500`}
+                    defaultValue={dataService?.status == true ? 1 : 0}
+                    onChange={(event) => setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})}
+                    disabled={!isEdit}
+                  >
+                    <option value="0">Chưa thanh toán</option>
+                    <option value="1">Đã thanh toán</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex w-full h-fit mt-5">
+                <div className="flex flex-col w-1/2  pl-16 pr-4">
+                  <label className="font-semibold text-base pl-1">{'Tên nhân viên'}</label>
+                  <TextInput
+                    disabled={!isEdit}
+                    value={`Nhân viên ${dataOrder?.customerId}`}
+                    type="text"
+                    title="Tên nhân viên"
+                    placeholder={'Tên nhân viên'}
+                    className="h-8 "
+                  />
+
+                  <div className="w-full mt-4">
+                    <label className="font-semibold text-base pl-1">{'Ngày tạo đơn'}</label>
+                    <TextInput
+                      disabled
+                      value={`${dataOrder?.createdAt}`}
+                      type="text"
+                      title="ID"
+                      placeholder={'ID'}
+                      className="h-8 "
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col w-1/2 pr-16 pl-4">
+                  <label className="font-semibold text-base pl-1">{'Mô tả đơn hàng'}</label>
+                  <TextArea
+                    disabled={!isEdit}
+                    value={`${dataOrder?.description ?? 'Không có'}`}
+                    title="Mô tả đơn hàng"
+                    placeholder={'Mô tả đơn hàng'}
+                    className="focus:outline-none h-28 resize-none scrollbar-thin"
+                  />
+                </div>
+              </div>
+
+              {dataOrder.orderDetails.length > 0 && (
+                <>
+                  <div className="flex w-full h-fit mt-5">
+                    <div className="flex flex-col w-1/2  pl-16 pr-4">
+                      <label className="font-semibold text-base pl-1">{'Dịch vụ, sản phẩm: '}</label>
+                    </div>
+                  </div>
+                  <div className="flex w-full h-fit mt-1">
+                    <div className="flex flex-col w-full h-fit px-16">
+                      <div className="w-full overflow-x-auto overflow-y-auto scrollbar-thin border box-border border-slate-400">
+                        <table className="min-w-full table-fixed">
+                          <thead className="bg-gray-200 sticky top-0 z-10">
+                            <tr>
+                              {/* <th></th> */}
+                              <th className="border border-gray-300 p-1">ID</th>
+                              <th className="border border-gray-300 p-1">Tên dịch vụ, sản phẩm</th>
+                              <th className="border border-gray-300 p-1">Giá tiền</th>
+                              <th className="border border-gray-300 p-1">Số lượng</th>
+                              <th className="border border-gray-300 p-1">Tổng tiền</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            {dataOrder.orderDetails.map((item: IOrderDetail, index) => {
+                              return (
+                                <tr
+                                  key={index}
+                                  className={`${
+                                    4 % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+                                  } border-b cursor-pointer hover:bg-slate-200 border-gray-300`}
+                                >
+                                  <td className="border border-gray-300 p-1">ODI0{item.id}</td>
+                                  <td className="border border-gray-300 p-1">{item.serviceName}</td>
+                                  <td className="border border-gray-300 p-1">
+                                    <div className="flex justify-end">{formatPrice(item.price.toString())}</div>
+                                  </td>
+                                  <td className="border border-gray-300 p-1">
+                                    <div className="flex justify-end">{item.quantity}</div>
+                                  </td>
+                                  <td className="border border-gray-300 p-1">
+                                    <div className="flex justify-end">{formatPrice(item.totalAmount.toString())}</div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
           ) : (
             <></>
           )}
         </div>
       </div>
+
+      {isReviewOrder && (
+        <div className="fixed flex flex-col inset-0 w-screen h-screen justify-center items-center bg-black bg-opacity-60 z-40">
+          <div className="flex w-[45%] p-3 h-[85%] bg-white rounded-md">
+            <Bills onClosed={() => setIsReviewOrder(false)} ref={billsRef} data={dataOrder} />
+          </div>
+          <div className="flex w-[45%] mt-3 justify-end bg-red-300">
+            <button className="flex px-4 py-1.5 rounded-lg bg-white mr-3 shadow-xl" onClick={() => setIsReviewOrder(false)}>
+              Đóng
+            </button>
+
+            <button className="flex px-4 py-1.5 rounded-lg bg-white shadow-xl" onClick={handleExportInvoice}>
+              Xuất hóa đơn
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

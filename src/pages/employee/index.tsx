@@ -238,6 +238,7 @@ const Employee: React.FC = () => {
         layoutAppointment: {layout: ELayoutInfo.Home, data: null},
         layoutService: {layout: ELayoutInfo.Home, data: null},
         layoutCustomer: {layout: ELayoutInfo.Details, data: customer},
+        layoutOrder: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };

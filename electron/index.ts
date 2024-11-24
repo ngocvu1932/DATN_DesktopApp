@@ -66,11 +66,36 @@ function createWindow() {
   });
 
   // Lắng nghe sự kiện save-pdf
-  ipcMain.handle('save-pdf', async (event, pdfData) => {
-    const filePath = path.join(app.getPath('downloads'), `invoice-${Date.now()}.pdf`);
-    const buffer = Buffer.from(pdfData, 'base64');
-    fs.writeFileSync(filePath, buffer);
-    return `Hóa đơn đã được lưu tại ${filePath}`;
+  ipcMain.handle('save-pdf', async (event, pdfData, title) => {
+    // const filePath = path.join(app.getPath('downloads'), title);
+    // const buffer = Buffer.from(pdfData, 'base64');
+    // fs.writeFileSync(filePath, buffer);
+    // return `Hóa đơn đã được lưu tại ${filePath}`;
+
+    try {
+      if (!pdfData || !title) {
+        return {status: 400, message: 'Dữ liệu không hợp lệ'};
+      }
+
+      const filePath = path.join(app.getPath('downloads'), title);
+      const buffer = Buffer.from(pdfData, 'base64');
+
+      fs.writeFileSync(filePath, buffer);
+      return {status: 200, message: `Hóa đơn đã được lưu tại ${filePath}`};
+    } catch (error) {
+      console.error('Lỗi khi lưu PDF:', error);
+      return {status: 400, message: 'Lỗi khi lưu PDF'};
+    }
+  });
+
+  ipcMain.handle('show-dialog', async (event, message) => {
+    const result = await dialog.showMessageBox({
+      type: 'info',
+      buttons: ['OK'],
+      title: 'Xuất hóa đơn',
+      message: message,
+    });
+    return result;
   });
 
   nativeTheme.themeSource = 'system';
