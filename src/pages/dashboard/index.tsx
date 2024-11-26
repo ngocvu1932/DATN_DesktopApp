@@ -21,6 +21,14 @@ import AllServices from '../all-services';
 import SessionsTracking from '../sessions-tracking';
 import LoadingOverlay from '../../components/loading-overlay';
 import Customer from '../customer';
+import {getInfo} from '../../api/auth';
+import ServiceRequest from '../service-request';
+import Skills from '../skills';
+import Employee from '../employee';
+import Orders from '../orders';
+import ServiceRequestList from '../service-request-dashboard';
+import ServiceRequestDetails from '../../components/service-request-detail';
+
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -102,6 +110,18 @@ const Dashboard: React.FunctionComponent = () => {
         return <SessionsTracking />;
       case ELayout.AllCustomer:
         return <Customer />;
+      case ELayout.ServiceRequest:
+        return <ServiceRequest />;
+      case ELayout.Skills:
+        return <Skills />;
+      case ELayout.Employee:
+        return <Employee />;
+      case ELayout.Orders:
+        return <Orders />;
+      case ELayout.ServiceRequestList:
+        return <ServiceRequestList />;
+        case ELayout.ServiceRequestDetail:
+          return <ServiceRequestDetails />;
       default:
         return <div>Chọn một trang để xem nội dung</div>;
     }

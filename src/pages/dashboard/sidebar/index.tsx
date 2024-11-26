@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useDispatch, useSelector} from 'react-redux';
-import {setLayout} from '../../../redux/slices/layoutSlice';
-import {ELayout, ELayoutInfo} from '../../../constants/layout';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLayout } from '../../../redux/slices/layoutSlice';
+import { ELayout, ELayoutInfo } from '../../../constants/layout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAddressBook,
   faAngleDown,
@@ -16,16 +16,17 @@ import {
   faReceipt,
   faUsersGear,
 } from '@fortawesome/free-solid-svg-icons';
-import {setIsLogin} from '../../../redux/slices/authSlice';
-import {setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
-import {useTranslation} from 'react-i18next';
+import { setIsLogin } from '../../../redux/slices/authSlice';
+import { resetAllLayouts } from '../../../redux/slices/layoutInfoSlice';
+import { useTranslation } from 'react-i18next';
+import Clock from '../../../components/clock';
 
 interface ISidebarProps {
   width: number;
 }
 
-const Sidebar: React.FC<ISidebarProps> = ({width}) => {
-  const {t} = useTranslation();
+const Sidebar: React.FC<ISidebarProps> = ({ width }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const layout = useSelector((state: any) => state.layout.layout);
@@ -56,14 +57,16 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   return (
     <div
       className="text-white m-1 rounded-lg relative h-[89vh] flex flex-col box-border"
-      style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
+      // style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
+      style={{ width, background: 'linear-gradient(to bottom, #2563eb, #93c5fd)' }}
     >
       <h2 className="text-2xl mb-4 text-center mt-3">{t('sidebar_title')}</h2>
       <ul className="p-4 overflow-y-auto overflow-x-hidden">
         <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
+            // layout == ELayout.Home ? 'bg-[#60a5fa] border border-white' : ''
             layout == ELayout.Home ? 'bg-gray-400 border border-white' : ''
-          }`}
+            }`}
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.Home));
@@ -80,9 +83,8 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         {/*Quản lý lịch hẹn */}
         <li className="mb-2">
           <button
-            className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.ScheduleAppointment && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
-            }`}
+            className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${layout == ELayout.ScheduleAppointment && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
+              }`}
             onClick={() => {
               toggleMenu('menu1');
               dispatch(setLayout(ELayout.ScheduleAppointment));
@@ -105,9 +107,8 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           {openMenu === 'menu1' && (
             <ul className="mt-1 ml-3">
               <li
-                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.ScheduleAppointment ? 'bg-gray-400 border border-white' : ''
-                }`}
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${layout == ELayout.ScheduleAppointment ? 'bg-gray-400 border border-white' : ''
+                  }`}
                 onClick={() => dispatch(setLayout(ELayout.ScheduleAppointment))}
               >
                 <div className="flex items-center">
@@ -117,8 +118,19 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
                   <p>{t('sidebar_appointment')}</p>
                 </div>
               </li>
-              <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
-                Mục con 2.2
+
+              <li
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${layout == ELayout.ServiceRequest ? 'bg-gray-400 border border-white' : ''
+                  }`}
+                onClick={() => dispatch(setLayout(ELayout.ServiceRequest))}
+              >
+                <div className="flex items-center">
+                  <div className="flex w-[30px]">
+                    <FontAwesomeIcon icon={faCalendar} />
+                  </div>
+                  <p>{t('Lịch hẹn đang xử lý')}</p>
+                  {/* <p>{t('sidebar_service_request')}</p> */}
+                </div>
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 2.3
@@ -179,9 +191,8 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         {/* Quản lý khách hàng */}
         <li className="mb-2">
           <button
-            className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AllCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
-            }`}
+            className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${layout == ELayout.AllCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
+              }`}
             onClick={() => {
               toggleMenu('menu3');
               dispatch(setLayout(ELayout.AllCustomer));
@@ -203,12 +214,21 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           {openMenu === 'menu3' && (
             <ul className="mt-1 ml-3">
               <li
-                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.AllCustomer ? 'bg-gray-400 border border-white' : ''
-                }`}
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${layout == ELayout.AllCustomer ? 'bg-gray-400 border border-white' : ''
+                  }`}
                 onClick={() => dispatch(setLayout(ELayout.AllCustomer))}
               >
                 {t('sidebar_customer_management_all')}
+              </li>
+
+              <li
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${layout == ELayout.Employee ? 'bg-gray-400 border border-white' : ''
+                  }`}
+                onClick={() => dispatch(setLayout(ELayout.Employee))}
+              >
+                {' '}
+                <FontAwesomeIcon icon={faUserTie} /> &nbsp;&nbsp;
+                {t('Nhân viên')}
               </li>
               <li className={`py-1.5 pl-2 cursor-pointer rounded-lg ${''}`} onClick={() => {}}>
                 Mục con 1.2
@@ -223,9 +243,8 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         {/* Mục chính 3 */}
         <li className="mb-2">
           <button
-            className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AllServices && openMenu != 'menu4' ? 'bg-gray-400 border border-white' : ''
-            }`}
+            className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${layout == ELayout.AllServices && openMenu != 'menu4' ? 'bg-gray-400 border border-white' : ''
+              }`}
             onClick={() => {
               toggleMenu('menu4');
               dispatch(setLayout(ELayout.AllServices));
@@ -247,9 +266,8 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
           {openMenu === 'menu4' && (
             <ul className="ml-3 mt-1">
               <li
-                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.AllServices ? 'bg-gray-400 border border-white' : ''
-                }`}
+                className={`py-1.5 pl-2 cursor-pointer rounded-lg ${layout == ELayout.AllServices ? 'bg-gray-400 border border-white' : ''
+                  }`}
                 onClick={() => dispatch(setLayout(ELayout.AllServices))}
               >
                 <div className="flex items-center">
@@ -268,6 +286,24 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         </li>
 
         <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${layout == ELayout.Orders ? 'bg-gray-400 border border-white' : ''
+            }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.Orders));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faFileInvoiceDollar} />
+            </div>
+            <p>{t('Đơn hàng')}</p>
+          </div>
+        </button>
+
+        {/*Hóa đơn */}
+        {/* <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
             layout == ELayout.Bills ? 'bg-gray-400 border border-white' : ''
           }`}
@@ -282,13 +318,48 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <p>{t('sidebar_bills')}</p>
           </div>
+        </button> */}
+
+        {/*Chi nhánh */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${layout == ELayout.BranchManagement ? 'bg-gray-400 border border-white' : ''
+            }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.BranchManagement));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faLocationDot} />
+            </div>
+            <p>{t('sidebar_branchs')}</p>
+          </div>
+        </button>
+
+        {/*Kĩ năng */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${layout == ELayout.Skills ? 'bg-gray-400 border border-white' : ''
+            }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.Skills));
+            dispatch(resetAllLayouts());
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faStar} />
+            </div>
+            <p>{t('Kỹ năng')}</p>
+          </div>
         </button>
 
         {/*Báo cáo doanh thu */}
         <button
-          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
-            layout == ELayout.RevenueManagement ? 'bg-gray-400 border border-white' : ''
-          }`}
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${layout == ELayout.RevenueManagement ? 'bg-gray-400 border border-white' : ''
+            }`}
           onClick={() => {
             toggleMenu('');
             dispatch(setLayout(ELayout.RevenueManagement));
@@ -325,6 +396,23 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <FontAwesomeIcon icon={faLocationDot} />
             </div>
             <p>{t('sidebar_branchs')}</p>
+          </div>
+        </button>
+
+        {/* Yeu cau dich vu */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${layout == ELayout.ServiceRequestList ? 'bg-gray-400 border border-white' : ''
+            }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.ServiceRequestList));
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faChartSimple} />
+            </div>
+            <p>{t('Quản lý yêu cầu')}</p>
           </div>
         </button>
       </ul>
