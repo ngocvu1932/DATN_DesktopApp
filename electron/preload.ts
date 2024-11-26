@@ -14,3 +14,9 @@
 //   maximize: () => ipcRenderer.send('maximize'),
 //   close: () => ipcRenderer.send('close')
 // });
+const {contextBridge, ipcRenderer} = require('electron');
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  savePdf: (data: any, title: string) => ipcRenderer.invoke('save-pdf', data, title),
+  showAlertDialog: (message: string) => ipcRenderer.invoke('show-dialog', message),
+});

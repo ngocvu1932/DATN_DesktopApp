@@ -1,22 +1,55 @@
 import {faAngleLeft, faAngleRight} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import TextInput from '../text-input';
+import useDebounce from '../../utils/useDebounce';
+import {set} from 'date-fns';
 
 interface IPaginationProps {
   currentPage: number;
   totalPages: number;
+  totalRecords?: number;
   previousPage: () => void;
   nextPage: () => void;
   goToPage: (page: number) => void;
+  limit?: number;
+  setLimit?: (limit: number) => void;
 }
 
-const Pagination: React.FC<IPaginationProps> = ({currentPage, totalPages, previousPage, nextPage, goToPage}) => {
+const Pagination: React.FC<IPaginationProps> = ({
+  currentPage,
+  totalPages,
+  previousPage,
+  nextPage,
+  goToPage,
+  totalRecords,
+  limit,
+  setLimit,
+}) => {
+  const [limitPage, setLimitPage] = useState<number>(limit ?? 0);
+  const debouncedLimit = useDebounce(limitPage, 1000);
+
+  useEffect(() => {
+    setLimit && setLimit(debouncedLimit);
+  }, [debouncedLimit]);
+
   return (
     <>
-      <div>
-        Tổng {currentPage} / {totalPages}
+      <div className="flex">
+        Tổng {currentPage} / {totalPages} trang
       </div>
-      <div className="flex items-center">
+
+      {/* {limit && totalRecords && (
+        <div className="flex bg-blue-300">
+          Tổng {currentPage * limit > totalRecords ? totalRecords : currentPage * limit} / {totalRecords}
+        </div>
+      )} */}
+
+      <div className="flex items-center ">
+        <div className="flex items-center mr-5">
+          <span className="">Số hàng trên mỗi trang</span>
+          <TextInput value={limitPage?.toString()} className="h-7 w-12" changeText={(text) => setLimitPage(Number(text))} />
+        </div>
         <button
           onClick={previousPage}
           disabled={currentPage === 1}

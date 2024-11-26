@@ -40,13 +40,13 @@ const Header: React.FC = () => {
       {/* <div className="flex h-[10vh] bg-[#1d4ed8] justify-between items-center rounded-lg mt-1 mx-1 px-4"> */}
       <h1 className="text-3xl font-bold mb-4 text-center font-source-code mt-3 text-white">GLAMOUR BEAUTY SPA</h1>
       <div className="flex items-center">
-        <div className="px-3" onClick={() => alert('ATin nhắnT')}>
+        {/* <div className="px-3" onClick={() => alert('ATin nhắnT')}>
           <FontAwesomeIcon icon={faMessage} />
         </div>
 
         <div className="px-3" onClick={() => alert('Thong báo')}>
           <FontAwesomeIcon icon={faBell} />
-        </div>
+        </div> */}
 
         <div className="relative">
           <div className="px-3 cursor-pointer" onClick={() => setIsShowChooseLanguage(!isShowChooseLanguage)}>

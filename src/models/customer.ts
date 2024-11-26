@@ -1,17 +1,20 @@
 export interface ICustomer {
-  id: number;
-  username: string;
-  password?: string;
   name: string;
-  email: string;
   phone: string;
+  email: string;
+  dateOfBirth: string;
   gender: string;
-  loyaltyPoints: number;
+  address: string;
+  id: number;
+  code: string;
+  username: string;
   avatar: string;
   status: number;
-  role: number;
-  token: string;
-  userId?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  loyaltyPoints: number;
+  createdAt: string;
+  updatedAt: string;
+  isRemoved: boolean;
+  city: string;
+  district: string;
+  ward: string;
 }

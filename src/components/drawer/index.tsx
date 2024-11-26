@@ -14,7 +14,7 @@ import {createBranch} from '../../api/branch';
 import {EFilterType} from '../filter/enum';
 import {IDataChoose} from '../../pages/all-services';
 import {IAppointmentRequest} from '../../api/appointment/interface';
-import ChooseDateTime from '../choose-date-time';
+import ChooseDateTime from '../date-time-picker';
 import {addHours, format, isEqual} from 'date-fns';
 import {app} from 'electron';
 import {createAppointment} from '../../api/appointment';
@@ -30,7 +30,8 @@ interface IDrawerProps {
 const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoose, dataServicesChoose}) => {
   const [isLoadingAdd, setIsLoadingAdd] = useState(false);
   const [isShowModalChooseTime, setIsShowModalChooseTime] = useState(false);
-  const [selectedTime, setSelectedTime] = useState<Date>(new Date('2000-01-01 00:00'));
+  const [selectedTime, setSelectedTime] = useState<string>('2000-01-01 00:00');
+
   const [isFillAdd, setIsFillAdd] = useState({
     service: false,
     branch: false,
@@ -183,7 +184,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
     setIsLoadingAdd(true);
     const res = await createService(dataServiceAdd);
     if (res?.statusCode === 200) {
-      console.log('res', res.data);
+      // console.log('res', res.data);
       toast.success('Thêm dịch vụ thành công!', {autoClose: 1000});
       handleReset(ETypeAdd.SERVICE);
       setIsLoadingAdd(false);
@@ -192,7 +193,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
       toast.error('Thêm dịch vụ lỗi!', {autoClose: 1000});
 
       setIsLoadingAdd(false);
-      console.log('res', res);
+      // console.log('res', res);
     }
   };
 
@@ -200,7 +201,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
     setIsLoadingAdd(true);
     const res = await createBranch(dataBranchAdd);
     if (res?.statusCode === 200) {
-      console.log('res', res.data);
+      // console.log('res', res.data);
       toast.success('Thêm nrahc thành công!', {autoClose: 1000});
       handleReset(ETypeAdd.BRANCH);
       setIsLoadingAdd(false);
@@ -209,16 +210,19 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
       toast.error('Thêm dịch vụ lỗi!', {autoClose: 1000});
 
       setIsLoadingAdd(false);
-      console.log('res', res);
+      // console.log('res', res);
     }
   };
 
   const handleAddAppointment = async () => {
     setIsLoadingAdd(true);
-    const res = await createAppointment(dataAppointmentAdd);
+    const filteredData = {
+      ...dataAppointmentAdd,
+      reminderSent: dataAppointmentAdd.reminderSent == 0 ? true : false,
+    };
+    const res = await createAppointment(filteredData);
     if (res?.statusCode === 200) {
-      console.log('res', res.data);
-      toast.success('Thêm nrahc thành công!', {autoClose: 1000});
+      toast.success('Thêm dịch vụ thành công!', {autoClose: 1000});
       handleReset(ETypeAdd.APPOINTMENT);
       setIsLoadingAdd(false);
       onClose();
@@ -226,12 +230,12 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
       toast.error('Thêm dịch vụ lỗi!', {autoClose: 1000});
 
       setIsLoadingAdd(false);
-      console.log('res', res);
+      // console.log('res', res);
     }
   };
 
   const handleReset = (type: ETypeAdd) => {
-    setSelectedTime(new Date('2000-01-01 00:00'));
+    setSelectedTime('2000-01-01 00:00');
     type === ETypeAdd.SERVICE
       ? setDataServiceAdd({
           name: '',
@@ -282,8 +286,9 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                 <FontAwesomeIcon icon={faXmark} size="xl" />
               </button>
             </div>
+
             <div className="drawer-content">
-              <div className="bg-slate-100 flex w-full h-full flex-col rounded-md border border-black px-3">
+              <div className="bg-gray-50 flex w-full h-full flex-col rounded-md border border-gray-400 px-3">
                 {type === ETypeAdd.SERVICE && (
                   <>
                     <div className="flex w-full mt-8">
@@ -306,7 +311,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Chi nhánh</label>
                         {/* <TextInput className="w-[90%] h-8" placeholder="Chọn chi nhánh" /> */}
                         <select
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:outline-none focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataServiceAdd.branchId ?? ''}
                           onChange={(e) => {
@@ -316,8 +321,13 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                             }));
                           }}
                         >
-                          <option value="">---Chọn chi nhánh--- </option>
+                          <option value="">
+                            <p className="text-gray-300">---Chọn chi nhánh--- </p>
+                          </option>
                           {dataBranchsChoose?.map((item, index) => {
+                            if (item.status == false) {
+                              return;
+                            }
                             return (
                               <option key={index} value={item.id}>
                                 {item.value}
@@ -332,7 +342,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                       <div className="w-[50%] ">
                         <label className="font-semibold ml-1">Trạng thái</label>
                         <select
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:outline-none focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataServiceAdd.status ?? ''}
                           onChange={(e) => {
@@ -342,9 +352,10 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                             }));
                           }}
                         >
+                          {/* //  false 0 tạm dừng, true  1 là Đang hoạt động  */}
                           <option value="">---Chọn trạng thái--- </option>
-                          <option value="1">Trạng thái 1</option>
-                          <option value="2">Trạng thái 2</option>
+                          <option value="1">Đang hoạt động</option>
+                          <option value="0">Tạm dừng</option>
                         </select>
                       </div>
                       <div className="w-[50%] ">
@@ -384,7 +395,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Gói dịch vụ</label>
                         <select
                           disabled={isLoadingAdd}
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8  rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:outline-none focus:ring-blue-500"
                           value={dataServiceAdd.categoryId ?? ''}
                           onChange={(e) => {
                             setDataServiceAdd((prevState) => ({
@@ -434,7 +445,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Khách hàng</label>
                         <select
                           title="Chọn khách hàng"
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:outline-none focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataAppointmentAdd.customerId ?? ''}
                           onChange={(e) => {
@@ -457,22 +468,20 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         </select>
                       </div>
 
-                      <div className="w-[50%] relative ">
+                      <div className="w-[50%] relative">
                         <label className="font-semibold ml-1">Ngày giờ</label>
                         <div
-                          className="flex items-center h-8 rounded-xl bg-white pl-3 m-1 w-[90%]"
+                          className="flex items-center h-8 rounded-xl bg-white m-1 w-[90%] relative pl-3 border border-slate-300 hover:border-blue-500 focus:outline-none focus:ring-blue-500"
                           onClick={() => handleChooseDateTime()}
                         >
-                          {isEqual(selectedTime, new Date('2000-01-01 00:00'))
-                            ? 'Chọn thời gian'
-                            : format(selectedTime, 'dd/MM/yyyy HH:mm')}
+                          <p className="">
+                            {isEqual(selectedTime, '2000-01-01 00:00')
+                              ? 'Chọn thời gian'
+                              : format(selectedTime, 'dd/MM/yyyy HH:mm')}
+                          </p>
                         </div>
                         {isShowModalChooseTime && (
-                          <ChooseDateTime
-                            onClose={handleChooseDateTime}
-                            nowDate={new Date()}
-                            onChooseTime={setSelectedTime}
-                          />
+                          <ChooseDateTime onClose={handleChooseDateTime} nowDate={new Date()} onChooseTime={setSelectedTime} />
                         )}
                       </div>
                     </div>
@@ -483,7 +492,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Dịch vụ</label>
                         <select
                           title="Chọn dịch vụ"
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:ring-blue-500 "
                           disabled={isLoadingAdd}
                           value={dataAppointmentAdd.serviceId ?? ''}
                           onChange={(e) => {
@@ -495,6 +504,9 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         >
                           <option value="">---Chọn dịch vụ--- </option>
                           {dataServicesChoose?.map((item, index) => {
+                            if (item.status == false) {
+                              return;
+                            }
                             return (
                               <option key={index} value={item.id}>
                                 {item.value}
@@ -507,7 +519,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Nhân viên</label>
                         <select
                           title="Chọn nhân viên"
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataAppointmentAdd.employeeId ?? ''}
                           onChange={(e) => {
@@ -537,7 +549,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Chi nhánh</label>
                         <select
                           title="Chọn chi nhánh"
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataAppointmentAdd.branchId ?? ''}
                           onChange={(e) => {
@@ -549,6 +561,9 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         >
                           <option value="">---Chọn chi nhánh--- </option>
                           {dataBranchsChoose?.map((item, index) => {
+                            if (item.status == false) {
+                              return;
+                            }
                             return (
                               <option key={index} value={item.id}>
                                 {item.value}
@@ -562,7 +577,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Trạng thái</label>
                         <select
                           title="Chọn trạng thái"
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataAppointmentAdd.status ?? ''}
                           onChange={(e) => {
@@ -572,10 +587,10 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                             }));
                           }}
                         >
-                          {/* // 1 là mới, 0 là đã xác nhận */}
+                          {/* 0 MỚi, 1 Đã xác nhận, 2 Hủy*/}
                           <option value="">---Chọn trạng thái--- </option>
-                          <option value="1">Mới</option>
-                          <option value="0">Đã xác nhận</option>
+                          <option value="0">Mới</option>
+                          <option value="1">Đã xác nhận</option>
                         </select>
                       </div>
                     </div>
@@ -586,9 +601,9 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                         <label className="font-semibold ml-1">Nhắc nhở</label>
                         <select
                           title="Nhắc nhở"
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:ring-blue-500"
                           disabled={isLoadingAdd}
-                          value={dataAppointmentAdd.reminderSent ?? ''}
+                          value={dataAppointmentAdd.reminderSent}
                           onChange={(e) => {
                             setDataAppointmentAdd((prevState) => ({
                               ...prevState,
@@ -596,10 +611,10 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                             }));
                           }}
                         >
-                          <option value="">---Chọn nhắc nhở--- </option>
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
+                          <option value="">---Nhắc nhở--- </option>
+                          <option value="0">Có</option>
+                          <option value="1">Không</option>
+                          {/* <option value="3">3</option> */}
                           {/* {dataBranchsChoose?.map((item, index) => {
                             return (
                               <option key={index} value={item.id}>
@@ -652,7 +667,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                       <div className="w-[50%] ">
                         <label className="font-semibold ml-1">Trạng thái</label>
                         <select
-                          className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-3"
+                          className="w-[90%] h-8 rounded-xl m-1 pl-3 border border-slate-300 hover:border-blue-500 focus:outline-none focus:ring-blue-500"
                           disabled={isLoadingAdd}
                           value={dataBranchAdd.status ?? ''}
                           onChange={(e) => {

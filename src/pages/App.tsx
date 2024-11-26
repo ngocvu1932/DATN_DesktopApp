@@ -27,14 +27,13 @@ const App = () => {
     }
   }, [reLogin?.isCancel]);
 
-  console.log('reLogin:', reLogin);
+  // console.log('reLogin:', reLogin);
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
-    console.log('accessToken relogin:', accessToken);
+    // console.log('accessToken relogin:', accessToken);
 
     const getInfoUser = async () => {
-      // Nếu có yêu cầu hủy, không gọi API
       if (reLogin?.isCancel) return;
 
       dispatch(setIsReLogin({ isReLogin: true, isSuscess: true }));
@@ -51,7 +50,7 @@ const App = () => {
         }
       } catch (error) {
         if (axios.isCancel(error)) {
-          console.log('Request canceled', error.message);
+          // console.log('Request canceled', error.message);
         } else {
           console.error('Error fetching user info:', error);
         }
@@ -73,7 +72,7 @@ const App = () => {
               <Navigate
                 to="/dashboard"
                 state={{
-                  message: t('auth_login_successx'),
+                  message: t('auth_reLogin_success'),
                   type: 'success',
                 }}
               />

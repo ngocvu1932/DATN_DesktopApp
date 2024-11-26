@@ -8,6 +8,7 @@
   "auth_logout_success": "Logout success!",
   "auth_login_fail": "Login fail!",
   "auth_logout_fail": "Logout fail!",
+  "auth_reLogin_success": "Welcome back!",
 
   "account_title": "Account",
   "account_info_title": "Personal information",

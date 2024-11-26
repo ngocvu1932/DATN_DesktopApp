@@ -3,7 +3,7 @@ export interface IServiceRequest {
   description: string;
   price: number;
   status: number;
+  categoryId: number;
   branchId: number;
   totalSessions: number;
-  categoryId: number;
 }

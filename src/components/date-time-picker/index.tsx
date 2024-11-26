@@ -8,7 +8,7 @@ import {parse, format, isBefore} from 'date-fns';
 import {useTranslation} from 'react-i18next';
 interface IChooseDateTimeProps {
   nowDate: Date;
-  onChooseTime: (time: Date) => void;
+  onChooseTime: (time: string) => void;
   onClose: () => void;
 }
 const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, onClose}) => {
@@ -17,7 +17,7 @@ const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, 
   const [timeFilter, setTimeFilter] = React.useState<Time>(Time.MORNING);
   const [listTime, setListTime] = useState<IFilteredTimes[]>([]);
   const [timeChoose, setTimeChoose] = useState<number>();
-  const [dayFinal, setDayFinal] = useState<Date>();
+  const [dayFinal, setDayFinal] = useState<string>('');
 
   useEffect(() => {
     handleFilterTime(timeFilter);
@@ -29,7 +29,7 @@ const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, 
       const date = format(dateTimeChoose, 'yyyy-MM-dd');
       const time = listTime[index].time;
       const dateTime = `${date} ${time}`;
-      setDayFinal(new Date(dateTime));
+      setDayFinal(dateTime);
     }
   };
 
@@ -42,9 +42,9 @@ const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, 
 
   const handleFilterTime = (time: Time, event?: React.MouseEvent) => {
     event?.preventDefault();
-    setDayFinal(undefined);
+    setDayFinal('');
     setTimeChoose(-1);
-    onChooseTime(new Date('2000-01-01 00:00'));
+    onChooseTime('2000-01-01 00:00');
     if (time == Time.MORNING) {
       setTimeFilter(Time.MORNING);
       setFilterTime('9:00', '11:45');
@@ -93,7 +93,7 @@ const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, 
   };
 
   return (
-    <div className="flex absolute top-16 flex-col w-[90%] bg-white z-20 rounded-xl shadow-xl border border-[#432269]">
+    <div className="flex absolute top-14 left-0 right-0 flex-col w-full bg-white z-20 rounded-xl shadow-xl border border-[#432269]">
       <div className="flex flex-col py-2 ">
         <label className="text-left mb-1 ml-3 font-bold">Chọn ngày</label>
         <DatePicker
@@ -135,6 +135,7 @@ const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, 
         </div>
       </div>
 
+      {/* chỗ này hiện time cho chọn */}
       {listTime.length !== 0 ? (
         <div className="flex flex-wrap mx-3 border border-slate-400 rounded-lg">
           {listTime.map((item, index) => (
@@ -153,8 +154,8 @@ const ChooseDateTime: React.FC<IChooseDateTimeProps> = ({nowDate, onChooseTime, 
 
       <div className="py-2 flex justify-center">
         <button
-          disabled={dayFinal == undefined ? true : false}
-          className={`bg-[#432269] ${dayFinal == undefined ? 'opacity-50' : ''} text-white rounded-lg px-3 py-1`}
+          disabled={dayFinal == '' ? true : false}
+          className={`bg-[#432269] ${dayFinal == '' ? 'opacity-50' : ''} text-white rounded-lg px-3 py-1`}
           onClick={() => handleConfirm()}
         >
           Xác nhận

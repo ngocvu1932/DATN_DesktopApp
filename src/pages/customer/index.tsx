@@ -103,7 +103,7 @@ const Customer: React.FC = () => {
       case ELayoutInfo.Home:
         return (
           <>
-            <div className="h-[13%] flex w-full">
+            <div className="h-[7%] flex w-full">
               <Filter
                 setDataFilter={setCustomersTemp}
                 dataFilter={customers}
@@ -117,7 +117,7 @@ const Customer: React.FC = () => {
               />
             </div>
 
-            <div className="h-[75%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
+            <div className="h-[81%] overflow-y-auto overflow-x-auto scrollbar-thin border box-border border-slate-400">
               {isLoadingPage ? (
                 <div className="flex w-full h-full justify-center items-center">
                   <LoadingSpinner size={60} />
@@ -128,6 +128,7 @@ const Customer: React.FC = () => {
                     <tr>
                       <th></th>
                       <th className="border border-gray-300 p-1">ID</th>
+                      <th className="border border-gray-300 p-1">Ảnh</th>
                       <th className="border border-gray-300 p-1">Tên khách hàng</th>
                       <th className="border border-gray-300 p-1">Số điện thoại</th>
                       <th className="border border-gray-300 p-1">Email</th>
@@ -186,9 +187,14 @@ const Customer: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.id}`}>
-          {customer.id}
+        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${customer.code}`}>
+          {customer.code}
         </td>
+
+        <td className="border border-gray-300 p-1" title={`ID: ${customer.id}`}>
+          <img src={customer.avatar ?? ''} className="h-10 w-10 rounded-full" />
+        </td>
+
         <td className="border border-gray-300 p-1" title={`Tên chi nhánh: ${customer.name}`}>
           {customer.name}
         </td>
@@ -199,7 +205,8 @@ const Customer: React.FC = () => {
           {customer.email}
         </td>
         <td className="border border-gray-300 p-1" title={`Giới tính: ${customer.gender}`}>
-          {customer.gender}
+          {/* giới tính 0 nam 1 nữ2 khác */}
+          {Number(customer.gender) == 0 ? 'Nam' : Number(customer.gender) == 1 ? 'Nữ' : 'Khác'}
         </td>
         <td className="border border-gray-300 p-1" title={`Điểm: ${customer.loyaltyPoints}`}>
           {customer.loyaltyPoints}
@@ -224,9 +231,6 @@ const Customer: React.FC = () => {
   const handleViewDetail = (customer: any) => {
     dispatch(
       setInfoLayout({
-        layoutBranch: {layout: ELayoutInfo.Home, data: null},
-        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
-        layoutService: {layout: ELayoutInfo.Home, data: null},
         layoutCustomer: {layout: ELayoutInfo.Details, data: customer},
       })
     );

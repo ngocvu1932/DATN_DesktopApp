@@ -2,7 +2,7 @@ import axios, {CustomAxiosResponse} from '../axiosConfig';
 
 export const allCustomer = async (page: number, limit: number): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.get(`/api/v1/customers?page=${page}&limit=${limit}`);
+    const res = await axios.get(`/api/v1/customer?page=${page}&limit=${limit}`);
     return res;
   } catch (error) {
     console.log(error);
@@ -11,7 +11,7 @@ export const allCustomer = async (page: number, limit: number): Promise<CustomAx
 
 export const createCustomer = async (data: any): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
-    const res = await axios.post(`/api/v1/customers`, data);
+    const res = await axios.post(`/api/v1/customer`, data);
     return res;
   } catch (error) {
     console.log(error);

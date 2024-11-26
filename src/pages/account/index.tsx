@@ -6,9 +6,10 @@ import avata from '../../assets/images/anh-avatar-cute-58.jpg';
 import Avatar from '../../components/avatar';
 import TextInput from '../../components/text-input';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowRightFromBracket} from '@fortawesome/free-solid-svg-icons';
+import {faArrowRightFromBracket, faRepeat, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../redux/slices/authSlice';
 import {useTranslation} from 'react-i18next';
+import {faFloppyDisk, faPenToSquare} from '@fortawesome/free-regular-svg-icons';
 
 const Account: React.FC = () => {
   const {t} = useTranslation();
@@ -52,7 +53,9 @@ const Account: React.FC = () => {
               <Avatar src={avata} height={100} width={100} />
               <div className="ml-8">
                 <button className="hover:bg-slate-700 bg-slate-500 px-2 py-1 rounded-md text-white text-base flex">
-                  {t('account_info_change_avt')}
+                  <span className="flex justify-center items-center">
+                    <FontAwesomeIcon className="mr-3" icon={faRepeat} /> {t('account_info_change_avt')}
+                  </span>
                 </button>
                 <p className="text-xs mt-1 italic">*JPG, PNG</p>
               </div>
@@ -123,10 +126,20 @@ const Account: React.FC = () => {
                 className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
                 onClick={() => handleClickEdit('userInfo')}
               >
-                {isEdit.isEditUserInfo ? t('account_info_button_cancel') : t('account_info_button_edit')}
+                {isEdit.isEditUserInfo ? (
+                  <span className="flex justify-center items-center">
+                    <FontAwesomeIcon className="mr-3" icon={faXmark} /> {t('account_info_button_cancel')}
+                  </span>
+                ) : (
+                  <span className="flex justify-center items-center">
+                    <FontAwesomeIcon className="mr-3" icon={faPenToSquare} /> {t('account_info_button_edit')}
+                  </span>
+                )}
               </button>
               <button className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex">
-                {t('account_info_button_save')}
+                <span className="flex justify-center items-center">
+                  <FontAwesomeIcon className="mr-3" icon={faFloppyDisk} /> {t('account_info_button_save')}
+                </span>
               </button>
             </div>
           </div>
@@ -173,10 +186,20 @@ const Account: React.FC = () => {
                 className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex mr-4"
                 onClick={() => handleClickEdit('password')}
               >
-                {isEdit.isEditPassword ? t('account_info_button_cancel') : t('account_info_button_edit')}
+                {isEdit.isEditPassword ? (
+                  <span className="flex justify-center items-center">
+                    <FontAwesomeIcon className="mr-3" icon={faXmark} /> {t('account_info_button_cancel')}
+                  </span>
+                ) : (
+                  <span className="flex justify-center items-center">
+                    <FontAwesomeIcon className="mr-3" icon={faPenToSquare} /> {t('account_info_button_edit')}
+                  </span>
+                )}
               </button>
               <button className="hover:bg-slate-700 bg-slate-500 px-3 py-1 rounded-md text-white text-base flex">
-                {t('account_info_button_save')}
+                <span className="flex justify-center items-center">
+                  <FontAwesomeIcon className="mr-3" icon={faPenToSquare} /> {t('account_info_button_save')}
+                </span>
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 {
   "name": "datndesktopapp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "main": "dist-electron/index.js",
   "type": "module",
@@ -45,6 +45,9 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "electron-is-dev": "^3.0.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
+    "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^7.5.0",
@@ -58,6 +61,7 @@
     "vite-plugin-electron-renderer": "^0.14.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.13",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

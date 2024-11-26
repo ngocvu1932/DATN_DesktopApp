@@ -4,6 +4,7 @@ export enum ELayout {
 
   // AppointmentManagement = 'AppointmentManagement',
   ScheduleAppointment = 'ScheduleAppointment',
+  ServiceRequest = 'ServiceRequest',
 
   // CustomerManagement = 'CustomerManagement',
   AllCustomer = 'AllCustomer',

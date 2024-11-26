@@ -1,10 +1,10 @@
 export interface IAppointmentRequest {
-  time: string; //
-  status: number; //
-  customerId: number; //
-  employeeId: number; //
-  serviceId: number; //
+  time: string;
+  customerId: number;
+  employeeId: number;
+  branchId: number;
+  serviceId: number;
   note: string;
-  reminderSent: number;
-  branchId: number; //
+  reminderSent: number; // boolean
+  status: number;
 }

@@ -1,8 +1,9 @@
-import {join} from 'path';
+import path, {join} from 'path';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
-import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut, screen} from 'electron';
+import {BrowserWindow, app, ipcMain, IpcMainEvent, nativeTheme, globalShortcut, screen, dialog} from 'electron';
 import isDev from 'electron-is-dev';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -11,7 +12,7 @@ const __dirname = dirname(__filename);
 function createWindow() {
   const {width: screenWidth, height: screenHeight} = screen.getPrimaryDisplay().workAreaSize;
 
-  const windowWidth = Math.round(screenWidth * 0.92); // 92% width
+  const windowWidth = Math.round(screenWidth * 0.95); // 92% width
   const windowHeight = Math.round(screenHeight * 0.94); // 94% height
   const window = new BrowserWindow({
     width: windowWidth,
@@ -62,6 +63,39 @@ function createWindow() {
 
   ipcMain.on('close', () => {
     window.close();
+  });
+
+  // Lắng nghe sự kiện save-pdf
+  ipcMain.handle('save-pdf', async (event, pdfData, title) => {
+    // const filePath = path.join(app.getPath('downloads'), title);
+    // const buffer = Buffer.from(pdfData, 'base64');
+    // fs.writeFileSync(filePath, buffer);
+    // return `Hóa đơn đã được lưu tại ${filePath}`;
+
+    try {
+      if (!pdfData || !title) {
+        return {status: 400, message: 'Dữ liệu không hợp lệ'};
+      }
+
+      const filePath = path.join(app.getPath('downloads'), title);
+      const buffer = Buffer.from(pdfData, 'base64');
+
+      fs.writeFileSync(filePath, buffer);
+      return {status: 200, message: `Hóa đơn đã được lưu tại ${filePath}`};
+    } catch (error) {
+      console.error('Lỗi khi lưu PDF:', error);
+      return {status: 400, message: 'Lỗi khi lưu PDF'};
+    }
+  });
+
+  ipcMain.handle('show-dialog', async (event, message) => {
+    const result = await dialog.showMessageBox({
+      type: 'info',
+      buttons: ['OK'],
+      title: 'Xuất hóa đơn',
+      message: message,
+    });
+    return result;
   });
 
   nativeTheme.themeSource = 'system';
