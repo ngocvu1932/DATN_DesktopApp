@@ -50,6 +50,12 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
   const [dataService, setDataService] = useState<IService>(layoutInfoService?.data);
   const [titleServiceName, setTitleServiceName] = useState(layoutInfoService?.data?.name);
 
+  const layoutInfoCustomer = useSelector((state: any) => state.layoutInfo.layoutCustomer);
+  const [dataCustomer, setDataCustomer] = useState<IService>(layoutInfoCustomer?.data);
+  // const [titleServiceName, setTitleServiceName] = useState(layoutInfoService?.data?.name);
+
+  console.log('layoutInfoCustomer', layoutInfoCustomer);
+
   const layoutInfoOrder = useSelector((state: any) => state.layoutInfo.layoutOrder);
   const [dataOrder, setDataOrder] = useState<IOrder>(layoutInfoOrder?.data);
   const [titleOrderName, setTitleOrderName] = useState(layoutInfoOrder?.data?.name);
@@ -176,6 +182,8 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
               ? `Lịch hẹn ${dataAppointment?.code} `
               : type == ETypeInfoDetail.ORDER
               ? `Chi tiết đơn hàng ORD00${dataOrder?.id}`
+              : type == ETypeInfoDetail.CUSTOMER
+              ? `Khách hàng ${dataCustomer?.name}`
               : `${titleServiceName} #${dataService?.id}`}
           </p>
         </div>
@@ -888,6 +896,33 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                   </div>
                 </>
               )}
+            </>
+          ) : type == ETypeInfoDetail.CUSTOMER ? (
+            <>
+              <div className="flex w-full h-fit mt-5">
+                <div className="flex flex-col w-1/2  pl-16 pr-4">
+                  <label className="font-semibold text-base pl-1">{'ID'}</label>
+                  <TextInput
+                    disabled
+                    value={`ORD00${dataOrder?.id.toString()}`}
+                    type="text"
+                    title="ID"
+                    placeholder={'ID'}
+                    className="h-8 "
+                  />
+                </div>
+                <div className="flex flex-col w-1/2 pr-16 pl-4">
+                  <label className="font-semibold text-base pl-1">{'Tổng tiền'}</label>
+                  <TextInput
+                    disabled
+                    value={`${formatPrice(dataOrder?.totalAmount.toString())}`}
+                    type="text"
+                    title="ID"
+                    placeholder={'ID'}
+                    className="h-8 "
+                  />
+                </div>
+              </div>
             </>
           ) : (
             <></>

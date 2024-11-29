@@ -57,6 +57,12 @@ const Login: React.FC = () => {
     }
   }, [phone, password]);
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === 'Enter' && isFilled && !isLoadingLogin) {
+      handleLogin(e);
+    }
+  };
+
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setIsLoadingLogin(true);
@@ -120,54 +126,59 @@ const Login: React.FC = () => {
 
       <div className="flex items-center bg-white flex-col px-6 py-8 rounded-xl shadow-xl">
         <p className="text-black font-bold text-2xl">{t('auth_login_title')}</p>
-        <Divider size={20} />
-        <TextInput
-          disabled={isLoadingLogin}
-          prefix={
-            <>
-              <FontAwesomeIcon icon={faUser} />
-            </>
-          }
-          value={phone}
-          className="w-[250px]"
-          changeText={setPhone}
-          placeholder={t('auth_login_placeholder_user')}
-          type="text"
-        />
-        <Divider size={20} />
-        <TextInput
-          disabled={isLoadingLogin}
-          prefix={
-            <>
-              <FontAwesomeIcon icon={faUnlock} />
-            </>
-          }
-          suffix={
-            <span onClick={() => setIsShowPassword(!isShowPassword)}>
-              {isShowPassword ? (
-                <FontAwesomeIcon className="cursor-pointer" icon={faEye} />
-              ) : (
-                <FontAwesomeIcon className="cursor-pointer" icon={faEyeSlash} />
-              )}
-            </span>
-          }
-          value={password}
-          className="w-[250px]"
-          changeText={setPassword}
-          placeholder={t('auth_login_placeholder_password')}
-          type={isShowPassword ? 'text' : 'password'}
-        />
+        <Divider size={20} dashColor="white" />
+        <div onKeyDown={handleKeyDown} className="bg-white">
+          <TextInput
+            disabled={isLoadingLogin}
+            prefix={
+              <>
+                <FontAwesomeIcon icon={faUser} />
+              </>
+            }
+            value={phone}
+            className="w-[250px]"
+            changeText={setPhone}
+            placeholder={t('auth_login_placeholder_user')}
+            type="text"
+          />
 
-        <Divider size={20} />
-        <button
-          className={` ${
-            isFilled ? (!isLoadingLogin ? 'bg-blue-500' : 'bg-blue-200') : 'bg-blue-200'
-          } text-white w-[250px] cursor-pointer h-[40px] rounded-xl`}
-          disabled={!isFilled || isLoadingLogin}
-          onClick={(e) => handleLogin(e)}
-        >
-          {isLoadingLogin ? <LoadingSpinner /> : t('auth_login_title')}
-        </button>
+          <div className="mt-5" />
+
+          <TextInput
+            disabled={isLoadingLogin}
+            prefix={
+              <>
+                <FontAwesomeIcon icon={faUnlock} />
+              </>
+            }
+            suffix={
+              <span onClick={() => setIsShowPassword(!isShowPassword)}>
+                {isShowPassword ? (
+                  <FontAwesomeIcon className="cursor-pointer" icon={faEye} />
+                ) : (
+                  <FontAwesomeIcon className="cursor-pointer" icon={faEyeSlash} />
+                )}
+              </span>
+            }
+            value={password}
+            className="w-[250px]"
+            changeText={setPassword}
+            placeholder={t('auth_login_placeholder_password')}
+            type={isShowPassword ? 'text' : 'password'}
+          />
+
+          <div className="mt-5" />
+
+          <button
+            className={` ${
+              isFilled ? (!isLoadingLogin ? 'bg-blue-500' : 'bg-blue-200') : 'bg-blue-200'
+            } text-white w-[250px] cursor-pointer h-[40px] rounded-xl`}
+            disabled={!isFilled || isLoadingLogin}
+            onClick={(e) => handleLogin(e)}
+          >
+            {isLoadingLogin ? <LoadingSpinner /> : t('auth_login_title')}
+          </button>
+        </div>
 
         <p className="text-right cursor-pointer mt-2">{t('auth_login_forget_password')}</p>
       </div>

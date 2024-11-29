@@ -228,7 +228,7 @@ const Customer: React.FC = () => {
     );
   };
 
-  const handleViewDetail = (customer: any) => {
+  const handleViewDetail = (customer: ICustomer) => {
     dispatch(
       setInfoLayout({
         layoutCustomer: {layout: ELayoutInfo.Details, data: customer},

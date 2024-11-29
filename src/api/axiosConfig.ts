@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
     // xử lý response trước khi trả về
     // console.log('response', response);
 
-    if (response?.status === 200) {
+    if (response?.status && response?.status === 200) {
       return response.data;
     }
     return response;
@@ -46,7 +46,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error?.response?.status && error?.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem('refreshToken');
@@ -69,6 +69,8 @@ axiosInstance.interceptors.response.use(
       } catch (err) {
         console.error('Làm mới token thất bại:', err);
       }
+    } else {
+      console.log('error:', error);
     }
 
     return Promise.reject(error);
