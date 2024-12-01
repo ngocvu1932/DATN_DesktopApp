@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Tooltip, Modal, Image, Radio, Card } from "antd";
 import { EyeOutlined, EditOutlined } from "@ant-design/icons";
 
 import { useNavigate } from "react-router-dom";
+import { setLayout } from "../../redux/slices/layoutSlice";
+import { ELayout } from "../../constants/layout";
+import { useDispatch } from "react-redux";
+import { getAllServiceRequest } from "../../api/service-requests";
 
 export const serviceRequests = [
     {
@@ -262,6 +266,7 @@ export const serviceRequests = [
     }
 ];
 
+
 const statusOptions = [
     { value: 0, label: "Đang chờ", tooltip: "Yêu cầu đang chờ xử lý" },
     { value: 1, label: "Đang phục vụ", tooltip: "Đang được phục vụ" },
@@ -269,17 +274,29 @@ const statusOptions = [
     { value: 3, label: "Thất bại", tooltip: "Yêu cầu thất bại" },
 ];
 
-const ServiceRequestList: React.FC = () => {
+
+interface ServiceRequestListProps {
+    setServiceRequestId: (id: number) => void;
+}
+
+const ServiceRequestList: React.FC<ServiceRequestListProps> = ({ setServiceRequestId }) => {
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<any>(null);
     const [serviceRequestDetail, setServiceRequestDetail] = useState<any>(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [data, setData] = useState<any>([]);
 
-    const handleViewDetails = (record: any) => {
-        // setSelectedRequest(record);
-        // setIsModalOpen(true);
-        navigate(`/service-request-detail`, { state: { record } });
-    };
+    useEffect(() => {
+        getAllServiceRequest().then((res) => {
+            if (res?.statusCode == 200) {
+                setData(res.data);
+            }
+        })
+
+    }, []);
+
 
     const columns = [
         {
@@ -318,24 +335,25 @@ const ServiceRequestList: React.FC = () => {
             width: 150,
         },
         {
-            title: 'Trạng thái hiện tại',
+            title: 'Trạng thái',
             dataIndex: 'currentStatus',
             key: 'currentStatus',
-        },
-        {
-            title: "Trạng thái",
-            key: "status",
             width: 200,
-            render: (record: any) => (
-                <Radio.Group value={record.currentStatus}>
-                    {statusOptions.map((option) => (
-                        <Tooltip title={option.tooltip} key={option.value}>
-                            <Radio value={option.value} />
-                        </Tooltip>
-                    ))}
-                </Radio.Group>
-            ),
         },
+        // {
+        //     title: "Trạng thái",
+        //     key: "status",
+        //     width: 200,
+        //     render: (record: any) => (
+        //         <Radio.Group value={record.currentStatus}>
+        //             {statusOptions.map((option) => (
+        //                 <Tooltip title={option.tooltip} key={option.value}>
+        //                     <Radio value={option.value} />
+        //                 </Tooltip>
+        //             ))}
+        //         </Radio.Group>
+        //     ),
+        // },
         {
             title: "Hành động",
             key: "action",
@@ -353,7 +371,8 @@ const ServiceRequestList: React.FC = () => {
                     <Tooltip title="Xem chi tiết">
                         <EyeOutlined
                             style={{ fontSize: "18px", cursor: "pointer" }}
-                            onClick={() => handleViewDetails(record)}
+                            // onClick={() => dispatch(setLayout(ELayout.ServiceRequestDetail))}
+                            onClick={handleViewDetail(record.id)}
                         />
                     </Tooltip>
                 </div>
@@ -361,17 +380,19 @@ const ServiceRequestList: React.FC = () => {
         },
     ];
 
+    const handleViewDetail = (id: number) => () => {
+        setServiceRequestId(id);
+        dispatch(setLayout(ELayout.ServiceRequestDetail));
+    }
+
     return (
         <div className="p-4 bg-white shadow-md">
             <h1 className="font-semibold text-lg mb-5">Danh sách yêu cầu dịch vụ</h1>
-            {/* <Card title="Danh sách yêu cầu dịch vụ" className="mb-4" bordered={false} extra={<a href="#">Xem tất cả</a>}> */}
-
-            {/* </Card> */}
             <Table
                 columns={columns as any}
-                dataSource={serviceRequests}
+                dataSource={data}
                 rowKey="id"
-                pagination={{ pageSize: 5 }}
+                pagination={{ pageSize: 10 }}
                 scroll={{ x: 1000 }}
             />
         </div>

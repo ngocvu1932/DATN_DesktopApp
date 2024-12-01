@@ -1,27 +1,27 @@
-import React, {useRef, useEffect} from 'react';
-import {faGripLinesVertical} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {useTranslation} from 'react-i18next';
+import React, { useRef, useEffect, useState } from 'react';
+import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useTranslation } from 'react-i18next';
 import Header from './header';
 import './index.css';
-import {useLocation} from 'react-router-dom';
-import {toast, ToastContainer} from 'react-toastify';
+import { useLocation } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from './sidebar';
-import {useDispatch, useSelector} from 'react-redux';
-import {ELayout} from '../../constants/layout';
+import { useDispatch, useSelector } from 'react-redux';
+import { ELayout } from '../../constants/layout';
 import Account from '../account';
 import Appointment from '../appointment';
 import RevenueManagement from '../revenue-management';
 import BranchManagement from '../branch-management';
-import {setWidth} from '../../redux/slices/sideBarWidthSlice';
+import { setWidth } from '../../redux/slices/sideBarWidthSlice';
 import Home from '../home';
 import Bills from '../bills';
 import AllServices from '../all-services';
 import SessionsTracking from '../sessions-tracking';
 import LoadingOverlay from '../../components/loading-overlay';
 import Customer from '../customer';
-import {getInfo} from '../../api/auth';
+import { getInfo } from '../../api/auth';
 import ServiceRequest from '../service-request';
 import Skills from '../skills';
 import Employee from '../employee';
@@ -32,7 +32,7 @@ import ServiceRequestDetails from '../../components/service-request-detail';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const width = useSelector((state: any) => state.width.width);
   const dispatch = useDispatch();
   const resizerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +40,11 @@ const Dashboard: React.FunctionComponent = () => {
   const minWidth = 250;
   const location = useLocation();
   const layout = useSelector((state: any) => state.layout.layout);
-  const {message, type} = location.state || {};
+  const [serviceRequestId, setServiceRequestId] = useState<number | undefined>(undefined);
+
+  console.log("layout111", layout)
+
+  const { message, type } = location.state || {};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,13 +66,13 @@ const Dashboard: React.FunctionComponent = () => {
     if (message && type) {
       switch (type) {
         case 'error':
-          toast.error(message, {autoClose: 2000});
+          toast.error(message, { autoClose: 2000 });
           break;
         case 'success':
-          toast.success(message, {autoClose: 2000});
+          toast.success(message, { autoClose: 2000 });
           break;
         case 'warning':
-          toast.warning(message, {autoClose: 2000});
+          toast.warning(message, { autoClose: 2000 });
           break;
         default:
           break;
@@ -127,11 +131,11 @@ const Dashboard: React.FunctionComponent = () => {
       case ELayout.Orders:
         return <Orders />;
       case ELayout.ServiceRequestList:
-        return <ServiceRequestList />;
-        case ELayout.ServiceRequestDetail:
-          return <ServiceRequestDetails />;
-      default:
-        return <div>Chọn một trang để xem nội dung</div>;
+        return <ServiceRequestList setServiceRequestId={setServiceRequestId} />;
+      case ELayout.ServiceRequestDetail:
+        return <ServiceRequestDetails serviceRequestId={serviceRequestId} />;
+      // default:
+      //   return <div>Chọn một trang để xem nội dung</div>;
     }
   };
 
@@ -152,7 +156,8 @@ const Dashboard: React.FunctionComponent = () => {
         )}
 
         <div className="flex-1 bg-gray-50 w-full h-[89vh] border border-slate-400 p-2 m-1 rounded-lg overflow-hidden box-border">
-          {renderContent()}
+          {layout != undefined ? renderContent() : <>
+          </>}
         </div>
       </div>
       <LoadingOverlay isLoading={loading} />

@@ -603,7 +603,7 @@ const Drawer: React.FC<IDrawerProps> = ({isOpen, onClose, type, dataBranchsChoos
                           title="Nhắc nhở"
                           className="w-[90%] h-8 focus:outline-none rounded-xl m-1 pl-2 border border-slate-300 hover:border-blue-500 focus:ring-blue-500"
                           disabled={isLoadingAdd}
-                          value={dataAppointmentAdd.reminderSent}
+                          value={dataAppointmentAdd.reminderSent ?? ''}
                           onChange={(e) => {
                             setDataAppointmentAdd((prevState) => ({
                               ...prevState,

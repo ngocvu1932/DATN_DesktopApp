@@ -32,7 +32,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ width }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const layout = useSelector((state: any) => state.layout.layout);
+  const layout = useSelector((state: any) => state?.layout?.layout);
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 

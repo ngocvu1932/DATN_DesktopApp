@@ -22,6 +22,8 @@ import {ICustomer} from '../../models/customer';
 import {allCustomer} from '../../api/customer';
 import {allEmployee} from '../../api/employee';
 import {IEmployee} from '../../models/employee';
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+
 
 const Employee: React.FC = () => {
   const [employees, setEmployees] = useState<IEmployee[]>([]);
@@ -37,6 +39,12 @@ const Employee: React.FC = () => {
   const [selectedCustomers, setSelectedCustomers] = useState<IEmployee[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const location = useLocation();
+  useEffect(() => {
+    console.log("Current location:", location);
+
+  }, [location]);
 
   useEffect(() => {
     if (isLoading) {

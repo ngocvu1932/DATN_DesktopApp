@@ -76,13 +76,13 @@ const App = () => {
                   type: 'success',
                 }}
               />
-            ) : (
-              <Login />
             )
+              : (
+                <Login />
+              )
           }
         />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/service-request-detail" element={<MainLayout><ServiceRequestDetails /></MainLayout>} />
       </Routes>
     </Router>
   );
