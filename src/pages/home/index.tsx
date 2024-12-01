@@ -173,7 +173,7 @@ const Home: React.FC = () => {
           />
 
           <ProcessView
-            colorTitle="#f87171"
+            colorTitle="red"
             backgroundCircel="#EDEDED"
             title="Tổng số lịch hẹn đã hủy"
             value={appointmentsCancel}

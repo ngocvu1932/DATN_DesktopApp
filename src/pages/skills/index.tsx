@@ -200,16 +200,18 @@ const Skills: React.FC = () => {
           {skill.description}
         </td>
         <td
-          className="h-full justify-center items-center p-0"
+          className="h-full justify-center items-center px-1"
           title={`Trạng thái: ${skill.status == false ? 'OFF' : 'Đang hoạt động'}`}
         >
           {/*   true là đang hoạt động, false OFFF*/}
-          {skill.status == false ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : skill.status == true ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
+          {skill.status == true ? (
+            <span className="border-gray-300 rounded-lg border  text-green-500 p-1 flex items-center whitespace-nowrap">
+              Đang hoạt động
+            </span>
+          ) : skill.status == false ? (
+            <span className="border-gray-300 rounded-lg border p-1 text-yellow-500 flex items-center ">OFF</span>
           ) : (
-            <>Error</>
+            ''
           )}
         </td>
       </>

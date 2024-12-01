@@ -212,16 +212,18 @@ const Customer: React.FC = () => {
           {customer.loyaltyPoints}
         </td>
         <td
-          className="h-full justify-center items-center p-0"
+          className="h-full px-1 justify-center items-center p-0"
           title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
           {/*     // 1 là OFF, 0 là đang hoạt động*/}
           {customer.status == 1 ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
+            <span className="border-gray-300 rounded-lg border text-yellow-500 p-1 flex items-center">OFF</span>
           ) : customer.status == 0 ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
+            <span className="border-gray-300 rounded-lg border p-1 text-green-500 flex items-center whitespace-nowrap">
+              Đang hoạt động
+            </span>
           ) : (
-            <>Error</>
+            ''
           )}
         </td>
       </>

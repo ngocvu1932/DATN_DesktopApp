@@ -10,7 +10,7 @@ interface IPagination {
 
 export interface CustomAxiosResponse<T = any> extends AxiosResponse<T> {
   statusCode?: number;
-  pagination?: IPagination;
+  pagination?: IPagination | null;
 }
 
 const axiosInstance = axios.create({

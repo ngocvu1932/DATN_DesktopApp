@@ -25,6 +25,10 @@ export enum ELayout {
   Employee = 'Employee',
 
   Orders = 'Orders',
+
+  ServiceRequestList = 'ServiceRequestList',
+
+  ServiceRequestDetail = 'ServiceRequestDetail',
 }
 
 export enum ELayoutInfo {

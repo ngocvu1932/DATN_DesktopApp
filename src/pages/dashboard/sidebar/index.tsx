@@ -32,7 +32,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const layout = useSelector((state: any) => state.layout.layout);
+  const layout = useSelector((state: any) => state?.layout?.layout);
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
@@ -62,7 +62,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
       style={{width, background: 'linear-gradient(to bottom, #bae6fd, #e0f2fe)'}}
     >
       <h2 className="text-2xl mb-4 text-center text-black font-medium mt-3">{t('sidebar_title')}</h2>
-      <ul className="p-4 overflow-y-auto text-black text-lg font-medium overflow-x-hidden">
+      <ul className="p-4 overflow-y-auto max-h-[500px] scrollbar-thin text-black text-lg font-medium overflow-x-hidden">
         <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
             layout == ELayout.Home ? 'bg-[#7dd3fc] border border-black' : ''
@@ -368,6 +368,24 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
               <FontAwesomeIcon icon={faChartSimple} />
             </div>
             <p>{t('Thống kê')}</p>
+          </div>
+        </button>
+
+        {/* Yeu cau dich vu */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
+            layout == ELayout.ServiceRequestList ? 'bg-gray-400 border border-white' : ''
+          }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.ServiceRequestList));
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faChartSimple} />
+            </div>
+            <p>{t('Quản lý yêu cầu')}</p>
           </div>
         </button>
       </ul>

@@ -211,16 +211,18 @@ const Orders: React.FC = () => {
           <div className="w-full text-end pr-2"> {formatPrice(order.totalAmount.toString())}</div>
         </td>
         <td
-          className="h-full justify-center items-center p-0"
+          className="h-ful px-1 justify-center items-center p-0"
           //   title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
           {/*     // 0 là Đã thanh toán, 1 là Chưa thanh toán*/}
           {order.status == 0 ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1  items-center">Đã thanh toán</span>
+            <span className="border-gray-300 rounded-lg border  text-green-500 p-1 flex items-center">Đã thanh toán</span>
           ) : order.status == 1 ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1 items-center ">Chưa thanh toán</span>
+            <span className="border-gray-300 rounded-lg border p-1 text-yellow-500 flex items-center whitespace-nowrap">
+              Chưa thanh toán
+            </span>
           ) : (
-            <>Error</>
+            ''
           )}
         </td>
       </>

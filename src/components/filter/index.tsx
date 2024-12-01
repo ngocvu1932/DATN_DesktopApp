@@ -81,7 +81,7 @@ const Filter: React.FC<IFilterProps> = ({
     description: '',
 
     gender: '',
-    loyalty_points: '',
+    loyaltyPoints: '',
   });
 
   const [dateTimeChoose, setDateTimeChoose] = useState<IFilterTime>({
@@ -150,7 +150,7 @@ const Filter: React.FC<IFilterProps> = ({
           (filter.phone ? item.phone.toLowerCase().includes(filter.phone.toLowerCase()) : true) &&
           (filter.email ? item.email.toLowerCase().includes(filter.email.toLowerCase()) : true) &&
           (filter.gender ? item.gender.toLowerCase().includes(filter.gender.toLowerCase()) : true) &&
-          (filter.loyalty_points ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase()) : true)
+          (filter.loyaltyPoints ? item.loyaltyPoints.toLowerCase().includes(filter.loyaltyPoints.toLowerCase()) : true)
         );
       });
     }

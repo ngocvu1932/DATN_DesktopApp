@@ -187,7 +187,7 @@ const Appointment: React.FC = () => {
                   <thead className="bg-gray-200 sticky top-[-1px] z-10">
                     <tr>
                       <td></td>
-                      <th className="border border-gray-300 p-1">ID</th>
+                      <th className="border border-gray-300 p-1">Mã lịch hẹn</th>
                       <th className="border border-gray-300 p-1">Khách hàng</th>
                       <th className="border border-gray-300 p-1">Dịch vụ</th>
                       <th className="border border-gray-300 p-1">Ngày</th>
