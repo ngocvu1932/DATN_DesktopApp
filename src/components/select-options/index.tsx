@@ -10,13 +10,23 @@ interface ISelectOptionProps {
   onSelect?: (item: any, type: any) => void;
   type?: string;
   disabled?: boolean;
+  className?: React.HTMLAttributes<HTMLInputElement>['className'];
 }
 
-const SelectOption: React.FC<ISelectOptionProps> = ({onClose, titleText = 'Text', isOpen, data, onSelect, type, disabled}) => {
+const SelectOption: React.FC<ISelectOptionProps> = ({
+  onClose,
+  titleText = 'Text',
+  isOpen,
+  data,
+  onSelect,
+  type,
+  disabled,
+  className,
+}) => {
   return (
-    <div className="relative mt-3 mx-4">
+    <div className="relative z-40">
       <div
-        className="flex justify-between items-center px-2 py-1 bg-white cursor-pointer border border-gray-300 rounded-md shadow-md"
+        className={`flex justify-between items-center px-2 py-1 bg-white cursor-pointer border border-gray-300 rounded-md shadow-md ${className}`}
         onClick={() => {
           if (disabled) {
             return;
@@ -31,12 +41,12 @@ const SelectOption: React.FC<ISelectOptionProps> = ({onClose, titleText = 'Text'
       </div>
 
       {isOpen && !disabled && (
-        <div className="absolute bg-white border scrollbar-thin overflow-y-auto p-2 border-gray-300 w-full max-h-80 rounded-md shadow-lg z-10">
+        <div className="absolute bg-white border scrollbar-thin overflow-y-auto p-1 border-gray-300 w-full max-h-80 rounded-md shadow-lg z-10">
           {data &&
             data.map((item) => (
               <div
                 key={item}
-                className={`p-2 cursor-pointer rounded-md hover:bg-gray-200`}
+                className={`cursor-pointer p-1 rounded-md hover:bg-gray-200`}
                 onClick={() => onSelect && onSelect(item, type)}
               >
                 {item == 0 ? 'Tất cả' : item}

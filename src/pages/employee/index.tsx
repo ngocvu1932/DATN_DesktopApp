@@ -22,6 +22,7 @@ import {ICustomer} from '../../models/customer';
 import {allCustomer} from '../../api/customer';
 import {allEmployee} from '../../api/employee';
 import {IEmployee} from '../../models/employee';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 
 const Employee: React.FC = () => {
   const [employees, setEmployees] = useState<IEmployee[]>([]);
@@ -37,6 +38,11 @@ const Employee: React.FC = () => {
   const [selectedCustomers, setSelectedCustomers] = useState<IEmployee[]>([]);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const location = useLocation();
+  useEffect(() => {
+    console.log('Current location:', location);
+  }, [location]);
 
   useEffect(() => {
     if (isLoading) {
@@ -215,16 +221,18 @@ const Employee: React.FC = () => {
           {customer.loyaltyPoints}
         </td> */}
         <td
-          className="h-full justify-center items-center p-0"
+          className="h-full px-1 justify-center items-center p-0"
           //   title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
           {/*     // 0 là OFF, 1 là đang hoạt động*/}
-          {employee.status == 0 ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : employee.status == 1 ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
+          {employee.status == 1 ? (
+            <span className="border-gray-300 rounded-lg border text-yellow-500 p-1 flex items-center">OFF</span>
+          ) : employee.status == 0 ? (
+            <span className="border-gray-300 rounded-lg border p-1 text-green-500 flex items-center whitespace-nowrap">
+              Đang hoạt động
+            </span>
           ) : (
-            <>Error</>
+            ''
           )}
         </td>
       </>

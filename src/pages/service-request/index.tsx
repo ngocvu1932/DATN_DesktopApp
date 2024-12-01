@@ -241,7 +241,7 @@ const ServiceRequest: React.FC = () => {
           {serviceRequest.code}
         </td>
         <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
-          LH00{serviceRequest.appointmentId}
+          LH00{serviceRequest.appointmentId}{index}
         </td>
         <td className="border border-gray-300 p-1" title={`Lịch hẹn: ${serviceRequest.appointmentId}`}>
           Nguyễn Văn A

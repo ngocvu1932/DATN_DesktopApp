@@ -33,8 +33,11 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="flex h-[10vh] bg-slate-500 justify-between items-center rounded-lg mt-1 mx-1 px-4">
-      <div className="font-bold text-2xl">LOGO</div>
+    <div
+      className="flex h-[10vh] justify-between items-center border border-[#38bdf8] rounded-lg mt-1 mx-1 px-4"
+      style={{background: 'linear-gradient(to right, #bae6fd, #e0f2fe, #bae6fd)'}}
+    >
+      <h1 className="text-3xl font-bold mb-4 text-center font-source-code mt-3 text-black">GLAMOUR BEAUTY SPA</h1>
       <div className="flex items-center">
         {/* <div className="px-3" onClick={() => alert('ATin nhắnT')}>
           <FontAwesomeIcon icon={faMessage} />
@@ -90,7 +93,7 @@ const Header: React.FC = () => {
           }}
         >
           <Avatar src={avatarImg} height={45} width={45} />
-          <div className="flex flex-col ml-2 text-left text-white">
+          <div className="flex flex-col ml-2 text-left text-black">
             <p className="font-semibold text-lg">{userInfo?.name}</p>
             <p className="italic">{userInfo?.role == 1 ? 'Adminstrator' : 'Customer'}</p>
           </div>

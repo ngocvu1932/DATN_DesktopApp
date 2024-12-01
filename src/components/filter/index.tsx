@@ -12,6 +12,7 @@ import DatePicker from 'react-datepicker';
 import DatePickerCustom from '../date-picker';
 import {approveAppointment} from '../../api/reception';
 import {updateServiceRequest} from '../../api/service-requests';
+import SelectOption from '../select-options';
 
 interface IFilterProps {
   clearFilter?: () => void;
@@ -80,7 +81,7 @@ const Filter: React.FC<IFilterProps> = ({
     description: '',
 
     gender: '',
-    loyalty_points: '',
+    loyaltyPoints: '',
   });
 
   const [dateTimeChoose, setDateTimeChoose] = useState<IFilterTime>({
@@ -90,6 +91,9 @@ const Filter: React.FC<IFilterProps> = ({
 
   const [tempFilter, setTempFilter] = useState(filter);
   const debouncedFilter = useDebounce(tempFilter, 600);
+  const [isShow, setIsShow] = useState({
+    statusAppointment: false,
+  });
 
   useEffect(() => {
     setFilter(debouncedFilter);
@@ -146,7 +150,7 @@ const Filter: React.FC<IFilterProps> = ({
           (filter.phone ? item.phone.toLowerCase().includes(filter.phone.toLowerCase()) : true) &&
           (filter.email ? item.email.toLowerCase().includes(filter.email.toLowerCase()) : true) &&
           (filter.gender ? item.gender.toLowerCase().includes(filter.gender.toLowerCase()) : true) &&
-          (filter.loyalty_points ? item.loyalty_points.toLowerCase().includes(filter.loyalty_points.toLowerCase()) : true)
+          (filter.loyaltyPoints ? item.loyaltyPoints.toLowerCase().includes(filter.loyaltyPoints.toLowerCase()) : true)
         );
       });
     }
@@ -161,6 +165,8 @@ const Filter: React.FC<IFilterProps> = ({
       setIsShowActions(false);
     }
   }, [dataAction]);
+
+  const dataSelectOption = ['Tất cả', 'Đã xác nhận', 'Mới'];
 
   const handleChangeAppointments = async (type: EChangeStatus) => {
     /* 0 MỚi, 1 Đã xác nhận, 2 Hủy */
@@ -415,189 +421,6 @@ const Filter: React.FC<IFilterProps> = ({
 
   return (
     <div className="flex w-full items-center justify-between my-1.5">
-      {/* <div className="w-[70%] flex flex-col">
-        <div className="flex">
-          <TextInput changeText={(text) => handleChange('id', text)} className="h-8 w-36" placeholder="ID" title="ID" />
-          {type == EFilterType.BRANCH && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('name', text)}
-                className="h-8 w-44"
-                placeholder="Tên chi nhánh"
-                title="Tên chi nhánh"
-              />
-              <TextInput
-                changeText={(text) => handleChange('address', text)}
-                className="h-8 w-52"
-                placeholder="Địa chỉ"
-                title="Địa chỉ"
-              />
-              <TextInput
-                changeText={(text) => handleChange('phone', text)}
-                className="h-8 w-40"
-                placeholder="Số điện thoại"
-                title="Số điện thoại"
-              />
-            </>
-          )}
-
-          {type == EFilterType.APPOINTMENT && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('name', text)}
-                className="h-8 w-44"
-                placeholder="Tên khách hàng"
-                title="Tên khách hàng"
-              />
-              <TextInput
-                changeText={(text) => handleChange('service_name', text)}
-                className="h-8 w-44"
-                placeholder="Tên dịch vụ"
-                title="Tên dịch vụ"
-              />
-              <TextInput
-                changeText={(text) => handleChange('employee_name', text)}
-                className="h-8 w-44"
-                placeholder="Tên nhân viên"
-                title="Tên nhân viên"
-              />
-              <TextInput
-                changeText={(text) => handleChange('status', text)}
-                className="h-8"
-                placeholder="Trạng thái"
-                title="Trạng thái"
-              />
-            </>
-          )}
-
-          {type == EFilterType.SERVICE && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('name', text)}
-                className="h-8 w-44"
-                placeholder="Tên dịch vụ"
-                title="Tên dịch vụ"
-              />
-              <TextInput
-                title="Ngày tạo"
-                changeText={(text) => handleChange('day', text)}
-                className="h-8 w-44"
-                placeholder="Ngày tạo"
-              />
-              <TextInput
-                changeText={(text) => handleChange('price', text)}
-                className="h-8 w-44"
-                placeholder="Giá tiền"
-                title="Giá tiền"
-              />
-            </>
-          )}
-
-          {type == EFilterType.CUSTOMER && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('name', text)}
-                className="h-8 w-44"
-                placeholder="Tên khách hàng"
-                title="Tên khách hàng"
-              />
-              <TextInput
-                changeText={(text) => handleChange('email', text)}
-                className="h-8 w-44"
-                placeholder="Email"
-                title="Email"
-              />
-              <TextInput
-                changeText={(text) => handleChange('phone', text)}
-                className="h-8 w-44"
-                placeholder="Số điện thoại"
-                title="Số điện thoại"
-              />
-            </>
-          )}
-        </div>
-        <div className="flex">
-          {type == EFilterType.BRANCH && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('email', text)}
-                className="h-8"
-                placeholder="Email"
-                title="Email"
-              />
-              <TextInput
-                changeText={(text) => handleChange('status', text)}
-                className="h-8"
-                placeholder="Trạng thái"
-                title="Trạng thái"
-              />
-            </>
-          )}
-          {type == EFilterType.APPOINTMENT && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('day', text)}
-                className="h-8 w-44"
-                placeholder="Ngày"
-                title="Ngày"
-              />
-              <TextInput
-                changeText={(text) => handleChange('time', text)}
-                className="h-8"
-                placeholder="Giờ"
-                title="Giờ"
-              />
-              <TextInput
-                changeText={(text) => handleChange('reminder', text)}
-                className="h-8"
-                placeholder="Nhắc hẹn"
-                title="Nhắc hẹn"
-              />
-              <TextInput
-                changeText={(text) => handleChange('note', text)}
-                className="h-8"
-                placeholder="Ghi chú"
-                title="Ghi chú"
-              />
-            </>
-          )}
-
-          {type == EFilterType.SERVICE && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('description', text)}
-                className="h-8"
-                placeholder="Mô tả"
-                title="Mô tả"
-              />
-            </>
-          )}
-
-          {type == EFilterType.CUSTOMER && (
-            <>
-              <TextInput
-                changeText={(text) => handleChange('gender', text)}
-                className="h-8 w-44"
-                placeholder="Giới tính"
-                title="Giới tính"
-              />
-              <TextInput
-                changeText={(text) => handleChange('loyalty_points', text)}
-                className="h-8 w-44"
-                placeholder="Điểm"
-                title="Điểm"
-              />
-              <TextInput
-                changeText={(text) => handleChange('status', text)}
-                className="h-8 w-44"
-                placeholder="Trạng thái"
-                title="Trạng thái"
-              />
-            </>
-          )}
-        </div>
-      </div> */}
-
       <div className="flex items-center">
         <TextInput placeholder="Tìm kiếm" className="h-8 ml-0" />
 
@@ -611,6 +434,17 @@ const Filter: React.FC<IFilterProps> = ({
           className="m-1"
           placeholder="To"
           onChooseDate={(date) => setDateTimeChoose({...dateTimeChoose, to: date})}
+        />
+
+        <SelectOption
+          onClose={() => setIsShow({statusAppointment: !isShow.statusAppointment})} // onClose
+          isOpen={isShow.statusAppointment}
+          data={dataSelectOption}
+          className="rounded-xl z-40 shadow-none h-8 text-gray-400"
+          titleText="Trạng thái"
+          onSelect={(item: any) => {
+            console.log('item', item);
+          }}
         />
 
         <button

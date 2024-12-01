@@ -131,7 +131,10 @@ const AllServices: React.FC = () => {
   const handleViewDetail = (service: any) => {
     dispatch(
       setInfoLayout({
+        layoutBranch: {layout: ELayoutInfo.Home, data: null},
+        layoutAppointment: {layout: ELayoutInfo.Home, data: null},
         layoutService: {layout: ELayoutInfo.Details, data: service},
+        layoutCustomer: {layout: ELayoutInfo.Home, data: null},
       })
     );
   };
@@ -248,20 +251,22 @@ const AllServices: React.FC = () => {
         <td className="border border-gray-300 p-1" title={`Ngày tạo: ${new Date(service.createdAt).toLocaleDateString()}`}>
           {getFormattedDate(service.createdAt)}
         </td>
-        <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price)}`}>
-          {formatPrice(service.price)}
+        <td className="border border-gray-300 p-1" title={`Giá tiền: ${formatPrice(service.price as any)}`}>
+          {formatPrice(service.price as any)}
         </td>
         <td
-          className="h-full justify-center items-center p-0 max-w-[110px]"
+          className="h-full px-1 justify-center items-center p-0 max-w-[120px]"
           title={`Trạng thái: ${service.status == false ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
           {/* // false 0 tạm dừng, true  1 là Đang hoạt động */}
           {service.status == false ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Tạm dừng</span>
+            <span className="border-gray-300 rounded-lg border text-yellow-500 p-1 flex items-center">Tạm dừng</span>
           ) : service.status == true ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center justify-center ">Đang hoạt động</span>
+            <span className="border-gray-300 rounded-lg border p-1 text-green-500 flex items-center whitespace-nowrap">
+              Đang hoạt động
+            </span>
           ) : (
-            'error'
+            ''
           )}
         </td>
         <td className="border border-gray-300 py-1 px-2 max-w-[350px]" title="Description">

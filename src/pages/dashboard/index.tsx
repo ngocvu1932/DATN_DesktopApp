@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {faGripLinesVertical} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {useTranslation} from 'react-i18next';
@@ -26,6 +26,8 @@ import ServiceRequest from '../service-request';
 import Skills from '../skills';
 import Employee from '../employee';
 import Orders from '../orders';
+import ServiceRequestList from '../service-request-dashboard';
+import ServiceRequestDetails from '../../components/service-request-detail';
 
 const Dashboard: React.FunctionComponent = () => {
   const loading = useSelector((state: any) => state.loading.loading);
@@ -37,6 +39,10 @@ const Dashboard: React.FunctionComponent = () => {
   const minWidth = 250;
   const location = useLocation();
   const layout = useSelector((state: any) => state.layout.layout);
+  const [serviceRequestId, setServiceRequestId] = useState<number | undefined>(undefined);
+
+  console.log('layout111', layout);
+
   const {message, type} = location.state || {};
 
   useEffect(() => {
@@ -123,8 +129,12 @@ const Dashboard: React.FunctionComponent = () => {
         return <Employee />;
       case ELayout.Orders:
         return <Orders />;
-      default:
-        return <div>Chọn một trang để xem nội dung</div>;
+      case ELayout.ServiceRequestList:
+        return <ServiceRequestList setServiceRequestId={setServiceRequestId} />;
+      case ELayout.ServiceRequestDetail:
+        return <ServiceRequestDetails serviceRequestId={serviceRequestId} />;
+      // default:
+      //   return <div>Chọn một trang để xem nội dung</div>;
     }
   };
 
@@ -145,7 +155,7 @@ const Dashboard: React.FunctionComponent = () => {
         )}
 
         <div className="flex-1 bg-gray-50 w-full h-[89vh] border border-slate-400 p-2 m-1 rounded-lg overflow-hidden box-border">
-          {renderContent()}
+          {layout != undefined ? renderContent() : <></>}
         </div>
       </div>
       <LoadingOverlay isLoading={loading} />

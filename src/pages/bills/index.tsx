@@ -27,6 +27,7 @@ const Bills = forwardRef((props: IBillsProps, ref) => {
 
     const canvas = await html2canvas(element);
     const pdf = new jsPDF('p', 'mm', 'a4');
+    // const pdf = new jsPDF('p', 'mm', [80, 297]);
     const imgData = canvas.toDataURL('image/png');
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();

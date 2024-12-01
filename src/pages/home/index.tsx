@@ -2,14 +2,11 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import SwitchSideBar from '../../components/switch-sidebar';
 import {useTranslation} from 'react-i18next';
-import BarChart from '../../components/chart';
 import {ETypeChart} from '../../components/chart/enum';
 import '../../global.css';
 import {fetchAppointments, fetchServices} from '../../utils/redux-until';
 import {IAppointment} from '../../models/appointment';
 import {IFilterForYear} from './interface';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faAngleDown, faAngleUp} from '@fortawesome/free-solid-svg-icons';
 import ProcessView from '../../components/process-view';
 import {isEqual, startOfDay} from 'date-fns';
 
@@ -59,8 +56,6 @@ const Home: React.FC = () => {
       ).length,
     [appointments]
   );
-
-  // console.log('appointments', appointments);
 
   // filter for chart
   const [year, setYear] = useState<string>(new Date().getFullYear().toString());
@@ -136,7 +131,7 @@ const Home: React.FC = () => {
             title="Số lịch hẹn mới trong hôm nay"
             value={appointmentsNewToDay}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -145,7 +140,7 @@ const Home: React.FC = () => {
             title="Số lịch hẹn đã duyệt trong hôm nay"
             value={appointmentsApprovedToDay}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -154,6 +149,7 @@ const Home: React.FC = () => {
             title="Số lịch hẹn đã hủy trong hôm nay"
             value={appointmentsCancelToDay}
             sizeCircle={45}
+            className="shadow-none border border-gray-300"
           />
         </div>
 
@@ -164,7 +160,7 @@ const Home: React.FC = () => {
             title="Tổng số lịch hẹn mới"
             value={appointmentsNew}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -173,18 +169,19 @@ const Home: React.FC = () => {
             title="Tổng số lịch hẹn đã duyệt"
             value={appointmentsApproved}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
-            colorTitle="#f87171"
+            colorTitle="red"
             backgroundCircel="#EDEDED"
             title="Tổng số lịch hẹn đã hủy"
             value={appointmentsCancel}
             sizeCircle={45}
+            className="shadow-none border border-gray-300"
           />
         </div>
-        <div className="flex w-full min-h-[350px] mt-5 p-2">
+        {/* <div className="flex w-full min-h-[350px] mt-5 p-2">
           <div className="flex w-full bg-white p-3 rounded-xl shadow-md">
             <div className="flex w-4/5 justify-start h-full">
               <BarChart
@@ -342,7 +339,7 @@ const Home: React.FC = () => {
               <BarChart type={ETypeChart.DOUGHNUT} />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

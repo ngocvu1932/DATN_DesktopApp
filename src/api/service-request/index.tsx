@@ -1,5 +1,5 @@
-import {b} from 'vite/dist/node/types.d-aGj9QkWt';
-import axios, {CustomAxiosResponse} from '../axiosConfig';
+import { b } from 'vite/dist/node/types.d-aGj9QkWt';
+import axios, { CustomAxiosResponse } from '../axiosConfig';
 
 interface IStatusUpdate {
   status: number;
@@ -69,6 +69,16 @@ export const updateAppointment = async (
 ): Promise<CustomAxiosResponse<any> | undefined> => {
   try {
     const res = await axios.patch(`/api/v1/appointments/${id}`, data);
+    return res;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const serviceRequestFindById = async (id: number): Promise<CustomAxiosResponse<any> | undefined> => {
+  try {
+    const res = await axios.get(`/api/v1/service-request/find-by-id/${id}`);
     return res;
   } catch (error) {
     console.log(error);

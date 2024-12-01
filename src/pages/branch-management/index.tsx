@@ -203,16 +203,18 @@ const BranchManagement: React.FC = () => {
           {branch.email}
         </td>
         <td
-          className="h-full justify-center items-center p-0"
+          className="h-full justify-center px-1 items-center p-0"
           title={`Trạng thái: ${branch.status == false ? 'OFF' : 'Đang hoạt động'}`}
         >
           {/*   true là đang hoạt động, false OFFF*/}
-          {branch.status == false ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">OFF</span>
-          ) : branch.status == true ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đang hoạt động</span>
+          {branch.status == true ? (
+            <span className="border-gray-300 rounded-lg border  text-green-500 p-1 flex items-center whitespace-nowrap">
+              Đang hoạt động
+            </span>
+          ) : branch.status == false ? (
+            <span className="border-gray-300 rounded-lg border p-1 text-yellow-500 flex items-center ">OFF</span>
           ) : (
-            <>Error</>
+            ''
           )}
         </td>
       </>

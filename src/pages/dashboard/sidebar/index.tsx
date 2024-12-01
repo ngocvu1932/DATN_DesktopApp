@@ -11,16 +11,16 @@ import {
   faCalendar,
   faCalendarDays,
   faChartSimple,
+  faFileInvoiceDollar,
   faHouse,
   faLocationDot,
-  faReceipt,
   faStar,
   faUser,
   faUsersGear,
   faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
 import {setIsLogin} from '../../../redux/slices/authSlice';
-import {resetAllLayouts, setInfoLayout} from '../../../redux/slices/layoutInfoSlice';
+import {resetAllLayouts} from '../../../redux/slices/layoutInfoSlice';
 import {useTranslation} from 'react-i18next';
 import Clock from '../../../components/clock';
 
@@ -32,7 +32,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const layout = useSelector((state: any) => state.layout.layout);
+  const layout = useSelector((state: any) => state?.layout?.layout);
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
@@ -49,7 +49,6 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
   };
 
   const toggleMenu = (menuName: string) => {
-    // Nếu menu đã mở thì đóng nó, nếu chưa mở thì mở menu mới và đóng tất cả các menu khác
     setOpenMenu((prevMenu) => (prevMenu === menuName ? null : menuName));
   };
 
@@ -59,14 +58,14 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
   return (
     <div
-      className="text-white m-1 rounded-lg relative h-[89vh] flex flex-col box-border"
-      style={{width, background: 'linear-gradient(to bottom, #374151, #4b5563)'}}
+      className="text-white m-1 rounded-lg border border-[#38bdf8] relative h-[89vh] flex flex-col box-border"
+      style={{width, background: 'linear-gradient(to bottom, #bae6fd, #e0f2fe)'}}
     >
-      <h2 className="text-2xl mb-4 text-center mt-3">{t('sidebar_title')}</h2>
-      <ul className="p-4 overflow-y-auto overflow-x-hidden">
+      <h2 className="text-2xl mb-4 text-center text-black font-medium mt-3">{t('sidebar_title')}</h2>
+      <ul className="p-4 overflow-y-auto max-h-[500px] scrollbar-thin text-black text-lg font-medium overflow-x-hidden">
         <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
-            layout == ELayout.Home ? 'bg-gray-400 border border-white' : ''
+            layout == ELayout.Home ? 'bg-[#7dd3fc] border border-black' : ''
           }`}
           onClick={() => {
             toggleMenu('');
@@ -86,14 +85,14 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center  px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.ScheduleAppointment && openMenu != 'menu1' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.ScheduleAppointment && openMenu != 'menu1' ? 'bg-[#7dd3fc] border border-black' : ''
             }`}
             onClick={() => {
               toggleMenu('menu1');
               dispatch(setLayout(ELayout.ScheduleAppointment));
             }}
           >
-            <div className="flex items-center">
+            <div className="flex  items-center">
               <div className="flex w-[30px]">
                 <FontAwesomeIcon icon={faCalendarDays} />
               </div>
@@ -107,7 +106,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.ScheduleAppointment ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.ScheduleAppointment ? 'bg-[#7dd3fc] border border-black' : ''
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.ScheduleAppointment))}
               >
@@ -121,7 +120,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.ServiceRequest ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.ServiceRequest ? 'bg-[#7dd3fc] border border-black' : ''
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.ServiceRequest))}
               >
@@ -188,7 +187,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AllCustomer && openMenu != 'menu3' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AllCustomer && openMenu != 'menu3' ? 'bg-[#7dd3fc] border border-black' : ''
             }`}
             onClick={() => {
               toggleMenu('menu3');
@@ -208,7 +207,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <ul className="mt-1 ml-3">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.AllCustomer ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.AllCustomer ? 'bg-[#7dd3fc] border border-black' : ''
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.AllCustomer))}
               >
@@ -218,7 +217,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
 
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.Employee ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.Employee ? 'bg-[#7dd3fc] border border-black' : ''
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.Employee))}
               >
@@ -240,7 +239,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         <li className="mb-2">
           <button
             className={`w-full text-left flex items-center px-2 py-2 rounded-xl justify-between ${
-              layout == ELayout.AllServices && openMenu != 'menu4' ? 'bg-gray-400 border border-white' : ''
+              layout == ELayout.AllServices && openMenu != 'menu4' ? 'bg-[#7dd3fc] border border-black' : ''
             }`}
             onClick={() => {
               toggleMenu('menu4');
@@ -260,7 +259,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <ul className="ml-3 mt-1">
               <li
                 className={`py-1.5 pl-2 cursor-pointer rounded-lg ${
-                  layout == ELayout.AllServices ? 'bg-gray-400 border border-white' : ''
+                  layout == ELayout.AllServices ? 'bg-[#7dd3fc] border border-black' : ''
                 }`}
                 onClick={() => dispatch(setLayout(ELayout.AllServices))}
               >
@@ -282,7 +281,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         {/*Đơn hàng */}
         <button
           className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
-            layout == ELayout.Orders ? 'bg-gray-400 border border-white' : ''
+            layout == ELayout.Orders ? 'bg-[#7dd3fc] border border-black' : ''
           }`}
           onClick={() => {
             toggleMenu('');
@@ -292,13 +291,14 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         >
           <div className="flex items-center">
             <div className="flex w-[30px]">
-              <FontAwesomeIcon icon={faLocationDot} />
+              <FontAwesomeIcon icon={faFileInvoiceDollar} />
             </div>
             <p>{t('Đơn hàng')}</p>
           </div>
         </button>
 
-        <button
+        {/*Hóa đơn */}
+        {/* <button
           className={`w-full text-left flex items-center px-2 py-2 rounded-xl mb-2  ${
             layout == ELayout.Bills ? 'bg-gray-400 border border-white' : ''
           }`}
@@ -313,12 +313,12 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             </div>
             <p>{t('sidebar_bills')}</p>
           </div>
-        </button>
+        </button> */}
 
         {/*Chi nhánh */}
         <button
           className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
-            layout == ELayout.BranchManagement ? 'bg-gray-400 border border-white' : ''
+            layout == ELayout.BranchManagement ? 'bg-[#7dd3fc] border border-black' : ''
           }`}
           onClick={() => {
             toggleMenu('');
@@ -337,7 +337,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         {/*Kĩ năng */}
         <button
           className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
-            layout == ELayout.Skills ? 'bg-gray-400 border border-white' : ''
+            layout == ELayout.Skills ? 'bg-[#7dd3fc] border border-black' : ''
           }`}
           onClick={() => {
             toggleMenu('');
@@ -356,7 +356,7 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
         {/*Báo cáo doanh thu */}
         <button
           className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
-            layout == ELayout.RevenueManagement ? 'bg-gray-400 border border-white' : ''
+            layout == ELayout.RevenueManagement ? 'bg-[#7dd3fc] border border-black' : ''
           }`}
           onClick={() => {
             toggleMenu('');
@@ -370,13 +370,31 @@ const Sidebar: React.FC<ISidebarProps> = ({width}) => {
             <p>{t('Thống kê')}</p>
           </div>
         </button>
+
+        {/* Yeu cau dich vu */}
+        <button
+          className={`w-full text-left flex items-center  px-2 py-2 rounded-xl mb-2 ${
+            layout == ELayout.ServiceRequestList ? 'bg-gray-400 border border-white' : ''
+          }`}
+          onClick={() => {
+            toggleMenu('');
+            dispatch(setLayout(ELayout.ServiceRequestList));
+          }}
+        >
+          <div className="flex items-center">
+            <div className="flex w-[30px]">
+              <FontAwesomeIcon icon={faChartSimple} />
+            </div>
+            <p>{t('Quản lý yêu cầu')}</p>
+          </div>
+        </button>
       </ul>
 
       {/* Đăng xuất */}
       <div className="flex absolute bottom-4 flex-col items-center justify-center w-full">
         {layout != ELayout.Account && (
           <div
-            className="flex hover:bg-red-600 bg-red-400 text-white rounded-xl cursor-pointer mb-3 shadow-xl px-9 py-1.5 items-center"
+            className="flex hover:bg-red-600 border border-red-600 bg-red-400 text-white font-medium rounded-xl cursor-pointer mb-3 shadow-xl px-9 py-1.5 items-center"
             onClick={handleLogout}
           >
             <FontAwesomeIcon icon={faArrowRightFromBracket} /> &nbsp; {t('sidebar_logout')}
