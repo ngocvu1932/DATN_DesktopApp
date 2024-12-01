@@ -214,7 +214,7 @@ const Orders: React.FC = () => {
           className="h-full justify-center items-center p-0"
           //   title={`Trạng thái: ${customer.status == 1 ? 'Tạm dừng' : 'Đang hoạt động'}`}
         >
-          {/*     // 0 là OFF, 1 là đang hoạt động*/}
+          {/*     // 0 là Đã thanh toán, 1 là Chưa thanh toán*/}
           {order.status == 0 ? (
             <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1  items-center">Đã thanh toán</span>
           ) : order.status == 1 ? (

@@ -26,6 +26,7 @@ import {IOrder, IOrderDetail} from '../../models/order';
 import {formatPrice} from '../../utils/formatPrice';
 import Bills from '../../pages/bills';
 import {faEye, faFilePdf, faFloppyDisk, faPenToSquare} from '@fortawesome/free-regular-svg-icons';
+import SelectOption from '../select-options';
 
 interface IInfoDetailProps {
   type?: ETypeInfoDetail;
@@ -53,8 +54,6 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
   const layoutInfoCustomer = useSelector((state: any) => state.layoutInfo.layoutCustomer);
   const [dataCustomer, setDataCustomer] = useState<IService>(layoutInfoCustomer?.data);
   // const [titleServiceName, setTitleServiceName] = useState(layoutInfoService?.data?.name);
-
-  console.log('layoutInfoCustomer', layoutInfoCustomer);
 
   const layoutInfoOrder = useSelector((state: any) => state.layoutInfo.layoutOrder);
   const [dataOrder, setDataOrder] = useState<IOrder>(layoutInfoOrder?.data);
@@ -787,21 +786,42 @@ const InfoDetail: React.FC<IInfoDetailProps> = ({type, dataChooseBranchs, dataCh
                     className="h-8 "
                   />
                 </div>
-                <div className="flex w-1/2 flex-col pl-4 pr-16">
-                  <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
-                  {/*     // 1 Tạm dừng, 0 là Đang hoạt động*/}
-                  <select
-                    title="Trạng thái"
-                    className={`${
-                      dataOrder?.status == 0 ? 'bg-green-400' : dataOrder?.status == 1 ? 'bg-yellow-200' : ''
-                    } rounded-lg p-1 mx-1 mt-1 focus:ring-blue-500 border border-slate-300 hover:border-blue-500`}
-                    defaultValue={dataService?.status == true ? 1 : 0}
-                    onChange={(event) => setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})}
-                    disabled={!isEdit}
-                  >
-                    <option value="0">Chưa thanh toán</option>
-                    <option value="1">Đã thanh toán</option>
-                  </select>
+                <div className="flex w-1/2 pl-4 pr-16">
+                  <div className="w-1/2 pr-2">
+                    <label className="font-semibold text-base pl-1">{'Trạng thái'}</label>
+                    {/*     // 0 là Đã thanh toán, 1 là Chưa thanh toán*/}
+                    <select
+                      title="Trạng thái"
+                      className={`${
+                        dataOrder?.status == 0 ? 'bg-green-400' : dataOrder?.status == 1 ? 'bg-yellow-200' : ''
+                      } rounded-lg w-full p-1 ml-1 mt-1 focus:ring-blue-500 focus:outline-none border border-slate-300 hover:border-blue-500`}
+                      defaultValue={dataOrder?.status}
+                      onChange={(event) =>
+                        setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})
+                      }
+                      disabled={!isEdit}
+                    >
+                      <option value="1">Chưa thanh toán</option>
+                      <option value="0">Đã thanh toán</option>
+                    </select>
+                  </div>
+                  <div className="w-1/2 pr-2">
+                    <label className="font-semibold text-base pl-1">{'Hình thức thanh toán'}</label>
+                    {/*     // 1 Tạm dừng, 0 là Đang hoạt động*/}
+                    <select
+                      title="Hình thức thanh toán"
+                      className={`rounded-lg w-full p-1 ml-1 mt-1 focus:outline-none focus:ring-blue-500 border border-slate-300 hover:border-blue-500`}
+                      defaultValue={dataService?.status == true ? 1 : 0}
+                      onChange={(event) =>
+                        setDataService({...dataService, status: Number(event.target.value) == 1 ? true : false})
+                      }
+                      disabled={!isEdit}
+                    >
+                      <option value="0">Chuyển khoản</option>
+                      <option value="1">Tiền mặt</option>
+                      <option value="2">Thẻ ngân hàng</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

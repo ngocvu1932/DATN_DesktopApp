@@ -13,7 +13,7 @@ const Clock: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex text-sm font-medium">
+    <div className="flex text-sm text-black font-medium">
       <p>{format(currentTime, 'dd/MM/yyyy')}</p>
       <span>&nbsp;-&nbsp;</span>
       <p>

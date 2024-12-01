@@ -144,7 +144,7 @@ const Dashboard: React.FunctionComponent = () => {
           <></>
         )}
 
-        <div className="flex-1 bg-gray-50 w-full h-[89vh] border border-slate-400 p-2 m-1 rounded-lg overflow-hidden box-border">
+        <div className="flex-1 bg-white w-full h-[89vh] border border-slate-400 p-2 m-1 rounded-lg overflow-hidden box-border">
           {renderContent()}
         </div>
       </div>

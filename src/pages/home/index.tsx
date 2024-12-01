@@ -131,7 +131,7 @@ const Home: React.FC = () => {
             title="Số lịch hẹn mới trong hôm nay"
             value={appointmentsNewToDay}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -140,7 +140,7 @@ const Home: React.FC = () => {
             title="Số lịch hẹn đã duyệt trong hôm nay"
             value={appointmentsApprovedToDay}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -149,6 +149,7 @@ const Home: React.FC = () => {
             title="Số lịch hẹn đã hủy trong hôm nay"
             value={appointmentsCancelToDay}
             sizeCircle={45}
+            className="shadow-none border border-gray-300"
           />
         </div>
 
@@ -159,7 +160,7 @@ const Home: React.FC = () => {
             title="Tổng số lịch hẹn mới"
             value={appointmentsNew}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -168,7 +169,7 @@ const Home: React.FC = () => {
             title="Tổng số lịch hẹn đã duyệt"
             value={appointmentsApproved}
             sizeCircle={45}
-            className="mr-3"
+            className="mr-3 shadow-none border border-gray-300"
           />
 
           <ProcessView
@@ -177,6 +178,7 @@ const Home: React.FC = () => {
             title="Tổng số lịch hẹn đã hủy"
             value={appointmentsCancel}
             sizeCircle={45}
+            className="shadow-none border border-gray-300"
           />
         </div>
         {/* <div className="flex w-full min-h-[350px] mt-5 p-2">

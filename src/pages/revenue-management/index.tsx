@@ -234,7 +234,7 @@ const RevenueManagement: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex relative w-1/5 border rounded-lg border-slate-300 flex-col">
+                <div className="flex relative px-4 w-1/5 border rounded-lg border-slate-300 flex-col">
                   <div className="flex absolute bottom-2 left-0 right-0 w-full justify-center">
                     Tổng:&nbsp;
                     <span className="font-bold">
@@ -244,6 +244,7 @@ const RevenueManagement: React.FC = () => {
                     </span>
                   </div>
                   <SelectOption
+                    className="mt-3"
                     titleText={`Năm: ${year.appointment}`}
                     onClose={() =>
                       setIsOpen({
@@ -259,6 +260,7 @@ const RevenueManagement: React.FC = () => {
                   />
 
                   <SelectOption
+                    className="mt-3"
                     titleText={`Tháng: ${month.appointment == 0 ? 'Tất cả' : month.appointment}`}
                     onClose={() =>
                       setIsOpen({
@@ -275,6 +277,7 @@ const RevenueManagement: React.FC = () => {
                   />
 
                   <SelectOption
+                    className="mt-3"
                     titleText={`Dạng: ${typeChart.appointment == ETypeChart.LINE ? 'Line' : 'Bar'}`}
                     onClose={() =>
                       setIsOpen({
@@ -303,8 +306,9 @@ const RevenueManagement: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex w-1/5  border rounded-lg border-slate-300 flex-col">
+                <div className="flex w-1/5 px-4 border rounded-lg border-slate-300 flex-col">
                   <SelectOption
+                    className="mt-3"
                     titleText={`Năm: ${year.service}`}
                     onClose={() =>
                       setIsOpen({
@@ -320,6 +324,7 @@ const RevenueManagement: React.FC = () => {
                   />
 
                   <SelectOption
+                    className="mt-3"
                     titleText={`Dạng: ${typeChart.service == ETypeChart.LINE ? 'Line' : 'Bar'}`}
                     onClose={() =>
                       setIsOpen({

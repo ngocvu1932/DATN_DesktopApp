@@ -11,7 +11,7 @@ import {EFilterType} from '../../components/filter/enum';
 import Filter from '../../components/filter';
 import Pagination from '../../components/pagination';
 import {useDispatch, useSelector} from 'react-redux';
-import {ELayoutInfo} from '../../constants/layout';
+import {ELayout, ELayoutInfo} from '../../constants/layout';
 import Breadcrumb from '../../components/breadcrumb';
 import {setInfoLayout} from '../../redux/slices/layoutInfoSlice';
 import InfoDetail from '../../components/info-detail';
@@ -22,6 +22,7 @@ import {getAllBranchNoLimit} from '../../api/branch';
 import {allServicesNoLimit} from '../../api/services';
 import {IService} from '../../models/service';
 import {IDataChoose} from '../all-services';
+import {setLayout} from '../../redux/slices/layoutSlice';
 
 const Appointment: React.FC = () => {
   const layoutInfo = useSelector((state: any) => state.layoutInfo.layoutAppointment);
@@ -195,7 +196,7 @@ const Appointment: React.FC = () => {
                       <th className="border border-gray-300 p-1">Trạng thái</th>
                       <th className="border border-gray-300 p-1">Chi nhánh</th>
                       <th className="border border-gray-300 p-1">Nhắc hẹn</th>
-                      <th className="border border-gray-300 p-1">Ngày tạo</th>
+                      <th className="border border-gray-300 p-1">Thanh toán</th>
                       <th className="border border-gray-300 p-1">Ghi chú</th>
                     </tr>
                   </thead>
@@ -249,6 +250,32 @@ const Appointment: React.FC = () => {
     });
   };
 
+  const handlePurchase = async (status: number, event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const body = {
+      createdAt: '2024-11-02T14:37:51.000Z',
+      customerId: 1,
+      description: 'Này là dữ liệu cứng để test',
+      id: 45,
+      isRemoved: false,
+      name: null,
+      orderDetails: [],
+      status: 0,
+      totalAmount: 0,
+      updatedAt: '2024-11-23T17:04:11.000Z',
+      userId: null,
+    };
+
+    dispatch(setLayout(ELayout.Orders));
+    dispatch(
+      setInfoLayout({
+        layoutOrder: {layout: ELayoutInfo.Details, data: body},
+      })
+    );
+  };
+
   const renderAppointment = (appointment: IAppointment, index: number) => {
     // không hiện licjk với trạng thái đã xóa!
     if (appointment.isRemoved) {
@@ -267,46 +294,65 @@ const Appointment: React.FC = () => {
             />
           </div>
         </td>
-        <td className="border border-gray-300 p-1 font-semibold" title={`ID: ${appointment.code}`}>
+        <td className="border border-gray-300 p-0.5 font-semibold" title={`ID: ${appointment.code}`}>
           {appointment.code}
         </td>
-        <td className="border border-gray-300 p-1" title={`Tên khách hàng: ${appointment.customerName}`}>
+        <td className="border border-gray-300 p-0.5" title={`Tên khách hàng: ${appointment.customerName}`}>
           {appointment.customerName}
         </td>
-        <td className="border border-gray-300 p-1" title={`Tên dịch vụ: ${appointment.serviceName}`}>
+        <td className="border border-gray-300 p-0.5" title={`Tên dịch vụ: ${appointment.serviceName}`}>
           {appointment.serviceName}
         </td>
-        <td className="border border-gray-300 p-1" title={`Ngày: ${getFormattedDate(appointment.time)}`}>
+        <td className="border border-gray-300 p-0.5" title={`Ngày: ${getFormattedDate(appointment.time)}`}>
           {getFormattedDate(appointment.time)}
         </td>
-        <td className="border border-gray-300 p-1" title={`Giờ: ${getFormattedTime(appointment.time)}`}>
+        <td className="border border-gray-300 p-0.5" title={`Giờ: ${getFormattedTime(appointment.time)}`}>
           {getFormattedTime(appointment.time)}
         </td>
-        <td className="border border-gray-300 p-1" title={`Tên nhân viên: ${appointment.employeeName}`}>
+        <td className="border border-gray-300 p-0.5" title={`Tên nhân viên: ${appointment.employeeName}`}>
           {appointment.employeeName ? appointment.employeeName : ''}
         </td>
         <td
-          className="h-full justify-center items-center p-0"
+          className="h-full justify-center items-center p-0.5 text-sm font-semibold"
           title={`Trạng thái: ${appointment.status == 0 ? 'Mới' : appointment.status == 1 ? 'Đã xác nhận' : 'Hủy'}`}
         >
           {/* 0 MỚi, 1 Đã xác nhận, 2 Hủy */}
 
           {appointment.status == 0 ? (
-            <span className="bg-yellow-200 rounded-lg py-1 px-1.5 flex m-1  items-center">Mới</span>
+            <span className="border-gray-300 rounded-lg border text-yellow-500 p-1 flex items-center">Mới</span>
           ) : appointment.status == 1 ? (
-            <span className="bg-green-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Đã xác nhận</span>
+            <span className="border-gray-300 rounded-lg border p-1 text-green-500 flex items-center whitespace-nowrap">
+              Đã xác nhận
+            </span>
           ) : appointment.status == 2 ? (
-            <span className="bg-red-400 rounded-lg py-1 px-1.5 flex m-1 items-center ">Hủy</span>
+            <span className="bg-red-400 rounded-lg py-1 px-1.5 flex items-center ">Hủy</span>
           ) : (
             ''
           )}
         </td>
-        <td className="border border-gray-300 p-1" title="Tên chi nhánh">
+        <td className="border border-gray-300 p-0.5" title="Tên chi nhánh">
           {appointment.branchName}
         </td>
-        <td className="border border-gray-300 p-1">{appointment.reminderSent}</td>
-        <td className="border border-gray-300 p-1">{getFormattedDate(appointment.createdAt)}</td>
-        <td className="border border-gray-300 p-1 max-w-[200px]">{appointment.note}</td>
+        <td className="border border-gray-300 p-0.5">{appointment.reminderSent}</td>
+        <td className="border border-gray-300 p-0.5 text-sm font-semibold">
+          <div>
+            {true ? (
+              <div
+                className="border flex justify-center border-gray-300 rounded-lg whitespace-nowrap p-1"
+                onClick={(e) => {
+                  handlePurchase(1, e);
+                }}
+              >
+                Thanh toán
+              </div>
+            ) : (
+              <div className="border flex justify-center text-green-500 border-gray-300 rounded-lg whitespace-nowrap p-1">
+                Đã thanh toán
+              </div>
+            )}
+          </div>
+        </td>
+        <td className="border border-gray-300 p-0.5 max-w-[200px]">{appointment.note}</td>
       </>
     );
   };
@@ -318,7 +364,7 @@ const Appointment: React.FC = () => {
     <div className="w-full h-full">
       <div className="h-[6%] flex border-b border-slate-400 box-border">
         <SwitchSideBar title="Danh sách lịch hẹn" className="font-bold text-lg" />
-        <Breadcrumb />
+        {/* <Breadcrumb /> */}
       </div>
 
       {renderContent()}
